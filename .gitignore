@@ -1,0 +1,18 @@
+# Build folders
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.log
+*.vs/
+
+# Output files
+*.exe
+*.dll
+*.pdb
+*.db
+*.lock.json
+
+# Test output
+TestResults/

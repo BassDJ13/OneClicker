@@ -1,0 +1,48 @@
+﻿using BassDJPopup.FileSystem;
+using BassDJPopup.Settings;
+using System.Runtime;
+using System.Text.Json;
+
+public class JsonSettingsStorage : ISettingsStorage
+{
+    private readonly string _path;
+    private readonly IAppSettings _settings;
+    private readonly IFileSystem _fs;
+    private readonly JsonSerializerOptions _opts = new()
+    {
+        WriteIndented = true,
+        Converters = { new JsonColorConverter() }
+    };
+
+    public JsonSettingsStorage(string path, IAppSettings settings, IFileSystem? fs = null)
+    {
+        _path = path;
+        _settings = settings;
+        _fs = fs ?? new RealFileSystem();
+    }
+
+    public void Load()
+    {
+        if (!_fs.Exists(_path)) return;
+        var json = string.Join('\n', _fs.ReadAllLines(_path));
+        var loaded = JsonSerializer.Deserialize<AppSettings>(json, _opts);
+        if (loaded != null)
+        {
+            // Copy values to preserve reference
+            _settings.FolderPath = loaded.FolderPath;
+            _settings.X = loaded.X;
+            _settings.Y = loaded.Y;
+            _settings.Width = loaded.Width;
+            _settings.Height = loaded.Height;
+            _settings.BackColor = loaded.BackColor;
+            _settings.ButtonColor = loaded.ButtonColor;
+            _settings.TriangleColor = loaded.TriangleColor;
+        }
+    }
+
+    public void Save()
+    {
+        var json = JsonSerializer.Serialize((AppSettings)_settings, _opts);
+        _fs.WriteAllLines(_path, json.Split('\n'));
+    }
+}

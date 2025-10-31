@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BassDJPopup", "BassDJPopup\BassDJPopup.csproj", "{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BassDJPopup.Tests", "BassDJPopup.Tests\BassDJPopup.Tests.csproj", "{FC677EB0-A753-453F-8B73-AEFC2C532440}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC677EB0-A753-453F-8B73-AEFC2C532440}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC677EB0-A753-453F-8B73-AEFC2C532440}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC677EB0-A753-453F-8B73-AEFC2C532440}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC677EB0-A753-453F-8B73-AEFC2C532440}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F1276BEA-6B6C-4CB6-8B29-B4C8E33D5138}
+	EndGlobalSection
+EndGlobal
