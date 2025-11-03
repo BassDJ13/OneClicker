@@ -8,6 +8,8 @@ public class IniSettingsStorage : ISettingsStorage
     private readonly IAppSettings _settings;
     private readonly IFileSystem _fs;
 
+    public bool FileExists { get; private set; }
+
     public IniSettingsStorage(string path, IAppSettings settings, IFileSystem? fs = null)
     {
         _path = path;
@@ -18,6 +20,7 @@ public class IniSettingsStorage : ISettingsStorage
     public void Load()
     {
         if (!_fs.Exists(_path)) return;
+        FileExists = true;
 
         foreach (var line in _fs.ReadAllLines(_path))
         {

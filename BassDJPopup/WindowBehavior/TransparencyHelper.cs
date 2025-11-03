@@ -1,36 +1,62 @@
-﻿namespace BassDJPopup.WindowBehavior;
+﻿using System.ComponentModel;
+
+namespace BassDJPopup.WindowBehavior;
 
 public static class TransparencyHelper
 {
     public static void AttachAutoOpacity(Form form, double inactiveOpacity = 0.75)
     {
-        if (form is null)
-            throw new ArgumentNullException(nameof(form));
+        ArgumentNullException.ThrowIfNull(form);
 
         bool isActive = true;
 
-        // Attach event handlers
-        form.Activated += (_, _) => { isActive = true; Update(form, isActive, inactiveOpacity); };
-        form.Deactivate += (_, _) => { isActive = false; Update(form, isActive, inactiveOpacity); };
-        form.MouseEnter += (_, _) => Update(form, isActive, inactiveOpacity);
-        form.MouseLeave += (_, _) => Update(form, isActive, inactiveOpacity);
+        void SafeUpdate() => Update(form, isActive, inactiveOpacity);
 
-        // Also handle child controls
+        form.Activated += (_, _) => { isActive = true; SafeUpdate(); };
+        form.Deactivate += (_, _) => { isActive = false; SafeUpdate(); };
+        form.MouseEnter += (_, _) => SafeUpdate();
+        form.MouseLeave += (_, _) => SafeUpdate();
+
         foreach (Control ctrl in form.Controls)
         {
-            ctrl.MouseEnter += (_, _) => Update(form, isActive, inactiveOpacity);
-            ctrl.MouseLeave += (_, _) => Update(form, isActive, inactiveOpacity);
+            ctrl.MouseEnter += (_, _) => SafeUpdate();
+            ctrl.MouseLeave += (_, _) => SafeUpdate();
         }
 
+        // Handle closing/disposal to prevent callbacks after it's gone
+        form.FormClosing += (_, _) => form.HandleDestroyed -= OnHandleDestroyed;
+        form.HandleDestroyed += OnHandleDestroyed;
+
         // Initialize once
-        Update(form, isActive, inactiveOpacity);
+        SafeUpdate();
+
+        void OnHandleDestroyed(object? sender, EventArgs e)
+        {
+            // No-op: event unsubscribed during closing
+        }
     }
 
     private static void Update(Form form, bool isActive, double inactiveOpacity)
     {
-        if (form.IsDisposed) return;
+        // ✅ skip updates when handle or form is gone
+        if (form.IsDisposed || !form.IsHandleCreated)
+            return;
 
-        bool mouseOver = form.ClientRectangle.Contains(form.PointToClient(Cursor.Position));
-        form.Opacity = isActive || mouseOver ? 1.0 : inactiveOpacity;
+        try
+        {
+            bool mouseOver = false;
+            if (form.IsHandleCreated)
+                mouseOver = form.ClientRectangle.Contains(form.PointToClient(Cursor.Position));
+
+            form.Opacity = (isActive || mouseOver) ? 1.0 : inactiveOpacity;
+        }
+        catch (ObjectDisposedException)
+        {
+            // ignore — form is closing
+        }
+        catch (Win32Exception)
+        {
+            // ignore invalid handle errors during shutdown
+        }
     }
 }

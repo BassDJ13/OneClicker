@@ -88,6 +88,12 @@ public class MainForm : Form
 
         _settingsIO = new IniSettingsStorage(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"), _settings);//, AppSettings.Instance);
         _settingsIO.Load();
+        if (!_settingsIO.FileExists)
+        {
+            _taskbarHelper.DockAboveTaskbar(this);
+            _settings.X = this.Left;
+            _settings.Y = this.Top;
+        }
 
         BackColor = _settings.BackColor;
         _openButton.BackColor = _settings.ButtonColor;
