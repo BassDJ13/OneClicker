@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace BassDJPopup.WindowBehavior;
+namespace OneClicker.WindowBehavior;
 
 public class Win32WindowPositioner : IWindowPositioner
 {

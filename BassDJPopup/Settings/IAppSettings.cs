@@ -1,4 +1,4 @@
-﻿namespace BassDJPopup.Settings;
+﻿namespace OneClicker.Settings;
 
 public interface IAppSettings
 {
@@ -11,9 +11,4 @@ public interface IAppSettings
     int Width { get; set; }
     int X { get; set; }
     int Y { get; set; }
-
-    //bool Equals(object? obj);
-    //bool Equals(IAppSettings? other);
-    //int GetHashCode();
-    //string ToString();
 }

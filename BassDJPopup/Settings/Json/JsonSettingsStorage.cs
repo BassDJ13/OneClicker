@@ -1,7 +1,7 @@
-﻿using BassDJPopup.FileSystem;
-using BassDJPopup.Settings;
-using System.Runtime;
+﻿using OneClicker.FileSystem;
 using System.Text.Json;
+
+namespace OneClicker.Settings.Json;
 
 public class JsonSettingsStorage : ISettingsStorage
 {
@@ -14,6 +14,8 @@ public class JsonSettingsStorage : ISettingsStorage
         Converters = { new JsonColorConverter() }
     };
 
+    public bool FileExists { get; private set; }
+
     public JsonSettingsStorage(string path, IAppSettings settings, IFileSystem? fs = null)
     {
         _path = path;
@@ -23,12 +25,16 @@ public class JsonSettingsStorage : ISettingsStorage
 
     public void Load()
     {
-        if (!_fs.Exists(_path)) return;
+        if (!_fs.Exists(_path))
+        {
+            return;
+        }
+        FileExists = true;
+
         var json = string.Join('\n', _fs.ReadAllLines(_path));
         var loaded = JsonSerializer.Deserialize<AppSettings>(json, _opts);
         if (loaded != null)
         {
-            // Copy values to preserve reference
             _settings.FolderPath = loaded.FolderPath;
             _settings.X = loaded.X;
             _settings.Y = loaded.Y;

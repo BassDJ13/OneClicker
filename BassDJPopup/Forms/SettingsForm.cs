@@ -1,6 +1,6 @@
-﻿using BassDJPopup.Settings;
+﻿using OneClicker.Settings;
 
-namespace BassDJPopup.Forms;
+namespace OneClicker.Forms;
 
 public class SettingsForm : Form
 {
@@ -28,13 +28,17 @@ public class SettingsForm : Form
                 SelectedPath = txtFolder.Text
             };
             if (dialog.ShowDialog() == DialogResult.OK)
+            {
                 txtFolder.Text = dialog.SelectedPath;
+            }
         };
 
         btnOpen.Click += (s, e) =>
         {
             if (Directory.Exists(txtFolder.Text))
+            {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(txtFolder.Text) { UseShellExecute = true });
+            }
         };
 
         // --- Colors ---
@@ -97,6 +101,7 @@ public class SettingsForm : Form
         {
             Color = btn.BackColor
         };
+
         if (cd.ShowDialog() == DialogResult.OK)
         {
             btn.BackColor = cd.Color;

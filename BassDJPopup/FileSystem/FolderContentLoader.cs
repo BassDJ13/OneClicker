@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace BassDJPopup.FileSystem;
+namespace OneClicker.FileSystem;
 
 public static class FolderContentLoader
 {

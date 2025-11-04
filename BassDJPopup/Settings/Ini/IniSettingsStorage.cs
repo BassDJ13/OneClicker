@@ -1,6 +1,6 @@
-﻿using BassDJPopup.FileSystem;
-using BassDJPopup.Settings;
-using System.Runtime;
+﻿using OneClicker.FileSystem;
+
+namespace OneClicker.Settings.Ini;
 
 public class IniSettingsStorage : ISettingsStorage
 {
@@ -14,12 +14,15 @@ public class IniSettingsStorage : ISettingsStorage
     {
         _path = path;
         _settings = settings;
-        _fs = fs ?? new RealFileSystem(); // default implementation
+        _fs = fs ?? new RealFileSystem();
     }
 
     public void Load()
     {
-        if (!_fs.Exists(_path)) return;
+        if (!_fs.Exists(_path))
+        {
+            return;
+        }
         FileExists = true;
 
         foreach (var line in _fs.ReadAllLines(_path))

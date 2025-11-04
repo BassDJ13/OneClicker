@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace BassDJPopup.WindowBehavior;
+namespace OneClicker.WindowBehavior;
 
 public static class TransparencyHelper
 {
@@ -38,15 +38,19 @@ public static class TransparencyHelper
 
     private static void Update(Form form, bool isActive, double inactiveOpacity)
     {
-        // ✅ skip updates when handle or form is gone
+        // skip updates when handle or form is gone
         if (form.IsDisposed || !form.IsHandleCreated)
+        {
             return;
+        }
 
         try
         {
             bool mouseOver = false;
             if (form.IsHandleCreated)
+            {
                 mouseOver = form.ClientRectangle.Contains(form.PointToClient(Cursor.Position));
+            }
 
             form.Opacity = (isActive || mouseOver) ? 1.0 : inactiveOpacity;
         }

@@ -1,4 +1,4 @@
-﻿namespace BassDJPopup.FileSystem;
+﻿namespace OneClicker.FileSystem;
 
 public interface IFileSystem
 {

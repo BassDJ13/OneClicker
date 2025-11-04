@@ -1,10 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using OneClicker.Settings.Json;
+using System.Text.Json.Serialization;
 
-namespace BassDJPopup.Settings;
+namespace OneClicker.Settings;
 
 public sealed record AppSettings : IAppSettings
 {
-    private static IAppSettings _instance;
+    private static IAppSettings? _instance;
     public static IAppSettings Instance => _instance ??= new AppSettings();
     public string FolderPath { get; set; } = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
     public int X { get; set; }
@@ -17,7 +18,5 @@ public sealed record AppSettings : IAppSettings
     public Color ButtonColor { get; set; } = Color.SteelBlue;
     [JsonConverter(typeof(JsonColorConverter))]
     public Color TriangleColor { get; set; } = Color.LightBlue;
-
-    //public AppSettings Clone() => (AppSettings)MemberwiseClone();
 }
 

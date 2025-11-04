@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\BassDJPopup\BassDJPopup.csproj" />
+		<ProjectReference Include="..\BassDJPopup\OneClicker.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

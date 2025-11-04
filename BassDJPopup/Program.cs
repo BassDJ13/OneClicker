@@ -1,6 +1,6 @@
-﻿using BassDJPopup.Forms;
+﻿using OneClicker.Forms;
 
-namespace QuickFolderPopup;
+namespace OneClicker;
 
 internal static class Program
 {

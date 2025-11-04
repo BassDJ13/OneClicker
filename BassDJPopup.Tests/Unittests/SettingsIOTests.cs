@@ -1,8 +1,9 @@
-﻿using BassDJPopup.FileSystem;
-using BassDJPopup.Settings;
+﻿using OneClicker.FileSystem;
+using OneClicker.Settings;
+using OneClicker.Settings.Ini;
 using NSubstitute;
 
-namespace BassDJPopup.Tests.Unittests;
+namespace OneClicker.Tests.Unittests;
 
 public class SettingsIOTests
 {
@@ -71,8 +72,8 @@ public class SettingsIOTests
         Assert.That(settings.Y, Is.EqualTo(20));
         Assert.That(settings.Width, Is.EqualTo(30));
         Assert.That(settings.Height, Is.EqualTo(40));
-        Assert.That(settings.BackColor.ToArgb(), Is.EqualTo(Color.FromArgb(128, 0, 0).ToArgb()));
-        Assert.That(settings.ButtonColor.ToArgb(), Is.EqualTo(Color.FromArgb(0, 128, 0).ToArgb()));
-        Assert.That(settings.TriangleColor.ToArgb(), Is.EqualTo(Color.FromArgb(0, 0, 128).ToArgb()));
+        Assert.That(settings.BackColor.ToArgb(), Is.EqualTo(Color.FromArgb(255, 0, 0).ToArgb()));
+        Assert.That(settings.ButtonColor.ToArgb(), Is.EqualTo(Color.FromArgb(0, 255, 0).ToArgb()));
+        Assert.That(settings.TriangleColor.ToArgb(), Is.EqualTo(Color.FromArgb(0, 0, 255).ToArgb()));
     }
 }

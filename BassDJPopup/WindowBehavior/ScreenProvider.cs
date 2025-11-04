@@ -1,4 +1,4 @@
-﻿namespace BassDJPopup.WindowBehavior;
+﻿namespace OneClicker.WindowBehavior;
 
 public class ScreenProvider : IScreenProvider
 {

@@ -1,7 +1,7 @@
-﻿using BassDJPopup.WindowBehavior;
+﻿using OneClicker.WindowBehavior;
 using NSubstitute;
 
-namespace BassDJPopup.Tests.Unittests;
+namespace OneClicker.Tests.Unittests;
 
 public class TopMostHelperTests
 {

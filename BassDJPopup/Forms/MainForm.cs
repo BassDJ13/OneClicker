@@ -1,11 +1,11 @@
-﻿using BassDJPopup.FileSystem;
-using BassDJPopup.Settings;
-using BassDJPopup.WindowBehavior;
+﻿using OneClicker.FileSystem;
+using OneClicker.Settings;
+using OneClicker.Settings.Ini;
+using OneClicker.WindowBehavior;
 using Microsoft.Win32;
-using QuickFolderPopup;
 using System.Diagnostics;
 
-namespace BassDJPopup.Forms;
+namespace OneClicker.Forms;
 
 public class MainForm : Form
 {
@@ -13,7 +13,7 @@ public class MainForm : Form
     private readonly Panel _dragArea;
     private readonly Button _openButton;
     private readonly ContextMenuStrip _popupMenu;
-    private readonly IniSettingsStorage _settingsIO;
+    private readonly ISettingsStorage _settingsIO;
     private bool _isDragging = false;
     private Color _triangleColor;
     private TaskbarHelper _taskbarHelper;
@@ -61,7 +61,9 @@ public class MainForm : Form
         _dragArea.MouseMove += (s, e) =>
         {
             if (_isDragging)
+            {
                 _taskbarHelper.KeepInWorkArea(this);
+            }
         };
 
         _openButton = new Button
@@ -80,7 +82,9 @@ public class MainForm : Form
         _popupMenu.ItemClicked += (s, e) =>
         {
             if (e.ClickedItem!.Tag is string path)
+            {
                 Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+            }
         };
 
         Controls.Add(_openButton);
