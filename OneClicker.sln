@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClicker", "BassDJPopup\OneClicker.csproj", "{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClicker", "OneClicker\OneClicker.csproj", "{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClicker.Tests", "BassDJPopup.Tests\OneClicker.Tests.csproj", "{FC677EB0-A753-453F-8B73-AEFC2C532440}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClicker.Tests", "OneClicker.Tests\OneClicker.Tests.csproj", "{FC677EB0-A753-453F-8B73-AEFC2C532440}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
