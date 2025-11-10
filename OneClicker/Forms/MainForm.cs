@@ -1,8 +1,8 @@
-﻿using OneClicker.FileSystem;
+﻿using Microsoft.Win32;
+using OneClicker.FileSystem;
 using OneClicker.Settings;
 using OneClicker.Settings.Ini;
 using OneClicker.WindowBehavior;
-using Microsoft.Win32;
 using System.Diagnostics;
 
 namespace OneClicker.Forms;
@@ -20,6 +20,7 @@ public class MainForm : Form
 
     public MainForm()
     {
+        Text = "OneClicker";
         _taskbarHelper = new TaskbarHelper(new ScreenProvider());
         _settings = AppSettings.Instance;
         FormBorderStyle = FormBorderStyle.None;
@@ -110,6 +111,39 @@ public class MainForm : Form
         SystemEvents.DisplaySettingsChanged += (s, e) => _taskbarHelper.EnsureVisible(this);
     }
 
+    private async void BlinkExistingInstance()
+    {
+        if (WindowState == FormWindowState.Minimized)
+            WindowState = FormWindowState.Normal;
+
+        Activate();
+        await BlinkAsync();
+    }
+
+    protected override async void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        await BlinkAsync();
+    }
+
+    private async Task BlinkAsync()
+    {
+        var startColor = _openButton.BackColor;
+        await BlinkHelper.BlinkAsync(v =>
+        {
+            _openButton.BackColor = LerpColor(startColor, Color.White, v);
+        });
+    }
+
+    private static Color LerpColor(Color from, Color to, double t)
+    {
+        t = Math.Clamp(t, 0, 1);
+        int r = (int)(from.R + (to.R - from.R) * t);
+        int g = (int)(from.G + (to.G - from.G) * t);
+        int b = (int)(from.B + (to.B - from.B) * t);
+        return Color.FromArgb(r, g, b);
+    }
+
     protected override CreateParams CreateParams
     {
         get
@@ -120,8 +154,15 @@ public class MainForm : Form
         }
     }
 
+    private const int WM_APP_SHOW = 0x8000 + 1;
+
     protected override void WndProc(ref Message m)
     {
+        if (m.Msg == WM_APP_SHOW)
+        {
+            BlinkExistingInstance();
+            return;
+        }
         base.WndProc(ref m);
         new TopMostHelper(new Win32WindowPositioner()).HandleMessage(this, ref m);
     }
@@ -175,12 +216,19 @@ public class MainForm : Form
 
     private void OpenButton_MouseUp(object sender, MouseEventArgs e)
     {
-        if (e.Button != MouseButtons.Right) return;
+        if (e.Button != MouseButtons.Right)
+        {
+            return;
+        }
 
         var menu = new ContextMenuStrip();
         menu.Items.Add("Settings", null, (s, a) => ShowSettings());
         menu.Items.Add("Reload Folder", null, (s, a) => _popupMenu.Items.Clear());
-        menu.Items.Add("Dock to bottom-right", null, (s, a) => _taskbarHelper.DockAboveTaskbar(this));
+        menu.Items.Add("Dock to bottom-right", null, async (s, a) =>
+        {
+            _taskbarHelper.DockAboveTaskbar(this);
+            await BlinkAsync();
+        });
         menu.Items.Add("Close", null, (s, a) => Close());
         menu.Show(_openButton, e.Location);
     }

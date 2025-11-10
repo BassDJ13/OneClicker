@@ -7,7 +7,7 @@ public class SettingsForm : Form
     public SettingsForm()
     {
         var settings = AppSettings.Instance;
-        Text = "OneClicker Settings v1.0.1";
+        Text = "OneClicker Settings v1.0.2";
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterParent;
         ClientSize = new Size(368, 212);
