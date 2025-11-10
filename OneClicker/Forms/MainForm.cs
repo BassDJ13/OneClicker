@@ -138,7 +138,39 @@ public class MainForm : Form
         {
             _popupMenu.Items.AddRange(FolderContentLoader.GetItems(_settings.FolderPath).ToArray());
         }
-        _popupMenu.Show(_openButton, new Point(0, -_popupMenu.PreferredSize.Height));
+        _popupMenu.Show(_openButton, new Point(
+            GetHorizontalAlignment(_openButton, _popupMenu.PreferredSize.Width),
+            GetVerticalAlignment(_openButton, _popupMenu.PreferredSize.Height)));
+    }
+
+    private int GetHorizontalAlignment(Button openButton, int preferredWidth)
+    {
+        var screen = Screen.FromControl(this);
+        var screenBounds = screen.WorkingArea;
+
+        var buttonScreenLocation = openButton.PointToScreen(Point.Empty);
+
+        if (buttonScreenLocation.X + preferredWidth > screenBounds.Right)
+        {
+            return openButton.Width - preferredWidth;
+        }
+
+        return 0;
+    }
+
+    private int GetVerticalAlignment(Button openButton, int preferredHeight)
+    {
+        var screen = Screen.FromControl(this);
+        var screenBounds = screen.WorkingArea;
+
+        var buttonScreenLocation = openButton.PointToScreen(Point.Empty);
+
+        var yOffset = -preferredHeight;
+        if (buttonScreenLocation.Y + yOffset < screenBounds.Top)
+        {
+            return openButton.Height;
+        }
+        return yOffset;
     }
 
     private void OpenButton_MouseUp(object sender, MouseEventArgs e)
