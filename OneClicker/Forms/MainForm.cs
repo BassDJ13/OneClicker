@@ -18,6 +18,26 @@ public class MainForm : Form
     private Color _triangleColor;
     private TaskbarHelper _taskbarHelper;
 
+    private readonly BlinkHelper _blinker = new BlinkHelper();
+
+    private async Task BlinkAsync()
+    {
+        var startColor = _openButton.BackColor;
+        await _blinker.BlinkAsync(v =>
+        {
+            _openButton.BackColor = LerpColor(startColor, Color.White, v);
+        });
+    }
+
+    private static Color LerpColor(Color from, Color to, double t)
+    {
+        t = Math.Clamp(t, 0, 1);
+        int r = (int)(from.R + (to.R - from.R) * t);
+        int g = (int)(from.G + (to.G - from.G) * t);
+        int b = (int)(from.B + (to.B - from.B) * t);
+        return Color.FromArgb(r, g, b);
+    }
+
     public MainForm()
     {
         Text = "OneClicker";
@@ -111,37 +131,10 @@ public class MainForm : Form
         SystemEvents.DisplaySettingsChanged += (s, e) => _taskbarHelper.EnsureVisible(this);
     }
 
-    private async void BlinkExistingInstance()
-    {
-        if (WindowState == FormWindowState.Minimized)
-            WindowState = FormWindowState.Normal;
-
-        Activate();
-        await BlinkAsync();
-    }
-
     protected override async void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
         await BlinkAsync();
-    }
-
-    private async Task BlinkAsync()
-    {
-        var startColor = _openButton.BackColor;
-        await BlinkHelper.BlinkAsync(v =>
-        {
-            _openButton.BackColor = LerpColor(startColor, Color.White, v);
-        });
-    }
-
-    private static Color LerpColor(Color from, Color to, double t)
-    {
-        t = Math.Clamp(t, 0, 1);
-        int r = (int)(from.R + (to.R - from.R) * t);
-        int g = (int)(from.G + (to.G - from.G) * t);
-        int b = (int)(from.B + (to.B - from.B) * t);
-        return Color.FromArgb(r, g, b);
     }
 
     protected override CreateParams CreateParams
@@ -160,7 +153,12 @@ public class MainForm : Form
     {
         if (m.Msg == WM_APP_SHOW)
         {
-            BlinkExistingInstance();
+
+            if (WindowState == FormWindowState.Minimized)
+                WindowState = FormWindowState.Normal;
+
+            Activate();
+            _ = RunSafeAsync(() => BlinkAsync());
             return;
         }
         base.WndProc(ref m);
@@ -277,6 +275,18 @@ public class MainForm : Form
         _settings.Height = Height;
         _settingsIO.Save();
         base.OnFormClosing(e);
+    }
+
+    private static async Task RunSafeAsync(Func<Task> action)
+    {
+        try
+        {
+            await action();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Async operation failed: {ex.Message}");
+        }
     }
 
     private static class NativeMethods
