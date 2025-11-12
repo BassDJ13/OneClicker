@@ -17,7 +17,7 @@ public class MainForm : Form
     private bool _isDragging = false;
     private Color _triangleColor;
     private TaskbarHelper _taskbarHelper;
-
+    private GlobalHotkeyHelper? _hotkeyHelper;
     private readonly BlinkHelper _blinker = new BlinkHelper();
 
     private async Task BlinkAsync()
@@ -104,14 +104,18 @@ public class MainForm : Form
         {
             if (e.ClickedItem!.Tag is string path)
             {
-                Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+                try
+                {
+                    Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+                }
+                catch { }
             }
         };
 
         Controls.Add(_openButton);
         Controls.Add(_dragArea);
 
-        _settingsIO = new IniSettingsStorage(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"), _settings);//, AppSettings.Instance);
+        _settingsIO = new IniSettingsStorage(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"), _settings);
         _settingsIO.Load();
         if (!_settingsIO.FileExists)
         {
@@ -122,7 +126,7 @@ public class MainForm : Form
 
         BackColor = _settings.BackColor;
         _openButton.BackColor = _settings.ButtonColor;
-        _triangleColor = _settings.TriangleColor; // add field for use in DrawTriangle
+        _triangleColor = _settings.TriangleColor;
 
         Size = new Size(_settings.Width, _settings.Height);
         Location = new Point(_settings.X, _settings.Y);
@@ -147,20 +151,43 @@ public class MainForm : Form
         }
     }
 
+    protected override void OnHandleCreated(EventArgs e)
+    {
+        base.OnHandleCreated(e);
+        _hotkeyHelper = new GlobalHotkeyHelper(Handle, OnGlobalHotkeyPressed);
+    }
+
+    private void OnGlobalHotkeyPressed()
+    {
+        ShowAndActivate();
+        _openButton.PerformClick();
+    }
+
+    private void ShowAndActivate()
+    {
+        if (WindowState == FormWindowState.Minimized)
+        {
+            WindowState = FormWindowState.Normal;
+        }
+        Activate();
+    }
+
     private const int WM_APP_SHOW = 0x8000 + 1;
 
     protected override void WndProc(ref Message m)
     {
-        if (m.Msg == WM_APP_SHOW)
+        if (_hotkeyHelper != null && _hotkeyHelper.ProcessHotkeyMessage(ref m))
         {
-
-            if (WindowState == FormWindowState.Minimized)
-                WindowState = FormWindowState.Normal;
-
-            Activate();
-            _ = RunSafeAsync(() => BlinkAsync());
             return;
         }
+
+        if (m.Msg == WM_APP_SHOW)
+        {
+            ShowAndActivate();
+            Task.Run(BlinkAsync);
+            return;
+        }
+
         base.WndProc(ref m);
         new TopMostHelper(new Win32WindowPositioner()).HandleMessage(this, ref m);
     }
@@ -277,16 +304,10 @@ public class MainForm : Form
         base.OnFormClosing(e);
     }
 
-    private static async Task RunSafeAsync(Func<Task> action)
+    protected override void OnFormClosed(FormClosedEventArgs e)
     {
-        try
-        {
-            await action();
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Async operation failed: {ex.Message}");
-        }
+        _hotkeyHelper?.Dispose();
+        base.OnFormClosed(e);
     }
 
     private static class NativeMethods

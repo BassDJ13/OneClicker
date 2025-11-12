@@ -4,7 +4,7 @@ namespace OneClicker.WindowBehavior;
 
 public static class TransparencyHelper
 {
-    public static void AttachAutoOpacity(Form form, double inactiveOpacity = 0.75)
+    public static void AttachAutoOpacity(Form form, double inactiveOpacity = 0.7)
     {
         ArgumentNullException.ThrowIfNull(form);
 
