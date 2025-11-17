@@ -5,12 +5,12 @@ namespace OneClicker.Settings.Ini;
 public class IniSettingsStorage : ISettingsStorage
 {
     private readonly string _path;
-    private readonly IAppSettings _settings;
+    private readonly ISettings _settings;
     private readonly IFileSystem _fs;
 
     public bool FileExists { get; private set; }
 
-    public IniSettingsStorage(string path, IAppSettings settings, IFileSystem? fs = null)
+    public IniSettingsStorage(string path, ISettings settings, IFileSystem? fs = null)
     {
         _path = path;
         _settings = settings;

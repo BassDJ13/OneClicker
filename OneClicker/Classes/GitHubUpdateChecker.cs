@@ -37,4 +37,27 @@ internal static class GitHubUpdateChecker
 
         return true;
     }
+
+    public static Version GetVersion()
+    {
+        var versionString = Application.ProductVersion;
+        if (string.IsNullOrWhiteSpace(versionString))
+        {
+            return new Version(0, 0, 0, 0);
+        }
+
+        // remove "+gitsha"
+        int pos = versionString.IndexOf('+');
+        if (pos >= 0)
+        {
+            versionString = versionString[..pos];
+        }
+
+        if (Version.TryParse(versionString, out var version))
+        {
+            return version;
+        }
+
+        return new Version(0, 0, 0);
+    }
 }

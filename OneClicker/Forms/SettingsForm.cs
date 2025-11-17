@@ -1,120 +1,104 @@
 ﻿using OneClicker.Classes;
 using OneClicker.Settings;
+using System.Diagnostics;
 
 namespace OneClicker.Forms;
 
-public class SettingsForm : Form
+public sealed class SettingsForm : Form
 {
-    private LinkLabel _linkUpdate;
+    private readonly ListBox _navList;
+    private readonly Panel _contentPanel;
+    private readonly LinkLabel _linkUpdate;
+    private readonly Button _saveButton;
+    private readonly Button _cancelButton;
+
     private string _owner = "BassDJ13";
     private string _repo = "OneClicker";
 
+    private ISettings _localSettings;
+
     public SettingsForm()
     {
-        Load += SettingsForm_Load;
+        _localSettings = AppSettings.Instance.Copy();
 
-        var settings = AppSettings.Instance;
-        Text = $"OneClicker Settings v{ParseVersionSafe(Application.ProductVersion)}";
+        Text = $"OneClicker Settings v{GitHubUpdateChecker.GetVersion()}";
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterParent;
-        ClientSize = new Size(368, 232);
+        ClientSize = new Size(480, 270);
         MaximizeBox = false;
         MinimizeBox = false;
 
-        // --- Folder ---
-        var labelFolder = new Label { Text = "Folder:", Left = 10, Top = 20, Width = 50 };
-        var textFolder = new TextBox { Left = 70, Top = 18, Width = 220, Text = settings.FolderPath };
-        var buttonBrowse = new Button { Text = "Browse...", Left = 290, Top = 18, Width = 65 };
-        var buttonOpen = new Button { Text = "Open in explorer", Left = 70, Top = 44, Width = 110 };
+        _navList = new ListBox { Dock = DockStyle.Left, Width = 128 };
 
-        buttonBrowse.Click += (s, e) =>
+        _navList.Items.AddRange(new object[]
         {
-            using var dialog = new FolderBrowserDialog
-            {
-                Description = "Select folder to display",
-                SelectedPath = textFolder.Text
-            };
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                textFolder.Text = dialog.SelectedPath;
-            }
-        };
-
-        buttonOpen.Click += (s, e) =>
-        {
-            if (Directory.Exists(textFolder.Text))
-            {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(textFolder.Text) { UseShellExecute = true });
-            }
-        };
-
-        // --- Hotkey ---
-        var labelHotkey = new Label { Text = "Hotkey:", Left = 10, Top = 72, Width = 50 };
-        var textHotkey = new TextBox { Left = 70, Top = 70, Width = 50, Text = "Alt + z", ReadOnly = true };
-
-        // --- Colors ---
-        var labelBack = new Label { Text = "Header:", Left = 10, Top = 110, Width = 60 };
-        var labelButton = new Label { Text = "Button:", Left = 10, Top = 135, Width = 60 };
-        var labelTriangle = new Label { Text = "Arrow:", Left = 10, Top = 160, Width = 60 };
-
-        var buttonHeaderColor = new Button { Left = 70, Top = 105, Width = 22, BackColor = settings.BackColor };
-        var buttonBackgroundColor = new Button { Left = 70, Top = 130, Width = 22, BackColor = settings.ButtonColor };
-        var buttonForegroundColor = new Button { Left = 70, Top = 155, Width = 22, BackColor = settings.TriangleColor };
-
-        buttonHeaderColor.Click += (s, e) => PickColor(buttonHeaderColor);
-        buttonBackgroundColor.Click += (s, e) => PickColor(buttonBackgroundColor);
-        buttonForegroundColor.Click += (s, e) => PickColor(buttonForegroundColor);
-
-        // --- Size ---
-        var labelWidth = new Label { Text = "Width:", Left = 175, Top = 110, Width = 50 };
-        var numericWidth = new NumericUpDown { Left = 230, Top = 107, Width = 60, Minimum = 8, Maximum = 960, Value = Math.Max(8, settings.Width) };
-        var labelHeight = new Label { Text = "Height:", Left = 175, Top = 135, Width = 50 };
-        var numericHeight = new NumericUpDown { Left = 230, Top = 132, Width = 60, Minimum = 12, Maximum = 540, Value = Math.Max(12, settings.Height) };
-
-        _linkUpdate = new LinkLabel { Text = "Update is available", Left = 10, Top = 195, Width = 200 };
-        _linkUpdate.LinkClicked += LinkUpdate_LinkClicked;
-        _linkUpdate.Visible = false;
-
-        // --- Save/Cancel ---
-        var saveButton = new Button { Text = "Save", Left = 226, Width = 60, Top = 195, DialogResult = DialogResult.OK };
-        var cancelButton = new Button { Text = "Cancel", Left = 296, Width = 60, Top = 195, DialogResult = DialogResult.Cancel };
-        AcceptButton = saveButton;
-        CancelButton = cancelButton;
-
-        Controls.AddRange(new Control[]
-        {
-            labelFolder, textFolder, buttonBrowse, buttonOpen,
-            labelHotkey, textHotkey,
-            labelBack, labelButton, labelTriangle,
-            buttonHeaderColor, buttonBackgroundColor, buttonForegroundColor,
-            labelWidth, numericWidth,
-            labelHeight, numericHeight,
-            _linkUpdate,
-            saveButton, cancelButton
+            "General",
+            "Appearance"
         });
 
-        saveButton.Click += (s, e) =>
+        _contentPanel = new Panel
         {
-            if (!Directory.Exists(textFolder.Text))
-            {
-                MessageBox.Show("Selected folder does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                DialogResult = DialogResult.None;
-                return;
-            }
-
-            settings.FolderPath = textFolder.Text;
-            settings.BackColor = buttonHeaderColor.BackColor;
-            settings.ButtonColor = buttonBackgroundColor.BackColor;
-            settings.TriangleColor = buttonForegroundColor.BackColor;
-            settings.Width = (int)numericWidth.Value;
-            settings.Height = (int)numericHeight.Value;
+            Dock = DockStyle.Fill,
+            Padding = new Padding(10)
         };
+
+        var bottomPanel = new Panel
+        {
+            Dock = DockStyle.Bottom,
+            Height = 44,
+            Padding = new Padding(8)
+        };
+
+        var flow = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Right,
+            FlowDirection = FlowDirection.LeftToRight,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            WrapContents = false
+        };
+
+        _saveButton = new Button { Text = "Save", Width = 60 };
+        _cancelButton = new Button { Text = "Cancel", Width = 60 };
+
+        flow.Controls.Add(_saveButton);
+        flow.Controls.Add(_cancelButton);
+
+        bottomPanel.Controls.Add(flow);
+
+        AcceptButton = _saveButton;
+        CancelButton = _cancelButton;
+
+        _saveButton.Click += SaveButton_Click;
+        _cancelButton.Click += (s, e) => Close();
+
+        _linkUpdate = new LinkLabel { Text = "Update available", Visible = false, Top = 15, Left = 9, AutoSize = true };
+        _linkUpdate.LinkClicked += LinkUpdate_LinkClicked;
+        bottomPanel.Controls.Add(_linkUpdate);
+
+        Controls.Add(_contentPanel);
+        Controls.Add(_navList);
+        Controls.Add(bottomPanel);
+
+        _navList.SelectedIndexChanged += NavigationIndexChanged;
+        _navList.SelectedIndex = 0;
+
+        Load += CheckVersion;
     }
 
-    private async void SettingsForm_Load(object? sender, EventArgs e)
+    private async void CheckVersion(object? sender, EventArgs e)
     {
-        var currentVersion = ParseVersionSafe(Application.ProductVersion);
-        bool isLatest = await GitHubUpdateChecker.IsLatestVersionAsync(_owner, _repo, currentVersion);
+        Version current = GitHubUpdateChecker.GetVersion();
+
+        bool isLatest = false;
+        try
+        {
+            isLatest = await GitHubUpdateChecker.IsLatestVersionAsync(_owner, _repo, current);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("Update check failed: " + ex.Message);
+        }
 
         if (!isLatest)
         {
@@ -122,45 +106,53 @@ public class SettingsForm : Form
         }
     }
 
-    private static Version ParseVersionSafe(string? versionString)
+    private void NavigationIndexChanged(object? sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(versionString))
-            return new Version(0, 0, 0, 0);
+        if (_navList.SelectedItem is null)
+        {
+            return;
+        }
 
-        // Trim build metadata like "+commitsha"
-        var clean = versionString.Split('+')[0];
-        if (Version.TryParse(clean, out var version))
-            return version;
-
-        return new Version(0, 0, 0, 0);
+        LoadContentPage(_navList.SelectedItem.ToString()!);
     }
 
-    private static void PickColor(Button button)
+    private void LoadContentPage(string pageName)
     {
-        var cd = new ColorDialog
+        SaveContentPageSettings();
+        _contentPanel.Controls.Clear();
+        UserControl newPage = pageName switch
         {
-            Color = button.BackColor
+            "General" => new GeneralSettingsPage(),
+            "Appearance" => new AppearanceSettingsPage(),
+            _ => throw new ArgumentOutOfRangeException(nameof(pageName))
         };
 
-        if (cd.ShowDialog() == DialogResult.OK)
+        (newPage as ISettingsPage)?.ReadFrom(_localSettings);
+        newPage.Dock = DockStyle.Fill;
+        _contentPanel.Controls.Add(newPage);
+    }
+
+    private void SaveContentPageSettings()
+    {
+        if (_contentPanel.Controls.Count > 0 && _contentPanel.Controls[0] is ISettingsPage page)
         {
-            button.BackColor = cd.Color;
+            page.WriteTo(_localSettings);
         }
+    }
+
+    private void SaveButton_Click(object? sender, EventArgs e)
+    {
+        SaveContentPageSettings();
+        AppSettings.Instance.Save(_localSettings);
+        DialogResult = DialogResult.OK;
+        Close();
     }
 
     private void LinkUpdate_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
     {
-        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        Process.Start(new ProcessStartInfo($"https://github.com/{_owner}/{_repo}")
         {
-            FileName = $"https://github.com/{_owner}/{_repo}",
             UseShellExecute = true
         });
-    }
-
-    protected override void OnFormClosed(FormClosedEventArgs e)
-    {
-        _linkUpdate.LinkClicked -= LinkUpdate_LinkClicked;
-        _linkUpdate?.Dispose();
-        base.OnFormClosed(e);
     }
 }

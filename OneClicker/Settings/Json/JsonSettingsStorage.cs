@@ -6,7 +6,7 @@ namespace OneClicker.Settings.Json;
 public class JsonSettingsStorage : ISettingsStorage
 {
     private readonly string _path;
-    private readonly IAppSettings _settings;
+    private readonly ISettings _settings;
     private readonly IFileSystem _fs;
     private readonly JsonSerializerOptions _opts = new()
     {
@@ -16,7 +16,7 @@ public class JsonSettingsStorage : ISettingsStorage
 
     public bool FileExists { get; private set; }
 
-    public JsonSettingsStorage(string path, IAppSettings settings, IFileSystem? fs = null)
+    public JsonSettingsStorage(string path, ISettings settings, IFileSystem? fs = null)
     {
         _path = path;
         _settings = settings;

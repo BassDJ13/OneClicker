@@ -18,5 +18,32 @@ public sealed record AppSettings : IAppSettings
     public Color ButtonColor { get; set; } = Color.SteelBlue;
     [JsonConverter(typeof(JsonColorConverter))]
     public Color TriangleColor { get; set; } = Color.LightBlue;
+
+    public ISettings Copy()
+    {
+        return new Settings()
+        {
+            FolderPath = this.FolderPath,
+            X = this.X,
+            Y = this.Y,
+            Width = this.Width,
+            Height = this.Height,
+            BackColor = this.BackColor,
+            ButtonColor = this.ButtonColor,
+            TriangleColor = this.TriangleColor
+        };
+    }
+
+    public void Save(ISettings settings)
+    {
+        FolderPath = settings.FolderPath;
+        X = settings.X;
+        Y = settings.Y;
+        Width = settings.Width;
+        Height = settings.Height;
+        BackColor = settings.BackColor;
+        ButtonColor = settings.ButtonColor;
+        TriangleColor = settings.TriangleColor;
+    }
 }
 
