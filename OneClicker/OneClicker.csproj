@@ -17,5 +17,14 @@
   <ItemGroup>
     <ProjectReference Include="..\BassTween\BassTween.csproj" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <Compile Update="Forms\PluginWidgetBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Forms\FolderWidget.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
 
 </Project>

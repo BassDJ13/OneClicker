@@ -1,41 +1,29 @@
 ﻿using Microsoft.Win32;
-using OneClicker.FileSystem;
 using OneClicker.Settings;
 using OneClicker.Settings.Ini;
 using OneClicker.WindowBehavior;
-using System.Diagnostics;
 
 namespace OneClicker.Forms;
 
-public class MainForm : Form
+public class MainForm : Form, IMainWindow
 {
     private readonly IAppSettings _settings;
     private readonly Panel _dragArea;
-    private readonly Button _openButton;
-    private readonly ContextMenuStrip _popupMenu;
+    private readonly Panel _contentPanel;
     private readonly ISettingsStorage _settingsIO;
     private bool _isDragging = false;
-    private Color _triangleColor;
     private TaskbarHelper _taskbarHelper;
     private GlobalHotkeyHelper? _hotkeyHelper;
-    private readonly BlinkHelper _blinker = new BlinkHelper();
+
+    private void Blink() => _ = BlinkAsync();
 
     private async Task BlinkAsync()
     {
-        var startColor = _openButton.BackColor;
-        await _blinker.BlinkAsync(v =>
-        {
-            _openButton.BackColor = LerpColor(startColor, Color.White, v);
-        });
-    }
-
-    private static Color LerpColor(Color from, Color to, double t)
-    {
-        t = Math.Clamp(t, 0, 1);
-        int r = (int)(from.R + (to.R - from.R) * t);
-        int g = (int)(from.G + (to.G - from.G) * t);
-        int b = (int)(from.B + (to.B - from.B) * t);
-        return Color.FromArgb(r, g, b);
+        var tasks = _contentPanel.Controls
+            .OfType<IPluginWidget>()
+            .Select(widget => widget.StartAnimation())
+            .ToList();
+        await Task.WhenAll(tasks);
     }
 
     public MainForm()
@@ -87,32 +75,13 @@ public class MainForm : Form
             }
         };
 
-        _openButton = new Button
+        _contentPanel = new Panel()
         {
             Dock = DockStyle.Fill,
-            FlatStyle = FlatStyle.Flat,
-            Margin = new Padding(0),
-            TabStop = false
-        };
-        _openButton.FlatAppearance.BorderSize = 0;
-        _openButton.Click += OpenButton_Click!;
-        _openButton.MouseUp += OpenButton_MouseUp!;
-        _openButton.Paint += DrawTriangle!;
-
-        _popupMenu = new ContextMenuStrip();
-        _popupMenu.ItemClicked += (s, e) =>
-        {
-            if (e.ClickedItem!.Tag is string path)
-            {
-                try
-                {
-                    Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-                }
-                catch { }
-            }
+            Padding = new Padding(0)
         };
 
-        Controls.Add(_openButton);
+        Controls.Add(_contentPanel);
         Controls.Add(_dragArea);
 
         _settingsIO = new IniSettingsStorage(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"), _settings);
@@ -125,8 +94,6 @@ public class MainForm : Form
         }
 
         BackColor = _settings.BackColor;
-        _openButton.BackColor = _settings.ButtonColor;
-        _triangleColor = _settings.TriangleColor;
 
         Size = new Size(_settings.Width, _settings.Height);
         Location = new Point(_settings.X, _settings.Y);
@@ -138,7 +105,16 @@ public class MainForm : Form
     protected override async void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
+        LoadWidgets();
         await BlinkAsync();
+    }
+
+    private void LoadWidgets()
+    {
+        _contentPanel.Controls.Clear();
+        PluginWidgetBase newPage = new FolderWidget(this);
+        newPage.Dock = DockStyle.Fill;
+        _contentPanel.Controls.Add(newPage);
     }
 
     protected override CreateParams CreateParams
@@ -160,7 +136,10 @@ public class MainForm : Form
     private void OnGlobalHotkeyPressed()
     {
         ShowAndActivate();
-        _openButton.PerformClick();
+        foreach (IPluginWidget widget in _contentPanel.Controls)
+        {
+            widget.ExecuteAction();
+        }
     }
 
     private void ShowAndActivate()
@@ -184,7 +163,7 @@ public class MainForm : Form
         if (m.Msg == WM_APP_SHOW)
         {
             ShowAndActivate();
-            Task.Run(BlinkAsync);
+            Blink();
             return;
         }
 
@@ -192,54 +171,7 @@ public class MainForm : Form
         new TopMostHelper(new Win32WindowPositioner()).HandleMessage(this, ref m);
     }
 
-    private void OpenButton_Click(object sender, EventArgs e)
-    {
-        if (!Directory.Exists(_settings.FolderPath))
-        {
-            MessageBox.Show("Folder not found.");
-            return;
-        }
-
-        if (_popupMenu.Items.Count == 0)
-        {
-            _popupMenu.Items.AddRange(FolderContentLoader.GetItems(_settings.FolderPath).ToArray());
-        }
-        _popupMenu.Show(_openButton, new Point(
-            GetHorizontalAlignment(_openButton, _popupMenu.PreferredSize.Width),
-            GetVerticalAlignment(_openButton, _popupMenu.PreferredSize.Height)));
-    }
-
-    private int GetHorizontalAlignment(Button openButton, int preferredWidth)
-    {
-        var screen = Screen.FromControl(this);
-        var screenBounds = screen.WorkingArea;
-
-        var buttonScreenLocation = openButton.PointToScreen(Point.Empty);
-
-        if (buttonScreenLocation.X + preferredWidth > screenBounds.Right)
-        {
-            return openButton.Width - preferredWidth;
-        }
-
-        return 0;
-    }
-
-    private int GetVerticalAlignment(Button openButton, int preferredHeight)
-    {
-        var screen = Screen.FromControl(this);
-        var screenBounds = screen.WorkingArea;
-
-        var buttonScreenLocation = openButton.PointToScreen(Point.Empty);
-
-        var yOffset = -preferredHeight;
-        if (buttonScreenLocation.Y + yOffset < screenBounds.Top)
-        {
-            return openButton.Height;
-        }
-        return yOffset;
-    }
-
-    private void OpenButton_MouseUp(object sender, MouseEventArgs e)
+    public void HandleMouseUp(object sender, MouseEventArgs e)
     {
         if (e.Button != MouseButtons.Right)
         {
@@ -248,14 +180,18 @@ public class MainForm : Form
 
         var menu = new ContextMenuStrip();
         menu.Items.Add("Settings", null, (s, a) => ShowSettings());
-        menu.Items.Add("Reload Folder", null, (s, a) => _popupMenu.Items.Clear());
-        menu.Items.Add("Dock to bottom-right", null, async (s, a) =>
+        foreach (IPluginWidget widget in _contentPanel.Controls)
+        {
+            menu.Items.Add(widget.MainMenuName);
+            (menu.Items[menu.Items.Count - 1] as ToolStripMenuItem)!.DropDownItems.AddRange(widget.SubMenuItems);
+        }
+        menu.Items.Add("Dock to bottom-right", null, (s, a) =>
         {
             _taskbarHelper.DockAboveTaskbar(this);
-            await BlinkAsync();
+            Blink();
         });
         menu.Items.Add("Close", null, (s, a) => Close());
-        menu.Show(_openButton, e.Location);
+        menu.Show(this, e.Location);
     }
 
     private void ShowSettings()
@@ -263,35 +199,17 @@ public class MainForm : Form
         using var dlg = new SettingsForm();
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-            _popupMenu.Items.Clear();
             BackColor = _settings.BackColor;
-            _openButton.BackColor = _settings.ButtonColor;
-            _triangleColor = _settings.TriangleColor;
             Size = new Size(_settings.Width, _settings.Height);
             _taskbarHelper.EnsureVisible(this);
-
             _settingsIO.Save();
             Invalidate();
-            _openButton.Invalidate();
+
+            foreach (IPluginWidget widget in _contentPanel.Controls)
+            {
+                widget.ApplySettings();
+            }
         }
-    }
-
-    private void DrawTriangle(object sender, PaintEventArgs e)
-    {
-        var g = e.Graphics;
-        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        var w = _openButton.ClientSize.Width;
-        var h = _openButton.ClientSize.Height;
-
-        PointF[] pts =
-        {
-            new PointF(w / 2f, h * 0.25f),
-            new PointF(w * 0.25f, h * 0.7f),
-            new PointF(w * 0.75f, h * 0.7f)
-        };
-
-        using (var brush = new SolidBrush(_triangleColor))
-            g.FillPolygon(brush, pts);
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)
