@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace BassTween;
+namespace BassCommon;
 
 public static class Tween
 {

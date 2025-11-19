@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClicker", "OneClicker\On
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClicker.Tests", "OneClicker.Tests\OneClicker.Tests.csproj", "{FC677EB0-A753-453F-8B73-AEFC2C532440}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BassTween", "BassTween\BassTween.csproj", "{B8A9F730-74C4-67E7-5673-0AFFC6C4D4F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BassCommon", "BassTween\BassCommon.csproj", "{B8A9F730-74C4-67E7-5673-0AFFC6C4D4F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

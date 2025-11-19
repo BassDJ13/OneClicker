@@ -1,12 +1,8 @@
-﻿namespace OneClicker.Forms;
+﻿namespace OneClicker.Plugins;
 
 public interface IPluginWidget
 {
     void ApplySettings();
     Task StartAnimation();
     void ExecuteAction();
-
-    string MainMenuName { get; }
-
-    ToolStripItem[] SubMenuItems { get; }
 }

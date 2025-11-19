@@ -1,11 +1,12 @@
 ﻿using OneClicker.FileSystem;
+using OneClicker.Forms;
 using OneClicker.Settings;
 using OneClicker.WindowBehavior;
 using System.Diagnostics;
 
-namespace OneClicker.Forms;
+namespace OneClicker.Plugins;
 
-public class FolderWidget : PluginWidgetBase
+public class FolderWidget : PluginWidgetBase, IPluginContextMenu
 {
     private readonly IAppSettings _settings;
     private readonly Button _openButton;
@@ -14,11 +15,11 @@ public class FolderWidget : PluginWidgetBase
 
     private readonly IMainWindow _mainWindow;
 
-    public override string MainMenuName => "Folder";
+    public string MainMenuName => "Folder viewer";
 
-    public override ToolStripItem[] SubMenuItems =>
+    public ToolStripItem[] SubMenuItems =>
     [
-        new ToolStripMenuItem("Reload Folder", null, (s, a) => _popupMenu.Items.Clear())
+        new ToolStripMenuItem("Refresh Folder", null, (s, a) => _popupMenu.Items.Clear())
     ];
 
     public FolderWidget(IMainWindow mainWindow) : base(mainWindow)
@@ -61,18 +62,11 @@ public class FolderWidget : PluginWidgetBase
         var startColor = _openButton.BackColor;
         await _blinker.BlinkAsync(position =>
         {
-            _openButton.BackColor = LerpColor(startColor, Color.White, position);
+            _openButton.BackColor = BassCommon.ColorConverter.Convert(startColor, Color.White, position);
         });
     }
 
-    private static Color LerpColor(Color from, Color to, double t)
-    {
-        t = Math.Clamp(t, 0, 1);
-        int r = (int)(from.R + (to.R - from.R) * t);
-        int g = (int)(from.G + (to.G - from.G) * t);
-        int b = (int)(from.B + (to.B - from.B) * t);
-        return Color.FromArgb(r, g, b);
-    }
+
 
     public override void ExecuteAction()
     {

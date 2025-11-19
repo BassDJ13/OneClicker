@@ -1,4 +1,4 @@
-﻿using BassTween;
+﻿using BassCommon;
 
 namespace OneClicker.WindowBehavior;
 

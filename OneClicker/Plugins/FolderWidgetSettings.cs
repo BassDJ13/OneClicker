@@ -1,15 +1,16 @@
-﻿using OneClicker.Settings;
+﻿using OneClicker.Forms;
+using OneClicker.Settings;
 
-namespace OneClicker.Forms;
+namespace OneClicker.Plugins;
 
-public class GeneralSettingsPage : UserControl, ISettingsPage
+public class FolderWidgetSettings : UserControl, ISettingsPage
 {
     private readonly TextBox _textFolder;
     private readonly Button _buttonBrowse;
     private readonly Button _buttonOpen;
     private readonly TextBox _textHotkey;
 
-    public GeneralSettingsPage()
+    public FolderWidgetSettings()
     {
         var labelFolder = new Label { Text = "Folder:", Left = 0, Top = 2, Width = 50 };
         _textFolder = new TextBox { Left = 50, Top = 0, Width = 256 };

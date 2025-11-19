@@ -1,4 +1,5 @@
 ﻿using OneClicker.Classes;
+using OneClicker.Plugins;
 using OneClicker.Settings;
 using System.Diagnostics;
 
@@ -32,8 +33,8 @@ public sealed class SettingsForm : Form
 
         _navList.Items.AddRange(new object[]
         {
-            "General",
-            "Appearance"
+            "Appearance",
+            "Folder viewer"
         });
 
         _contentPanel = new Panel
@@ -122,8 +123,8 @@ public sealed class SettingsForm : Form
         _contentPanel.Controls.Clear();
         UserControl newPage = pageName switch
         {
-            "General" => new GeneralSettingsPage(),
             "Appearance" => new AppearanceSettingsPage(),
+            "Folder viewer" => new FolderWidgetSettings(),
             _ => throw new ArgumentOutOfRangeException(nameof(pageName))
         };
 

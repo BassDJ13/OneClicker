@@ -1,4 +1,4 @@
-﻿namespace BassTween;
+﻿namespace BassCommon;
 
 public enum Easing
 {

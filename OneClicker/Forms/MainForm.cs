@@ -1,4 +1,6 @@
 ﻿using Microsoft.Win32;
+using OneClicker.Classes;
+using OneClicker.Plugins;
 using OneClicker.Settings;
 using OneClicker.Settings.Ini;
 using OneClicker.WindowBehavior;
@@ -8,12 +10,15 @@ namespace OneClicker.Forms;
 public class MainForm : Form, IMainWindow
 {
     private readonly IAppSettings _settings;
+    private readonly PluginManager _pluginManager;
     private readonly Panel _dragArea;
     private readonly Panel _contentPanel;
     private readonly ISettingsStorage _settingsIO;
     private bool _isDragging = false;
     private TaskbarHelper _taskbarHelper;
     private GlobalHotkeyHelper? _hotkeyHelper;
+    private int _widgetWidth = 0;
+    private int _widgetHeight = 0;
 
     private void Blink() => _ = BlinkAsync();
 
@@ -31,13 +36,13 @@ public class MainForm : Form, IMainWindow
         Text = "OneClicker";
         _taskbarHelper = new TaskbarHelper(new ScreenProvider());
         _settings = AppSettings.Instance;
+        _pluginManager = new PluginManager(this);
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.Manual;
         TopMost = true;
         ShowInTaskbar = false;
         DoubleBuffered = true;
         BackColor = Color.MidnightBlue;
-        Size = new Size(20, 20);
         TransparencyHelper.AttachAutoOpacity(this);
 
         _dragArea = new Panel
@@ -94,12 +99,18 @@ public class MainForm : Form, IMainWindow
         }
 
         BackColor = _settings.BackColor;
-
-        Size = new Size(_settings.Width, _settings.Height);
+        RefreshSize();
         Location = new Point(_settings.X, _settings.Y);
         _taskbarHelper.EnsureVisible(this);
 
         SystemEvents.DisplaySettingsChanged += (s, e) => _taskbarHelper.EnsureVisible(this);
+    }
+
+    private void RefreshSize()
+    {
+        _widgetWidth = _settings.Width;
+        _widgetHeight = _settings.Height;
+        Size = new Size(_widgetWidth * _pluginManager.ActivePlugins.Count, _widgetHeight);
     }
 
     protected override async void OnLoad(EventArgs e)
@@ -112,9 +123,13 @@ public class MainForm : Form, IMainWindow
     private void LoadWidgets()
     {
         _contentPanel.Controls.Clear();
-        PluginWidgetBase newPage = new FolderWidget(this);
-        newPage.Dock = DockStyle.Fill;
-        _contentPanel.Controls.Add(newPage);
+        PluginWidgetBase newPage = null;
+        foreach (IPluginWidget widget in _pluginManager.ActivePlugins)
+        {
+            newPage = (PluginWidgetBase)widget;
+            newPage.Dock = DockStyle.Fill;
+            _contentPanel.Controls.Add(newPage);
+        }
     }
 
     protected override CreateParams CreateParams
@@ -136,7 +151,7 @@ public class MainForm : Form, IMainWindow
     private void OnGlobalHotkeyPressed()
     {
         ShowAndActivate();
-        foreach (IPluginWidget widget in _contentPanel.Controls)
+        foreach (IPluginWidget widget in _pluginManager.ActivePlugins)
         {
             widget.ExecuteAction();
         }
@@ -180,10 +195,13 @@ public class MainForm : Form, IMainWindow
 
         var menu = new ContextMenuStrip();
         menu.Items.Add("Settings", null, (s, a) => ShowSettings());
-        foreach (IPluginWidget widget in _contentPanel.Controls)
+        foreach (IPluginWidget widget in _pluginManager.ActivePlugins)
         {
-            menu.Items.Add(widget.MainMenuName);
-            (menu.Items[menu.Items.Count - 1] as ToolStripMenuItem)!.DropDownItems.AddRange(widget.SubMenuItems);
+            if (widget is IPluginContextMenu pluginContextMenu)
+            {
+                menu.Items.Add(pluginContextMenu.MainMenuName);
+                (menu.Items[menu.Items.Count - 1] as ToolStripMenuItem)!.DropDownItems.AddRange(pluginContextMenu.SubMenuItems);
+            }
         }
         menu.Items.Add("Dock to bottom-right", null, (s, a) =>
         {
@@ -200,12 +218,12 @@ public class MainForm : Form, IMainWindow
         if (dlg.ShowDialog() == DialogResult.OK)
         {
             BackColor = _settings.BackColor;
-            Size = new Size(_settings.Width, _settings.Height);
+            RefreshSize();
             _taskbarHelper.EnsureVisible(this);
             _settingsIO.Save();
             Invalidate();
 
-            foreach (IPluginWidget widget in _contentPanel.Controls)
+            foreach (IPluginWidget widget in _pluginManager.ActivePlugins)
             {
                 widget.ApplySettings();
             }
@@ -216,8 +234,8 @@ public class MainForm : Form, IMainWindow
     {
         _settings.X = Left;
         _settings.Y = Top;
-        _settings.Width = Width;
-        _settings.Height = Height;
+        _settings.Width = _widgetWidth;
+        _settings.Height = _widgetHeight;
         _settingsIO.Save();
         base.OnFormClosing(e);
     }

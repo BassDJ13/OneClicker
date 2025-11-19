@@ -15,14 +15,14 @@
 	</PropertyGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\BassTween\BassTween.csproj" />
+    <ProjectReference Include="..\BassTween\BassCommon.csproj" />
   </ItemGroup>
 	
   <ItemGroup>
     <Compile Update="Forms\PluginWidgetBase.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="Forms\FolderWidget.cs">
+    <Compile Update="Plugins\FolderWidget.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
