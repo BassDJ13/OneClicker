@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClicker.Tests", "OneClic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BassCommon", "BassCommon\BassCommon.csproj", "{BE7C7E9B-96A4-DB81-C809-2E42B5B5E777}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderViewer", "Plugins\FolderViewer\FolderViewer.csproj", "{093FC698-28BD-4B96-8268-149CE29D24ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginContracts", "PluginContracts\PluginContracts.csproj", "{EB9EE1E7-0128-41BD-852B-FC0E9D330A21}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{BE7C7E9B-96A4-DB81-C809-2E42B5B5E777}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE7C7E9B-96A4-DB81-C809-2E42B5B5E777}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE7C7E9B-96A4-DB81-C809-2E42B5B5E777}.Release|Any CPU.Build.0 = Release|Any CPU
+		{093FC698-28BD-4B96-8268-149CE29D24ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{093FC698-28BD-4B96-8268-149CE29D24ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{093FC698-28BD-4B96-8268-149CE29D24ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{093FC698-28BD-4B96-8268-149CE29D24ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB9EE1E7-0128-41BD-852B-FC0E9D330A21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB9EE1E7-0128-41BD-852B-FC0E9D330A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB9EE1E7-0128-41BD-852B-FC0E9D330A21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB9EE1E7-0128-41BD-852B-FC0E9D330A21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

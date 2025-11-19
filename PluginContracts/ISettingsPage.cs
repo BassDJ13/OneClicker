@@ -1,6 +1,4 @@
-﻿using OneClicker.Settings;
-
-namespace OneClicker.Forms;
+﻿namespace PluginContracts;
 
 public interface ISettingsPage
 {

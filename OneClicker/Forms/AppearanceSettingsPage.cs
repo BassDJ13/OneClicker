@@ -1,4 +1,4 @@
-﻿using OneClicker.Settings;
+﻿using PluginContracts;
 
 namespace OneClicker.Forms;
 

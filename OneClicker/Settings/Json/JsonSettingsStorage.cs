@@ -1,4 +1,5 @@
-﻿using OneClicker.FileSystem;
+﻿using BassCommon.FileSystem;
+using PluginContracts;
 using System.Text.Json;
 
 namespace OneClicker.Settings.Json;

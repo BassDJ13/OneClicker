@@ -1,4 +1,4 @@
-﻿namespace OneClicker.FileSystem;
+﻿namespace BassCommon.FileSystem;
 
 public interface IFileSystem
 {

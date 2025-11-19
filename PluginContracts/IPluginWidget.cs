@@ -1,4 +1,4 @@
-﻿namespace OneClicker.Plugins;
+﻿namespace PluginContracts;
 
 public interface IPluginWidget
 {

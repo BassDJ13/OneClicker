@@ -1,4 +1,4 @@
-﻿namespace OneClicker.Settings;
+﻿namespace PluginContracts;
 
 public interface ISettings
 {

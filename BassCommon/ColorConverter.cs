@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace BassCommon;
+﻿namespace BassCommon;
 
 public static class ColorConverter
 {

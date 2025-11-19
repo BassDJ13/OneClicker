@@ -1,6 +1,5 @@
 ﻿using OneClicker.Classes;
-using OneClicker.Plugins;
-using OneClicker.Settings;
+using PluginContracts;
 using System.Diagnostics;
 
 namespace OneClicker.Forms;
@@ -31,11 +30,8 @@ public sealed class SettingsForm : Form
 
         _navList = new ListBox { Dock = DockStyle.Left, Width = 128 };
 
-        _navList.Items.AddRange(new object[]
-        {
-            "Appearance",
-            "Folder viewer"
-        });
+        _navList.Items.Add("Appearance");
+        _navList.Items.AddRange(PluginManager.Instance.Names);
 
         _contentPanel = new Panel
         {
@@ -121,16 +117,24 @@ public sealed class SettingsForm : Form
     {
         SaveContentPageSettings();
         _contentPanel.Controls.Clear();
-        UserControl newPage = pageName switch
-        {
-            "Appearance" => new AppearanceSettingsPage(),
-            "Folder viewer" => new FolderWidgetSettings(),
-            _ => throw new ArgumentOutOfRangeException(nameof(pageName))
-        };
 
-        (newPage as ISettingsPage)?.ReadFrom(_localSettings);
-        newPage.Dock = DockStyle.Fill;
-        _contentPanel.Controls.Add(newPage);
+        var settingsControl = LoadUserControl(pageName);
+        
+        (settingsControl as ISettingsPage)?.ReadFrom(_localSettings);
+        settingsControl.Dock = DockStyle.Fill;
+        _contentPanel.Controls.Add(settingsControl);
+    }
+
+    private UserControl LoadUserControl(string pageName)
+    {
+        if (pageName == "Appearance")
+        {
+            return new AppearanceSettingsPage();
+        }
+        else
+        {
+            return PluginManager.Instance.GetPlugin(pageName).SettingsControl;
+        }
     }
 
     private void SaveContentPageSettings()

@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BassCommon\BassCommon.csproj" />
+    <ProjectReference Include="..\..\PluginContracts\PluginContracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="FolderWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="FolderWidgetSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+
+	<Target Name="CopyPlugin" AfterTargets="Build">
+		<Copy
+		  SourceFiles="$(TargetPath)"
+		  DestinationFolder="$(SolutionDir)OneClicker\bin\$(Configuration)\$(TargetFramework)\plugins\" />
+	</Target>
+	
+</Project>

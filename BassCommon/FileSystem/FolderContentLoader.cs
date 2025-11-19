@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace OneClicker.FileSystem;
+namespace BassCommon.FileSystem;
 
 public static class FolderContentLoader
 {

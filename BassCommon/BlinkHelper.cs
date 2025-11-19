@@ -1,6 +1,4 @@
-﻿using BassCommon;
-
-namespace OneClicker.WindowBehavior;
+﻿namespace BassCommon;
 
 public class BlinkHelper
 {

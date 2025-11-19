@@ -1,7 +1,7 @@
-﻿using OneClicker.FileSystem;
-using OneClicker.Settings;
-using OneClicker.Settings.Ini;
+﻿using OneClicker.Settings.Ini;
 using NSubstitute;
+using BassCommon.FileSystem;
+using PluginContracts;
 
 namespace OneClicker.Tests.Unittests;
 

@@ -1,7 +1,7 @@
-﻿using OneClicker.Settings.Json;
+﻿//using OneClicker.Settings.Json;
 using System.Text.Json.Serialization;
 
-namespace OneClicker.Settings;
+namespace PluginContracts;
 
 public sealed record AppSettings : IAppSettings
 {
@@ -12,11 +12,11 @@ public sealed record AppSettings : IAppSettings
     public int Y { get; set; }
     public int Width { get; set; } = 20;
     public int Height { get; set; } = 20;
-    [JsonConverter(typeof(JsonColorConverter))]
+    //[JsonConverter(typeof(JsonColorConverter))]
     public Color BackColor { get; set; } = Color.MidnightBlue;
-    [JsonConverter(typeof(JsonColorConverter))]
+    //[JsonConverter(typeof(JsonColorConverter))]
     public Color ButtonColor { get; set; } = Color.SteelBlue;
-    [JsonConverter(typeof(JsonColorConverter))]
+    //[JsonConverter(typeof(JsonColorConverter))]
     public Color TriangleColor { get; set; } = Color.LightBlue;
 
     public ISettings Copy()

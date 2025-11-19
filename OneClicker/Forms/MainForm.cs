@@ -1,16 +1,15 @@
 ﻿using Microsoft.Win32;
 using OneClicker.Classes;
-using OneClicker.Plugins;
 using OneClicker.Settings;
 using OneClicker.Settings.Ini;
 using OneClicker.WindowBehavior;
+using PluginContracts;
 
 namespace OneClicker.Forms;
 
 public class MainForm : Form, IMainWindow
 {
     private readonly IAppSettings _settings;
-    private readonly PluginManager _pluginManager;
     private readonly Panel _dragArea;
     private readonly Panel _contentPanel;
     private readonly ISettingsStorage _settingsIO;
@@ -33,10 +32,10 @@ public class MainForm : Form, IMainWindow
 
     public MainForm()
     {
+        PluginManager.Initialize(this);
         Text = "OneClicker";
         _taskbarHelper = new TaskbarHelper(new ScreenProvider());
         _settings = AppSettings.Instance;
-        _pluginManager = new PluginManager(this);
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.Manual;
         TopMost = true;
@@ -110,7 +109,7 @@ public class MainForm : Form, IMainWindow
     {
         _widgetWidth = _settings.Width;
         _widgetHeight = _settings.Height;
-        Size = new Size(_widgetWidth * _pluginManager.ActivePlugins.Count, _widgetHeight);
+        Size = new Size(_widgetWidth * PluginManager.Instance.ActivePlugins.Count, _widgetHeight);
     }
 
     protected override async void OnLoad(EventArgs e)
@@ -123,12 +122,12 @@ public class MainForm : Form, IMainWindow
     private void LoadWidgets()
     {
         _contentPanel.Controls.Clear();
-        PluginWidgetBase newPage = null;
-        foreach (IPluginWidget widget in _pluginManager.ActivePlugins)
+        foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
         {
-            newPage = (PluginWidgetBase)widget;
-            newPage.Dock = DockStyle.Fill;
-            _contentPanel.Controls.Add(newPage);
+            var widgetControl = plugin.WidgetControl;
+            widgetControl.Dock = DockStyle.Fill; //todo: stack widgets horizontal
+            _contentPanel.Controls.Add(widgetControl);
+            widgetControl.ApplySettings();
         }
     }
 
@@ -151,9 +150,9 @@ public class MainForm : Form, IMainWindow
     private void OnGlobalHotkeyPressed()
     {
         ShowAndActivate();
-        foreach (IPluginWidget widget in _pluginManager.ActivePlugins)
+        foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
         {
-            widget.ExecuteAction();
+            plugin.WidgetControl.ExecuteAction();
         }
     }
 
@@ -195,9 +194,9 @@ public class MainForm : Form, IMainWindow
 
         var menu = new ContextMenuStrip();
         menu.Items.Add("Settings", null, (s, a) => ShowSettings());
-        foreach (IPluginWidget widget in _pluginManager.ActivePlugins)
+        foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
         {
-            if (widget is IPluginContextMenu pluginContextMenu)
+            if (plugin.WidgetControl is IPluginContextMenu pluginContextMenu)
             {
                 menu.Items.Add(pluginContextMenu.MainMenuName);
                 (menu.Items[menu.Items.Count - 1] as ToolStripMenuItem)!.DropDownItems.AddRange(pluginContextMenu.SubMenuItems);
@@ -223,9 +222,9 @@ public class MainForm : Form, IMainWindow
             _settingsIO.Save();
             Invalidate();
 
-            foreach (IPluginWidget widget in _pluginManager.ActivePlugins)
+            foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
             {
-                widget.ApplySettings();
+                plugin.WidgetControl.ApplySettings();
             }
         }
     }

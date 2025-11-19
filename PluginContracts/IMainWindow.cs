@@ -1,4 +1,4 @@
-﻿namespace OneClicker.Forms;
+﻿namespace PluginContracts;
 
 public interface IMainWindow
 {

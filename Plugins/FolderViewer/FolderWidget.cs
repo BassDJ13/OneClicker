@@ -1,10 +1,9 @@
-﻿using OneClicker.FileSystem;
-using OneClicker.Forms;
-using OneClicker.Settings;
-using OneClicker.WindowBehavior;
+﻿using BassCommon;
+using BassCommon.FileSystem;
+using PluginContracts;
 using System.Diagnostics;
 
-namespace OneClicker.Plugins;
+namespace FolderViewer;
 
 public class FolderWidget : PluginWidgetBase, IPluginContextMenu
 {

@@ -1,7 +1,4 @@
-﻿using OneClicker.Plugins;
-using OneClicker.Settings;
-
-namespace OneClicker.Forms;
+﻿namespace PluginContracts;
 
 public abstract class PluginWidgetBase : UserControl, IPluginWidget
 {

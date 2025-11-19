@@ -1,7 +1,6 @@
-﻿using OneClicker.Forms;
-using OneClicker.Settings;
+﻿using PluginContracts;
 
-namespace OneClicker.Plugins;
+namespace FolderViewer;
 
 public class FolderWidgetSettings : UserControl, ISettingsPage
 {
