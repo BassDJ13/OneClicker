@@ -13,10 +13,10 @@
 		<FileVersion>1.0.0.0</FileVersion>
 		<InformationalVersion>1.0.3</InformationalVersion>
 	</PropertyGroup>
-	
-  <ItemGroup>
-    <ProjectReference Include="..\BassTween\BassCommon.csproj" />
-  </ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\BassCommon\BassCommon.csproj" />
+	</ItemGroup>
 	
   <ItemGroup>
     <Compile Update="Forms\PluginWidgetBase.cs">
