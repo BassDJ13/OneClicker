@@ -1,7 +1,6 @@
-﻿using OneClicker.Plugins;
-using PluginContracts;
+﻿using PluginContracts;
 
-namespace OneClicker.Classes;
+namespace OneClicker.Plugins;
 
 internal class PluginManager
 {

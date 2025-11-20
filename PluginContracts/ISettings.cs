@@ -1,5 +1,6 @@
 ﻿namespace PluginContracts;
 
+//todo: Make each plugin responsible for it's own settings
 public interface ISettings
 {
     Color BackColor { get; set; }

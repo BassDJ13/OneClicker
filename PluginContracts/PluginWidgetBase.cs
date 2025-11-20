@@ -1,14 +1,8 @@
 ﻿namespace PluginContracts;
 
-public abstract class PluginWidgetBase : UserControl, IPluginWidget
+public abstract class PluginWidgetBase : UserControl, IPluginWidgetBase
 {
     protected IAppSettings Settings => AppSettings.Instance;
-    protected IMainWindow MainWindow { get; private set; }
-
-    public PluginWidgetBase(IMainWindow mainWindow)
-    {
-        MainWindow = mainWindow;
-    }
 
     public abstract Task StartAnimation();
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using OneClicker.Classes;
+using OneClicker.Plugins;
 using OneClicker.Settings;
 using OneClicker.Settings.Ini;
 using OneClicker.WindowBehavior;
@@ -18,13 +19,14 @@ public class MainForm : Form, IMainWindow
     private GlobalHotkeyHelper? _hotkeyHelper;
     private int _widgetWidth = 0;
     private int _widgetHeight = 0;
+    private ContextMenuStrip? _contextMenu;
 
-    private void Blink() => _ = BlinkAsync();
+    public void Blink() => _ = BlinkAsync();
 
     private async Task BlinkAsync()
     {
         var tasks = _contentPanel.Controls
-            .OfType<IPluginWidget>()
+            .OfType<IPluginWidgetBase>()
             .Select(widget => widget.StartAnimation())
             .ToList();
         await Task.WhenAll(tasks);
@@ -32,6 +34,7 @@ public class MainForm : Form, IMainWindow
 
     public MainForm()
     {
+        AppServices.MainWindow = this;
         PluginManager.Initialize(this);
         Text = "OneClicker";
         _taskbarHelper = new TaskbarHelper(new ScreenProvider());
@@ -124,10 +127,12 @@ public class MainForm : Form, IMainWindow
         _contentPanel.Controls.Clear();
         foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
         {
-            var widgetControl = plugin.WidgetControl;
-            widgetControl.Dock = DockStyle.Fill; //todo: stack widgets horizontal
-            _contentPanel.Controls.Add(widgetControl);
-            widgetControl.ApplySettings();
+            if (plugin.HasWidget)
+            {
+                plugin.WidgetControl!.Dock = DockStyle.Fill; //todo: stack widgets horizontal
+                _contentPanel.Controls.Add(plugin.WidgetControl);
+                plugin.WidgetControl.ApplySettings();
+            }
         }
     }
 
@@ -152,7 +157,7 @@ public class MainForm : Form, IMainWindow
         ShowAndActivate();
         foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
         {
-            plugin.WidgetControl.ExecuteAction();
+            plugin.WidgetControl?.ExecuteAction(); //todo: only do one action for one plugin
         }
     }
 
@@ -192,26 +197,31 @@ public class MainForm : Form, IMainWindow
             return;
         }
 
-        var menu = new ContextMenuStrip();
-        menu.Items.Add("Settings", null, (s, a) => ShowSettings());
-        foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
+        ShowContextMenu(e);
+    }
+
+    private bool ShowContextMenu(MouseEventArgs e)
+    {
+        if (_contextMenu != null)
         {
-            if (plugin.WidgetControl is IPluginContextMenu pluginContextMenu)
-            {
-                menu.Items.Add(pluginContextMenu.MainMenuName);
-                (menu.Items[menu.Items.Count - 1] as ToolStripMenuItem)!.DropDownItems.AddRange(pluginContextMenu.SubMenuItems);
-            }
+            _contextMenu.Show(this, e.Location);
+            return false;
         }
-        menu.Items.Add("Dock to bottom-right", null, (s, a) =>
+        _contextMenu = new ContextMenuStrip();
+        ContextMenuService.CreateMenuItemsForPlugins(_contextMenu);
+        _contextMenu.Items.Add("Dock to bottom-right", null, (s, a) =>
         {
             _taskbarHelper.DockAboveTaskbar(this);
             Blink();
         });
-        menu.Items.Add("Close", null, (s, a) => Close());
-        menu.Show(this, e.Location);
+        _contextMenu.Items.Add("Settings", null, (s, a) => ShowSettings());
+        _contextMenu.Items.Add("Close", null, (s, a) => Close());
+
+        _contextMenu.Show(this, e.Location);
+        return true;
     }
 
-    private void ShowSettings()
+    internal void ShowSettings()
     {
         using var dlg = new SettingsForm();
         if (dlg.ShowDialog() == DialogResult.OK)
@@ -224,7 +234,7 @@ public class MainForm : Form, IMainWindow
 
             foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
             {
-                plugin.WidgetControl.ApplySettings();
+                plugin.WidgetControl?.ApplySettings();
             }
         }
     }

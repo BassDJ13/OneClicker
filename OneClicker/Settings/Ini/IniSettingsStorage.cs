@@ -3,6 +3,7 @@ using PluginContracts;
 
 namespace OneClicker.Settings.Ini;
 
+//todo: make each plugin responsible for it's own settings.
 public class IniSettingsStorage : ISettingsStorage
 {
     private readonly string _path;

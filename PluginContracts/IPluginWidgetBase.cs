@@ -1,6 +1,6 @@
 ﻿namespace PluginContracts;
 
-public interface IPluginWidget
+public interface IPluginWidgetBase
 {
     void ApplySettings();
     Task StartAnimation();

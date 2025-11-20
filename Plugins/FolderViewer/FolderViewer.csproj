@@ -13,18 +13,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="FolderWidget.cs">
+    <Compile Update="Widget.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="FolderWidgetSettings.cs">
+    <Compile Update="Settings.cs">
       <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>
 
 	<Target Name="CopyPlugin" AfterTargets="Build">
-		<Copy
-		  SourceFiles="$(TargetPath)"
-		  DestinationFolder="$(SolutionDir)OneClicker\bin\$(Configuration)\$(TargetFramework)\plugins\" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SolutionDir)OneClicker\bin\$(Configuration)\$(TargetFramework)\plugins\" />
 	</Target>
 	
 </Project>

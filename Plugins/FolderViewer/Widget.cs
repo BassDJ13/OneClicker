@@ -5,25 +5,14 @@ using System.Diagnostics;
 
 namespace FolderViewer;
 
-public class FolderWidget : PluginWidgetBase, IPluginContextMenu
+public class Widget : PluginWidgetBase
 {
     private readonly IAppSettings _settings;
     private readonly Button _openButton;
-    private readonly ContextMenuStrip _popupMenu;
     private readonly BlinkHelper _blinker = new BlinkHelper();
 
-    private readonly IMainWindow _mainWindow;
-
-    public string MainMenuName => "Folder viewer";
-
-    public ToolStripItem[] SubMenuItems =>
-    [
-        new ToolStripMenuItem("Refresh Folder", null, (s, a) => _popupMenu.Items.Clear())
-    ];
-
-    public FolderWidget(IMainWindow mainWindow) : base(mainWindow)
+    public Widget()
     {
-        _mainWindow = mainWindow;
         _settings = AppSettings.Instance;
 
         _openButton = new Button
@@ -35,11 +24,10 @@ public class FolderWidget : PluginWidgetBase, IPluginContextMenu
         };
         _openButton.FlatAppearance.BorderSize = 0;
         _openButton.Click += OpenButton_Click!;
-        _openButton.MouseUp += _mainWindow.HandleMouseUp!;
+        _openButton.MouseUp += AppServices.MainWindow.HandleMouseUp!;
         _openButton.Paint += DrawButtonArrow!;
 
-        _popupMenu = new ContextMenuStrip();
-        _popupMenu.ItemClicked += (s, e) =>
+        PopupMenuService.PopupMenu.ItemClicked += (s, e) =>
         {
             if (e.ClickedItem!.Tag is string path)
             {
@@ -65,8 +53,6 @@ public class FolderWidget : PluginWidgetBase, IPluginContextMenu
         });
     }
 
-
-
     public override void ExecuteAction()
     {
         _openButton.PerformClick();
@@ -74,7 +60,7 @@ public class FolderWidget : PluginWidgetBase, IPluginContextMenu
 
     public override void ApplySettings()
     {
-        _popupMenu.Items.Clear();
+        PopupMenuService.PopupMenu.Items.Clear();
         _openButton.BackColor = _settings.ButtonColor;
         _openButton.Invalidate();
     }
@@ -87,13 +73,15 @@ public class FolderWidget : PluginWidgetBase, IPluginContextMenu
             return;
         }
 
-        if (_popupMenu.Items.Count == 0)
+        var popupMenu = PopupMenuService.PopupMenu;
+        if (popupMenu.Items.Count == 0)
         {
-            _popupMenu.Items.AddRange(FolderContentLoader.GetItems(_settings.FolderPath).ToArray());
+            popupMenu.Items.AddRange(FolderContentLoader.GetItems(_settings.FolderPath).ToArray());
         }
-        _popupMenu.Show(_openButton, new Point(
-            GetHorizontalAlignment(_openButton, _popupMenu.PreferredSize.Width),
-            GetVerticalAlignment(_openButton, _popupMenu.PreferredSize.Height)));
+
+        popupMenu.Show(_openButton, new Point(
+            GetHorizontalAlignment(_openButton, popupMenu.PreferredSize.Width),
+            GetVerticalAlignment(_openButton, popupMenu.PreferredSize.Height)));
     }
 
     private int GetHorizontalAlignment(Button openButton, int preferredWidth)
@@ -123,6 +111,7 @@ public class FolderWidget : PluginWidgetBase, IPluginContextMenu
         {
             return openButton.Height;
         }
+
         return yOffset;
     }
 
@@ -140,7 +129,7 @@ public class FolderWidget : PluginWidgetBase, IPluginContextMenu
             new PointF(w * 0.75f, h * 0.7f)
         };
 
-        using (var brush = new SolidBrush(_settings.TriangleColor))
-            g.FillPolygon(brush, pts);
+        using var brush = new SolidBrush(_settings.TriangleColor);
+        g.FillPolygon(brush, pts);
     }
 }

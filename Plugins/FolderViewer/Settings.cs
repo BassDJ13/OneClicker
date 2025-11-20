@@ -2,14 +2,14 @@
 
 namespace FolderViewer;
 
-public class FolderWidgetSettings : UserControl, ISettingsPage
+public class Settings : UserControl, ISettingsPage
 {
     private readonly TextBox _textFolder;
     private readonly Button _buttonBrowse;
     private readonly Button _buttonOpen;
     private readonly TextBox _textHotkey;
 
-    public FolderWidgetSettings()
+    public Settings()
     {
         var labelFolder = new Label { Text = "Folder:", Left = 0, Top = 2, Width = 50 };
         _textFolder = new TextBox { Left = 50, Top = 0, Width = 256 };
