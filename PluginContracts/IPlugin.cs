@@ -6,9 +6,9 @@ public interface IPlugin
 
     UserControl? SettingsControl { get; }
     PluginWidgetBase? WidgetControl { get; }
-    IPluginContextMenu? ContextMenu { get; }
+    IList<MenuItem> MenuItems { get; }
 
     bool HasSettings { get; }
     bool HasWidget { get; }
-    bool HasContextMenu { get; }
+    bool HasMenuItems { get; }
 }

@@ -1,0 +1,15 @@
+﻿namespace PluginContracts;
+
+public class MenuItem
+{
+    public string Description { get; set; }
+    public Image? Image { get; set; }
+    public EventHandler? OnClick { get; set; }
+
+    public MenuItem(string description, Image? image, EventHandler? onClick) 
+    {
+        Description = description;
+        Image = image;
+        OnClick = onClick;
+    }
+}

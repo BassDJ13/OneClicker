@@ -9,6 +9,10 @@ public class Plugin : PluginBase
         Name = "Folder Viewer";
         SettingsClass = typeof(Settings);
         WidgetClass = typeof(Widget);
-        ContextMenuClass = typeof(ContextMenu);
+
+        MenuItems.Add(new MenuItem(
+            description: "Refresh Folder",
+            image: null,
+            onClick: (s, a) => PopupMenuProvider.Menu.Items.Clear()));
     }
 }

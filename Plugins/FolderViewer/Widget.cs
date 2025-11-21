@@ -27,7 +27,7 @@ public class Widget : PluginWidgetBase
         _openButton.MouseUp += AppServices.MainWindow.HandleMouseUp!;
         _openButton.Paint += DrawButtonArrow!;
 
-        PopupMenuService.PopupMenu.ItemClicked += (s, e) =>
+        PopupMenuProvider.Menu.ItemClicked += (s, e) =>
         {
             if (e.ClickedItem!.Tag is string path)
             {
@@ -60,7 +60,7 @@ public class Widget : PluginWidgetBase
 
     public override void ApplySettings()
     {
-        PopupMenuService.PopupMenu.Items.Clear();
+        PopupMenuProvider.Menu.Items.Clear();
         _openButton.BackColor = _settings.ButtonColor;
         _openButton.Invalidate();
     }
@@ -73,7 +73,7 @@ public class Widget : PluginWidgetBase
             return;
         }
 
-        var popupMenu = PopupMenuService.PopupMenu;
+        var popupMenu = PopupMenuProvider.Menu;
         if (popupMenu.Items.Count == 0)
         {
             popupMenu.Items.AddRange(FolderContentLoader.GetItems(_settings.FolderPath).ToArray());

@@ -35,15 +35,10 @@ public abstract class PluginBase : IPlugin
 
     public bool HasWidget => WidgetControl != null;
 
-    protected Type? ContextMenuClass { get; set; }
-    private IPluginContextMenu? _contextMenu;
+    public bool HasMenuItems => MenuItems.Count > 0;
 
-    public IPluginContextMenu? ContextMenu =>
-        _contextMenu ??= ContextMenuClass == null
-            ? null
-            : (IPluginContextMenu)Activator.CreateInstance(ContextMenuClass)!;
-
-    public bool HasContextMenu => ContextMenu != null;
+    private IList<MenuItem>? _menuItems;
+    public IList<MenuItem> MenuItems => _menuItems ??= new List<MenuItem>();
 
     public virtual string Name { get; protected set; } = "Unnamed Plugin";
     public virtual string Description { get; protected set; } = "";
