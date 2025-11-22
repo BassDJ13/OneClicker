@@ -17,8 +17,7 @@ public class SettingsIOTests
             FolderPath = @"C:\TestFolder",
             X = 123,
             Y = 456,
-            Width = 40,
-            Height = 50,
+            WidgetSize = 40,
             BackColor = Color.Red,
             ButtonColor = Color.Green,
             TriangleColor = Color.Blue
@@ -70,8 +69,7 @@ public class SettingsIOTests
         Assert.That(settings.FolderPath, Is.EqualTo(@"C:\TestFolder"));
         Assert.That(settings.X, Is.EqualTo(10));
         Assert.That(settings.Y, Is.EqualTo(20));
-        Assert.That(settings.Width, Is.EqualTo(30));
-        Assert.That(settings.Height, Is.EqualTo(40));
+        Assert.That(settings.WidgetSize, Is.EqualTo(30));
         Assert.That(settings.BackColor.ToArgb(), Is.EqualTo(Color.FromArgb(255, 0, 0).ToArgb()));
         Assert.That(settings.ButtonColor.ToArgb(), Is.EqualTo(Color.FromArgb(0, 255, 0).ToArgb()));
         Assert.That(settings.TriangleColor.ToArgb(), Is.EqualTo(Color.FromArgb(0, 0, 255).ToArgb()));

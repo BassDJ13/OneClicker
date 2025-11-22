@@ -44,16 +44,24 @@ public class IniSettingsStorage : ISettingsStorage
                     if (int.TryParse(value, out var y)) _settings.Y = y;
                     break;
 
-                case "Width":
-                    if (int.TryParse(value, out var w)) _settings.Width = w;
-                    break;
-
-                case "Height":
-                    if (int.TryParse(value, out var h)) _settings.Height = h;
+                case "WidgetSize":
+                    if (int.TryParse(value, out var w)) _settings.WidgetSize = w;
                     break;
                 case "BackColor": _settings.BackColor = ParseColor(value, _settings.BackColor); break;
                 case "ButtonColor": _settings.ButtonColor = ParseColor(value, _settings.ButtonColor); break;
                 case "TriangleColor": _settings.TriangleColor = ParseColor(value, _settings.TriangleColor); break;
+                case "WindowStyle":
+                    if (Enum.TryParse<WindowStyle>(value, out var windowStyle))
+                        _settings.WindowStyle = windowStyle;
+                    break;
+                case "DockPosition":
+                    if (Enum.TryParse<DockPosition>(value, out var dockPosition))
+                        _settings.DockPosition = dockPosition;
+                    break;
+                case "InactiveOpacity":
+                    if (int.TryParse(value, out var inactiveOpacity)) _settings.InactiveOpacity = inactiveOpacity;
+                    break;
+
             }
         }
     }
@@ -65,11 +73,13 @@ public class IniSettingsStorage : ISettingsStorage
             $"Folder={_settings.FolderPath}",
             $"X={_settings.X}",
             $"Y={_settings.Y}",
-            $"Width={_settings.Width}",
-            $"Height={_settings.Height}",
+            $"WidgetSize={_settings.WidgetSize}",
             $"BackColor={ColorToHex(_settings.BackColor)}",
             $"ButtonColor={ColorToHex(_settings.ButtonColor)}",
-            $"TriangleColor={ColorToHex(_settings.TriangleColor)}"
+            $"TriangleColor={ColorToHex(_settings.TriangleColor)}",
+            $"WindowStyle={_settings.WindowStyle}",
+            $"DockPosition={_settings.DockPosition}",
+            $"InactiveOpacity={_settings.InactiveOpacity}"
         };
         _fs.WriteAllLines(_path, lines);
     }

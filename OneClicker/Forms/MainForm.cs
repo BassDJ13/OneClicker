@@ -12,13 +12,15 @@ public class MainForm : Form, IMainWindow
 {
     private readonly IAppSettings _settings;
     private readonly Panel _dragArea;
+    private const int _dragAreaHeight = 6;
     private readonly Panel _contentPanel;
-    private readonly ISettingsStorage _settingsIO;
+    private ISettingsStorage? _settingsIO;
     private bool _isDragging = false;
-    private TaskbarHelper _taskbarHelper;
+    private WindowLocationHelper _windowLocationHelper;
     private GlobalHotkeyHelper? _hotkeyHelper;
-    private int _widgetWidth = 0;
-    private int _widgetHeight = 0;
+    private int _widgetSize = 16;
+    private int _appWidth = 0;
+    private int _appHeight = 0;
     private ContextMenuStrip? _contextMenu;
 
     public void Blink() => _ = BlinkAsync();
@@ -37,7 +39,7 @@ public class MainForm : Form, IMainWindow
         AppServices.MainWindow = this;
         PluginManager.Initialize(this);
         Text = "OneClicker";
-        _taskbarHelper = new TaskbarHelper(new ScreenProvider());
+        _windowLocationHelper = new WindowLocationHelper(new ScreenProvider());
         _settings = AppSettings.Instance;
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.Manual;
@@ -45,17 +47,23 @@ public class MainForm : Form, IMainWindow
         ShowInTaskbar = false;
         DoubleBuffered = true;
         BackColor = Color.MidnightBlue;
-        TransparencyHelper.AttachAutoOpacity(this);
+
+        InitializeSettings();
+
+        TransparencyHelper.AttachAutoOpacity(this, ((double)_settings.InactiveOpacity) / 100f);
 
         _dragArea = new Panel
         {
             Dock = DockStyle.Top,
-            Height = 6,
+            Height = _dragAreaHeight,
             Cursor = Cursors.SizeAll,
             BackColor = Color.Transparent
         };
         _dragArea.MouseDown += (s, e) =>
         {
+            if (_settings.WindowStyle == WindowStyle.Docked)
+                return;
+
             if (e.Button == MouseButtons.Left)
             {
                 _isDragging = true;
@@ -63,22 +71,30 @@ public class MainForm : Form, IMainWindow
                 NativeMethods.SendMessage(Handle, 0xA1, 0x2, 0);
             }
         };
+
         _dragArea.MouseUp += (s, e) =>
         {
+            if (_settings.WindowStyle == WindowStyle.Docked)
+                return;
+
             if (_isDragging)
             {
                 _isDragging = false;
-                _taskbarHelper.KeepInWorkArea(this);
+                _windowLocationHelper.KeepInWorkArea(this);
                 _settings.X = Left;
                 _settings.Y = Top;
                 _settingsIO!.Save();
             }
         };
+
         _dragArea.MouseMove += (s, e) =>
         {
+            if (_settings.WindowStyle == WindowStyle.Docked)
+                return;
+
             if (_isDragging)
             {
-                _taskbarHelper.KeepInWorkArea(this);
+                _windowLocationHelper.KeepInWorkArea(this);
             }
         };
 
@@ -91,28 +107,50 @@ public class MainForm : Form, IMainWindow
         Controls.Add(_contentPanel);
         Controls.Add(_dragArea);
 
+        BackColor = _settings.BackColor;
+        DetermineAppSize();
+        ApplyWindowStyle();
+
+        SystemEvents.DisplaySettingsChanged += OnDisplaySettingsChanged;
+    }
+
+    private void InitializeSettings()
+    {
         _settingsIO = new IniSettingsStorage(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"), _settings);
         _settingsIO.Load();
         if (!_settingsIO.FileExists)
         {
-            _taskbarHelper.DockAboveTaskbar(this);
+            SetDockedLocation();
             _settings.X = this.Left;
             _settings.Y = this.Top;
         }
-
-        BackColor = _settings.BackColor;
-        RefreshSize();
-        Location = new Point(_settings.X, _settings.Y);
-        _taskbarHelper.EnsureVisible(this);
-
-        SystemEvents.DisplaySettingsChanged += (s, e) => _taskbarHelper.EnsureVisible(this);
     }
 
-    private void RefreshSize()
+    private void DetermineAppSize()
     {
-        _widgetWidth = _settings.Width;
-        _widgetHeight = _settings.Height;
-        Size = new Size(_widgetWidth * PluginManager.Instance.ActivePlugins.Count, _widgetHeight);
+        _widgetSize = _settings.WidgetSize;
+        var headerHeight = _settings.WindowStyle == WindowStyle.Floating ? _dragAreaHeight : 0;
+
+        _appWidth = _widgetSize * Math.Max(1, PluginManager.Instance.ActivePlugins.Count);
+        _appHeight = _widgetSize + headerHeight;
+
+        Size = new Size(_appWidth, _appHeight);
+    }
+
+    private void ApplyWindowStyle()
+    {
+        if (_settings.WindowStyle == WindowStyle.Docked)
+        {
+            _dragArea.Visible = false;
+            SetDockedLocation();
+        }
+        else
+        {
+            _dragArea.Visible = true;
+            Location = new Point(_settings.X, _settings.Y);
+            _windowLocationHelper.EnsureVisible(this);
+        }
+        Blink();
     }
 
     protected override async void OnLoad(EventArgs e)
@@ -157,7 +195,7 @@ public class MainForm : Form, IMainWindow
         ShowAndActivate();
         foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
         {
-            plugin.WidgetControl?.ExecuteAction(); //todo: only do one action for one plugin
+            plugin.WidgetControl?.ExecuteAction(); //todo: only execute one action for the preferred plugin
         }
     }
 
@@ -168,6 +206,7 @@ public class MainForm : Form, IMainWindow
             WindowState = FormWindowState.Normal;
         }
         Activate();
+        Blink();
     }
 
     private const int WM_APP_SHOW = 0x8000 + 1;
@@ -182,7 +221,6 @@ public class MainForm : Form, IMainWindow
         if (m.Msg == WM_APP_SHOW)
         {
             ShowAndActivate();
-            Blink();
             return;
         }
 
@@ -209,13 +247,8 @@ public class MainForm : Form, IMainWindow
         }
         _contextMenu = new ContextMenuStrip();
         ContextMenuService.CreateMenuItemsForPlugins(_contextMenu);
-        _contextMenu.Items.Add("Dock to bottom-right", null, (s, a) =>
-        {
-            _taskbarHelper.DockAboveTaskbar(this);
-            Blink();
-        });
-        _contextMenu.Items.Add("Settings", null, (s, a) => ShowSettings());
-        _contextMenu.Items.Add("Close", null, (s, a) => Close());
+        _contextMenu.Items.Add("App settings", null, (s, a) => ShowSettings());
+        _contextMenu.Items.Add("Close program", null, (s, a) => Close());
 
         _contextMenu.Show(this, e.Location);
         return true;
@@ -227,9 +260,11 @@ public class MainForm : Form, IMainWindow
         if (dlg.ShowDialog() == DialogResult.OK)
         {
             BackColor = _settings.BackColor;
-            RefreshSize();
-            _taskbarHelper.EnsureVisible(this);
-            _settingsIO.Save();
+            DetermineAppSize();
+            ApplyWindowStyle();
+            _windowLocationHelper.EnsureVisible(this);
+            TransparencyHelper.SetInactiveOpacity(this, ((double)_settings.InactiveOpacity) / 100f);
+            _settingsIO!.Save();
             Invalidate();
 
             foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
@@ -239,15 +274,27 @@ public class MainForm : Form, IMainWindow
         }
     }
 
+    private void SetDockedLocation()
+    {
+        var wa = Screen.FromHandle(Handle).WorkingArea;
+        Location = _windowLocationHelper.GetDockedPosition(wa, Size, _settings.DockPosition);
+    }
+
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
-        _settings.X = Left;
-        _settings.Y = Top;
-        _settings.Width = _widgetWidth;
-        _settings.Height = _widgetHeight;
-        _settingsIO.Save();
+        SystemEvents.DisplaySettingsChanged -= OnDisplaySettingsChanged;
+        if (_settings.WindowStyle == WindowStyle.Floating)
+        {
+            _settings.X = Left;
+            _settings.Y = Top;
+            _settings.WidgetSize = _widgetSize;
+        }
+        _settingsIO!.Save();
         base.OnFormClosing(e);
     }
+
+    private void OnDisplaySettingsChanged(object? sender, EventArgs e)
+        => ApplyWindowStyle();
 
     protected override void OnFormClosed(FormClosedEventArgs e)
     {

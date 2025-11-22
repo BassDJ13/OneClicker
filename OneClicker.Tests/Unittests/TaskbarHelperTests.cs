@@ -12,7 +12,7 @@ public class TaskbarHelperTests
         screenProvider.GetWorkingArea(Arg.Any<Form>())
                       .Returns(new Rectangle(0, 0, 100, 100));
 
-        var helper = new TaskbarHelper(screenProvider);
+        var helper = new WindowLocationHelper(screenProvider);
         var form = new Form
         {
             FormBorderStyle = FormBorderStyle.None,
@@ -35,7 +35,7 @@ public class TaskbarHelperTests
         screenProvider.GetWorkingArea(Arg.Any<Form>())
                       .Returns(new Rectangle(0, 0, 200, 200));
 
-        var helper = new TaskbarHelper(screenProvider);
+        var helper = new WindowLocationHelper(screenProvider);
         var form = new Form
         {
             FormBorderStyle = FormBorderStyle.None,
@@ -43,7 +43,7 @@ public class TaskbarHelperTests
             Height = 20 
         };
 
-        helper.DockAboveTaskbar(form);
+        form.Location = helper.GetDockedPosition(screenProvider.GetWorkingArea(form), form.Size, PluginContracts.DockPosition.BottomRight);
 
         Assert.That(form.Left, Is.EqualTo(200 - 20 - 16));
         Assert.That(form.Top, Is.EqualTo(200 - 20 - 4));

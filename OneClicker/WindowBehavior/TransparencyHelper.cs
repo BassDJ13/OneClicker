@@ -1,66 +1,226 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace OneClicker.WindowBehavior;
 
 public static class TransparencyHelper
 {
+    private class OpacityState
+    {
+        public Form Form = null!;
+        public bool IsActive;
+        public double InactiveOpacity;
+        public List<Control> SubscribedControls = new();
+    }
+
+    private static readonly ConditionalWeakTable<Form, OpacityState> States = new();
+
     public static void AttachAutoOpacity(Form form, double inactiveOpacity = 0.7)
     {
         ArgumentNullException.ThrowIfNull(form);
 
-        bool isActive = true;
+        if (States.TryGetValue(form, out _))
+            return;
 
-        void SafeUpdate() => Update(form, isActive, inactiveOpacity);
+        var state = new OpacityState
+        {
+            Form = form,
+            IsActive = true,
+            InactiveOpacity = inactiveOpacity
+        };
 
-        form.Activated += (_, _) => { isActive = true; SafeUpdate(); };
-        form.Deactivate += (_, _) => { isActive = false; SafeUpdate(); };
-        form.MouseEnter += (_, _) => SafeUpdate();
-        form.MouseLeave += (_, _) => SafeUpdate();
+        States.Add(form, state);
+
+        form.Activated += Form_Activated;
+        form.Deactivate += Form_Deactivate;
+        form.MouseEnter += Form_MouseEnter;
+        form.MouseLeave += Form_MouseLeave;
+        form.FormClosing += Form_FormClosing;
+        form.HandleDestroyed += Form_HandleDestroyed;
 
         foreach (Control ctrl in form.Controls)
         {
-            ctrl.MouseEnter += (_, _) => SafeUpdate();
-            ctrl.MouseLeave += (_, _) => SafeUpdate();
+            ctrl.MouseEnter += Control_MouseEnter;
+            ctrl.MouseLeave += Control_MouseLeave;
+            state.SubscribedControls.Add(ctrl);
         }
 
-        // Handle closing/disposal to prevent callbacks after it's gone
-        form.FormClosing += (_, _) => form.HandleDestroyed -= OnHandleDestroyed;
-        form.HandleDestroyed += OnHandleDestroyed;
+        UpdateOpacity(state);
+    }
 
-        // Initialize once
-        SafeUpdate();
+    public static void SetInactiveOpacity(Form form, double inactiveOpacity)
+    {
+        if (!States.TryGetValue(form, out var state))
+            return;
 
-        void OnHandleDestroyed(object? sender, EventArgs e)
+        state.InactiveOpacity = inactiveOpacity;
+        UpdateOpacity(state);
+    }
+
+    public static void UpdateOpacity(Form form)
+    {
+        if (States.TryGetValue(form, out var state))
         {
-            // No-op: event unsubscribed during closing
+            UpdateOpacity(state);
         }
     }
 
-    private static void Update(Form form, bool isActive, double inactiveOpacity)
+    private static void UpdateOpacity(OpacityState state)
     {
-        // skip updates when handle or form is gone
+        var form = state.Form;
+
         if (form.IsDisposed || !form.IsHandleCreated)
+            return;
+
+        bool mouseOver = false;
+
+        try
+        {
+            mouseOver = form.ClientRectangle.Contains(form.PointToClient(Cursor.Position));
+        }
+        catch
         {
             return;
         }
 
         try
         {
-            bool mouseOver = false;
-            if (form.IsHandleCreated)
-            {
-                mouseOver = form.ClientRectangle.Contains(form.PointToClient(Cursor.Position));
-            }
+            form.Opacity = (state.IsActive || mouseOver) ? 1.0 : state.InactiveOpacity;
+        }
+        catch
+        {
+        }
+    }
 
-            form.Opacity = (isActive || mouseOver) ? 1.0 : inactiveOpacity;
-        }
-        catch (ObjectDisposedException)
+    private static void Form_Activated(object? sender, EventArgs e)
+    {
+        if (sender is not Form form)
+            return;
+
+        if (!States.TryGetValue(form, out var state))
+            return;
+
+        if (form.IsDisposed || !form.IsHandleCreated)
+            return;
+
+        state.IsActive = true;
+        UpdateOpacity(state);
+    }
+
+    private static void Form_Deactivate(object? sender, EventArgs e)
+    {
+        if (sender is not Form form)
+            return;
+
+        if (!States.TryGetValue(form, out var state))
+            return;
+
+        if (form.IsDisposed)
+            return;
+
+        if (!form.IsHandleCreated)
+            return;
+
+        state.IsActive = false;
+        UpdateOpacity(state);
+    }
+
+    private static void Form_MouseEnter(object? sender, EventArgs e)
+    {
+        if (sender is not Form form)
+            return;
+
+        if (!States.TryGetValue(form, out var state))
+            return;
+
+        if (form.IsDisposed || !form.IsHandleCreated)
+            return;
+
+        UpdateOpacity(state);
+    }
+
+    private static void Form_MouseLeave(object? sender, EventArgs e)
+    {
+        if (sender is not Form form)
+            return;
+
+        if (!States.TryGetValue(form, out var state))
+            return;
+
+        if (form.IsDisposed || !form.IsHandleCreated)
+            return;
+
+        UpdateOpacity(state);
+    }
+
+    private static void Control_MouseEnter(object? sender, EventArgs e)
+    {
+        if (sender is not Control ctrl)
+            return;
+
+        var form = ctrl.FindForm();
+        if (form is null)
+            return;
+
+        if (!States.TryGetValue(form, out var state))
+            return;
+
+        if (form.IsDisposed || !form.IsHandleCreated)
+            return;
+
+        UpdateOpacity(state);
+    }
+
+    private static void Control_MouseLeave(object? sender, EventArgs e)
+    {
+        if (sender is not Control ctrl)
+            return;
+
+        var form = ctrl.FindForm();
+        if (form is null)
+            return;
+
+        if (!States.TryGetValue(form, out var state))
+            return;
+
+        if (form.IsDisposed || !form.IsHandleCreated)
+            return;
+
+        UpdateOpacity(state);
+    }
+
+    private static void Form_FormClosing(object? sender, FormClosingEventArgs e)
+    {
+        if (sender is not Form form)
+            return;
+
+        if (!States.TryGetValue(form, out var state))
+            return;
+
+        form.Activated -= Form_Activated;
+        form.Deactivate -= Form_Deactivate;
+        form.MouseEnter -= Form_MouseEnter;
+        form.MouseLeave -= Form_MouseLeave;
+        form.FormClosing -= Form_FormClosing;
+        form.HandleDestroyed -= Form_HandleDestroyed;
+
+        foreach (var ctrl in state.SubscribedControls)
         {
-            // ignore — form is closing
+            try
+            {
+                ctrl.MouseEnter -= Control_MouseEnter;
+                ctrl.MouseLeave -= Control_MouseLeave;
+            }
+            catch
+            {
+            }
         }
-        catch (Win32Exception)
-        {
-            // ignore invalid handle errors during shutdown
-        }
+
+        state.SubscribedControls.Clear();
+        States.Remove(form);
+    }
+
+    private static void Form_HandleDestroyed(object? sender, EventArgs e)
+    {
     }
 }

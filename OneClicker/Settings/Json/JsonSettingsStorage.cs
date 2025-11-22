@@ -39,8 +39,7 @@ public class JsonSettingsStorage : ISettingsStorage
             _settings.FolderPath = loaded.FolderPath;
             _settings.X = loaded.X;
             _settings.Y = loaded.Y;
-            _settings.Width = loaded.Width;
-            _settings.Height = loaded.Height;
+            _settings.WidgetSize = loaded.WidgetSize;
             _settings.BackColor = loaded.BackColor;
             _settings.ButtonColor = loaded.ButtonColor;
             _settings.TriangleColor = loaded.TriangleColor;

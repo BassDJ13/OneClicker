@@ -6,9 +6,11 @@ public interface ISettings
     Color BackColor { get; set; }
     Color ButtonColor { get; set; }
     string FolderPath { get; set; }
-    int Height { get; set; }
     Color TriangleColor { get; set; }
-    int Width { get; set; }
+    int WidgetSize { get; set; }
     int X { get; set; }
     int Y { get; set; }
+    WindowStyle WindowStyle { get; set; }
+    DockPosition DockPosition { get; set; }
+    int InactiveOpacity { get; set; }
 }
