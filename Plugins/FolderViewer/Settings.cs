@@ -7,7 +7,6 @@ public class Settings : UserControl, ISettingsPage
     private readonly TextBox _textFolder;
     private readonly Button _buttonBrowse;
     private readonly Button _buttonOpen;
-    private readonly TextBox _textHotkey;
 
     public Settings()
     {
@@ -15,10 +14,6 @@ public class Settings : UserControl, ISettingsPage
         _textFolder = new TextBox { Left = 50, Top = 0, Width = 256 };
         _buttonBrowse = new Button { Text = "Browse...", Left = 50, Top = 26, Width = 80 };
         _buttonOpen = new Button { Text = "Open in explorer", Left = 130, Top = 26, Width = 130 };
-
-        var labelHotkey = new Label { Text = "Hotkey:", Left = 0, Top = 62, Width = 50 };
-        _textHotkey = new TextBox { Left = 50, Top = 60, Width = 72, Text = "Alt + z", ReadOnly = true };
-
 
         _buttonBrowse.Click += (s, e) =>
         {
@@ -41,7 +36,7 @@ public class Settings : UserControl, ISettingsPage
             }
         };
 
-        Controls.AddRange([labelFolder, _textFolder, _buttonBrowse, _buttonOpen, labelHotkey, _textHotkey]);
+        Controls.AddRange([labelFolder, _textFolder, _buttonBrowse, _buttonOpen]);
     }
 
     public void ReadFrom(ISettings settings)

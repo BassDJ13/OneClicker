@@ -21,18 +21,37 @@ public sealed class GlobalHotkeyHelper : IDisposable
     private readonly Action _onHotkeyPressed;
     private bool _isRegistered;
 
-    public GlobalHotkeyHelper(IntPtr handle, Action onHotkeyPressed, Keys key = Keys.Z)
+    public GlobalHotkeyHelper(IntPtr handle, Action onHotkeyPressed, Keys keyData)
     {
         _handle = handle;
         _onHotkeyPressed = onHotkeyPressed ?? throw new ArgumentNullException(nameof(onHotkeyPressed));
         _hotkeyId = GetHashCode();
-        _isRegistered = RegisterHotKey(handle, _hotkeyId, MOD_ALT, (uint)key);
+        var key = keyData & Keys.KeyCode;
+        var modifiers = keyData & Keys.Modifiers;
+        _isRegistered = RegisterHotKey(handle, _hotkeyId, GetModifiers(modifiers), (uint)key);
 
         if (!_isRegistered)
         {
             //MessageBox.Show("Unable to register global hotkey.", "Warning",
             //    MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
+    }
+
+    private uint GetModifiers(Keys keyData)
+    {
+        uint mods = 0;
+        Keys modifiers = keyData & Keys.Modifiers;
+
+        if (modifiers.HasFlag(Keys.Alt))
+            mods |= MOD_ALT;
+        if (modifiers.HasFlag(Keys.Control))
+            mods |= MOD_CONTROL;
+        if (modifiers.HasFlag(Keys.Shift))
+            mods |= MOD_SHIFT;
+        if (modifiers.HasFlag(Keys.LWin) || modifiers.HasFlag(Keys.RWin))
+            mods |= MOD_WIN;
+
+        return mods;
     }
 
     public bool ProcessHotkeyMessage(ref Message m)

@@ -15,4 +15,5 @@ public interface ISettings
     int DockOffsetX { get; set; }
     int DockOffsetY { get; set; }
     int InactiveOpacity { get; set; }
+    string FocusShortcut { get; set; }
 }

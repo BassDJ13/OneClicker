@@ -9,6 +9,7 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
     private RadioButton _radioFloating, _radioDocked;
     private DockSelectorPanel _dockSelector;
     private Label _labelDock, _labelOffsetX, _labelOffsetY;
+    private ShortcutPickerControl _shortcutPicker;
 
     public AppearanceSettingsPage()
     {
@@ -50,17 +51,23 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
         var labelBack = new Label { Text = "Header:", Left = 0, Top = 85, Width = 60 };
         _btnHeaderColor = new Button { Left = 60, Top = 82, Width = 22 };
 
-        var labelButton = new Label { Text = "Button:", Left = 0, Top = 111, Width = 60 };
-        _btnButtonColor = new Button { Left = 60, Top = 108, Width = 22 };
+        var labelButton = new Label { Text = "Button:", Left = 0, Top = 107, Width = 60 };
+        _btnButtonColor = new Button { Left = 60, Top = 104, Width = 22 };
 
-        var labelTriangle = new Label { Text = "Arrow:", Left = 0, Top = 139, Width = 60 };
-        _btnTriangleColor = new Button { Left = 60, Top = 136, Width = 22 };
+        var labelTriangle = new Label { Text = "Arrow:", Left = 0, Top = 129, Width = 60 };
+        _btnTriangleColor = new Button { Left = 60, Top = 126, Width = 22 };
 
         var labelWidgetSize = new Label { Text = "WidgetSize:", Left = 110, Top = 85, Width = 102 };
         _numWidgetSize = new NumericUpDown { Left = 212, Top = 82, Width = 60, Minimum = 8, Maximum = 960 };
         var labelInactiveOpacity = new Label { Text = "Inactive opacity:", Left = 110, Top = 114, Width = 102 };
         _numInactiveOpacity = new NumericUpDown { Left = 212, Top = 111, Width = 60, Minimum = 0, Maximum = 100 };
 
+        var labelShortcut = new Label { Text = "Focus app:", Left = 0, Top = 172, Width = 70 };
+        _shortcutPicker = new ShortcutPickerControl
+        {
+            Left = 75,
+            Top = 170
+        };
 
         _btnHeaderColor.Click += (s, e) => PickColor(_btnHeaderColor);
         _btnButtonColor.Click += (s, e) => PickColor(_btnButtonColor);
@@ -75,7 +82,8 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
             labelButton, _btnButtonColor,
             labelTriangle, _btnTriangleColor,
             labelWidgetSize, _numWidgetSize,
-            labelInactiveOpacity, _numInactiveOpacity]);
+            labelInactiveOpacity, _numInactiveOpacity,
+            labelShortcut, _shortcutPicker]);
 
         OnWindowStyleChanged(null, EventArgs.Empty);
     }
@@ -119,7 +127,7 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
         _dockSelector.SelectedDock = settings.DockPosition;
         _numOffsetX.Value = Math.Clamp(settings.DockOffsetX, -9999, 9999);
         _numOffsetY.Value = Math.Clamp(settings.DockOffsetY, -9999, 9999);
-
+        _shortcutPicker.SetShortcutKey(settings.FocusShortcut);
     }
 
     public bool WriteTo(ISettings settings)
@@ -133,6 +141,7 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
         settings.DockPosition = _dockSelector.SelectedDock;
         settings.DockOffsetX = (int)_numOffsetX.Value;
         settings.DockOffsetY = (int)_numOffsetY.Value;
+        settings.FocusShortcut = _shortcutPicker.GetShortcutKey();
 
         return true;
     }

@@ -14,5 +14,6 @@ public sealed record Settings : ISettings
     public int DockOffsetX { get; set; }
     public int DockOffsetY { get; set; }
     public int InactiveOpacity { get; set; }
+    public string FocusShortcut { get; set; } = "";
 }
 

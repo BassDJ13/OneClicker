@@ -187,12 +187,13 @@ public class MainForm : Form, IMainWindow
     protected override void OnHandleCreated(EventArgs e)
     {
         base.OnHandleCreated(e);
-        _hotkeyHelper = new GlobalHotkeyHelper(Handle, OnGlobalHotkeyPressed);
+        _hotkeyHelper = new GlobalHotkeyHelper(Handle, OnGlobalHotkeyPressed, KeyParser.FromSettingString(_settings.FocusShortcut));
+        //todo: currently needs to restart app, fix this
     }
 
     private void OnGlobalHotkeyPressed()
     {
-        ShowAndActivate();
+        ShowAndActivate(); 
         foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
         {
             plugin.WidgetControl?.ExecuteAction(); //todo: only execute one action for the preferred plugin

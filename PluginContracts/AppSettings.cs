@@ -22,6 +22,7 @@ public sealed record AppSettings : IAppSettings
     public int DockOffsetX { get; set; }
     public int DockOffsetY { get; set; }
     public int InactiveOpacity { get; set; } = 50;
+    public string FocusShortcut { get; set; } = "ALT+Z";
 
     public ISettings Copy()
     {
@@ -38,7 +39,8 @@ public sealed record AppSettings : IAppSettings
             DockPosition = this.DockPosition,
             DockOffsetX = this.DockOffsetX,
             DockOffsetY = this.DockOffsetY,
-            InactiveOpacity = this.InactiveOpacity
+            InactiveOpacity = this.InactiveOpacity,
+            FocusShortcut = this.FocusShortcut
         };
     }
 
@@ -56,6 +58,7 @@ public sealed record AppSettings : IAppSettings
         DockOffsetX = settings.DockOffsetX;
         DockOffsetY = settings.DockOffsetY;
         InactiveOpacity = settings.InactiveOpacity;
+        FocusShortcut = settings.FocusShortcut;
     }
 }
 
