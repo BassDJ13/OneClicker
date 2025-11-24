@@ -148,8 +148,8 @@ public class MainForm : Form, IMainWindow
         {
             _dragArea.Visible = true;
             Location = new Point(_settings.X, _settings.Y);
-            _windowLocationHelper.EnsureVisible(this);
         }
+        _windowLocationHelper.EnsureVisible(this);
         Blink();
     }
 
@@ -261,23 +261,21 @@ public class MainForm : Form, IMainWindow
         {
             BackColor = _settings.BackColor;
             DetermineAppSize();
-            ApplyWindowStyle();
-            _windowLocationHelper.EnsureVisible(this);
-            TransparencyHelper.SetInactiveOpacity(this, ((double)_settings.InactiveOpacity) / 100f);
-            _settingsIO!.Save();
-            Invalidate();
-
             foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
             {
                 plugin.WidgetControl?.ApplySettings();
             }
+            ApplyWindowStyle();
+            TransparencyHelper.SetInactiveOpacity(this, ((double)_settings.InactiveOpacity) / 100f);
+            _settingsIO!.Save();
+            Invalidate();
         }
     }
 
     private void SetDockedLocation()
     {
         var wa = Screen.FromHandle(Handle).WorkingArea;
-        Location = _windowLocationHelper.GetDockedPosition(wa, Size, _settings.DockPosition);
+        Location = _windowLocationHelper.GetDockedPosition(wa, Size, _settings.DockPosition, _settings.DockOffsetX, _settings.DockOffsetY);
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)

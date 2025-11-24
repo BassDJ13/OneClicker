@@ -12,5 +12,7 @@ public interface ISettings
     int Y { get; set; }
     WindowStyle WindowStyle { get; set; }
     DockPosition DockPosition { get; set; }
+    int DockOffsetX { get; set; }
+    int DockOffsetY { get; set; }
     int InactiveOpacity { get; set; }
 }

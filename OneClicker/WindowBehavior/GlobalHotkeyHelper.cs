@@ -21,7 +21,7 @@ public sealed class GlobalHotkeyHelper : IDisposable
     private readonly Action _onHotkeyPressed;
     private bool _isRegistered;
 
-    public GlobalHotkeyHelper(IntPtr handle, Action onHotkeyPressed, Keys key = Keys.Space)
+    public GlobalHotkeyHelper(IntPtr handle, Action onHotkeyPressed, Keys key = Keys.Z)
     {
         _handle = handle;
         _onHotkeyPressed = onHotkeyPressed ?? throw new ArgumentNullException(nameof(onHotkeyPressed));
@@ -30,8 +30,8 @@ public sealed class GlobalHotkeyHelper : IDisposable
 
         if (!_isRegistered)
         {
-            MessageBox.Show("Unable to register global hotkey.", "Warning",
-                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //MessageBox.Show("Unable to register global hotkey.", "Warning",
+            //    MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 

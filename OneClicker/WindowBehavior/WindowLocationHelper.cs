@@ -23,7 +23,7 @@ public class WindowLocationHelper
         form.Location = new Point(x, y);
     }
 
-    public Point GetDockedPosition(Rectangle workingArea, Size windowSize, DockPosition position)
+    public Point GetDockedPosition(Rectangle workingArea, Size windowSize, DockPosition position, int offsetX, int offsetY)
     {
         int x = 0, y = 0;
 
@@ -70,6 +70,6 @@ public class WindowLocationHelper
                 break;
         }
 
-        return new Point(x, y);
+        return new Point(x + offsetX, y + offsetY);
     }
 }

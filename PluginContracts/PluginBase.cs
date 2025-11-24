@@ -19,7 +19,8 @@ public abstract class PluginBase : IPlugin
                 return _settingsControl;
             }
 
-            return (UserControl)Activator.CreateInstance(SettingsClass)!;
+            _settingsControl = (UserControl)Activator.CreateInstance(SettingsClass)!;
+            return _settingsControl;
         }
     }
 
@@ -43,4 +44,3 @@ public abstract class PluginBase : IPlugin
     public virtual string Name { get; protected set; } = "Unnamed Plugin";
     public virtual string Description { get; protected set; } = "";
 }
-

@@ -4,15 +4,11 @@ namespace OneClicker.Forms;
 
 public class AppearanceSettingsPage : UserControl, ISettingsPage
 {
-    private readonly Button _btnHeaderColor;
-    private readonly Button _btnButtonColor;
-    private readonly Button _btnTriangleColor;
-    private readonly NumericUpDown _numWidgetSize;
-    private readonly NumericUpDown _numInactiveOpacity;
-    private RadioButton _radioFloating;
-    private RadioButton _radioDocked;
+    private readonly Button _btnHeaderColor, _btnButtonColor, _btnTriangleColor;
+    private readonly NumericUpDown _numWidgetSize, _numInactiveOpacity, _numOffsetX, _numOffsetY;
+    private RadioButton _radioFloating, _radioDocked;
     private DockSelectorPanel _dockSelector;
-    private Label _labelDock;
+    private Label _labelDock, _labelOffsetX, _labelOffsetY;
 
     public AppearanceSettingsPage()
     {
@@ -44,20 +40,26 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
             Left = 110,
             Top = 27
         };
+        _dockSelector.SelectedDockChanged += OnDockSelectorValueChanged;
 
-        var labelBack = new Label { Text = "Header:", Left = 0, Top = 80, Width = 60 };
-        _btnHeaderColor = new Button { Left = 60, Top = 77, Width = 22 };
+        _labelOffsetX = new Label { Text = "x offset:", Left = 160, Top = 27, Width = 50 };
+        _labelOffsetY = new Label { Text = "y offset:", Left = 160, Top = 50, Width = 50 };
+        _numOffsetX = new NumericUpDown { Left = 220, Top = 25, Width = 60, Minimum = -9999, Maximum = 9999 };
+        _numOffsetY = new NumericUpDown { Left = 220, Top = 48, Width = 60, Minimum = -9999, Maximum = 9999 };
 
-        var labelButton = new Label { Text = "Button:", Left = 0, Top = 106, Width = 60 };
-        _btnButtonColor = new Button { Left = 60, Top = 103, Width = 22 };
+        var labelBack = new Label { Text = "Header:", Left = 0, Top = 85, Width = 60 };
+        _btnHeaderColor = new Button { Left = 60, Top = 82, Width = 22 };
 
-        var labelTriangle = new Label { Text = "Arrow:", Left = 0, Top = 134, Width = 60 };
-        _btnTriangleColor = new Button { Left = 60, Top = 131, Width = 22 };
+        var labelButton = new Label { Text = "Button:", Left = 0, Top = 111, Width = 60 };
+        _btnButtonColor = new Button { Left = 60, Top = 108, Width = 22 };
 
-        var labelWidgetSize = new Label { Text = "WidgetSize:", Left = 110, Top = 80, Width = 102 };
-        _numWidgetSize = new NumericUpDown { Left = 212, Top = 77, Width = 60, Minimum = 8, Maximum = 960 };
-        var labelInactiveOpacity = new Label { Text = "Inactive opacity:", Left = 110, Top = 109, Width = 102 };
-        _numInactiveOpacity = new NumericUpDown { Left = 212, Top = 106, Width = 60, Minimum = 0, Maximum = 100 };
+        var labelTriangle = new Label { Text = "Arrow:", Left = 0, Top = 139, Width = 60 };
+        _btnTriangleColor = new Button { Left = 60, Top = 136, Width = 22 };
+
+        var labelWidgetSize = new Label { Text = "WidgetSize:", Left = 110, Top = 85, Width = 102 };
+        _numWidgetSize = new NumericUpDown { Left = 212, Top = 82, Width = 60, Minimum = 8, Maximum = 960 };
+        var labelInactiveOpacity = new Label { Text = "Inactive opacity:", Left = 110, Top = 114, Width = 102 };
+        _numInactiveOpacity = new NumericUpDown { Left = 212, Top = 111, Width = 60, Minimum = 0, Maximum = 100 };
 
 
         _btnHeaderColor.Click += (s, e) => PickColor(_btnHeaderColor);
@@ -67,6 +69,8 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
         Controls.AddRange([
             labelStyle, _radioFloating, _radioDocked,
             _labelDock, _dockSelector,
+            _labelOffsetX, _numOffsetX,
+            _labelOffsetY, _numOffsetY,
             labelBack, _btnHeaderColor,
             labelButton, _btnButtonColor,
             labelTriangle, _btnTriangleColor,
@@ -76,12 +80,22 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
         OnWindowStyleChanged(null, EventArgs.Empty);
     }
 
+    private void OnDockSelectorValueChanged(object? sender, EventArgs e)
+    {
+        _numOffsetX.Value = 0;
+        _numOffsetY.Value = 0;
+    }
+
     private void OnWindowStyleChanged(object? sender, EventArgs e)
     {
         bool isDocked = _radioDocked.Checked;
 
         _dockSelector.Visible = isDocked;
         _labelDock.Visible = isDocked;
+        _labelOffsetX.Visible = isDocked;
+        _numOffsetX.Visible = isDocked;
+        _labelOffsetY.Visible = isDocked;
+        _numOffsetY.Visible = isDocked;
     }
 
     private void PickColor(Button button)
@@ -102,7 +116,10 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
         _numInactiveOpacity.Value = Math.Clamp(settings.InactiveOpacity, 0, 100);
         _radioFloating.Checked = settings.WindowStyle == WindowStyle.Floating;
         _radioDocked.Checked = settings.WindowStyle == WindowStyle.Docked;
-        _dockSelector.SetPosition(settings.DockPosition);
+        _dockSelector.SelectedDock = settings.DockPosition;
+        _numOffsetX.Value = Math.Clamp(settings.DockOffsetX, -9999, 9999);
+        _numOffsetY.Value = Math.Clamp(settings.DockOffsetY, -9999, 9999);
+
     }
 
     public bool WriteTo(ISettings settings)
@@ -113,7 +130,9 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
         settings.WidgetSize = (int)_numWidgetSize.Value;
         settings.InactiveOpacity = (int)_numInactiveOpacity.Value;
         settings.WindowStyle = _radioDocked.Checked ? WindowStyle.Docked : WindowStyle.Floating;
-        settings.DockPosition = _dockSelector.Selected;
+        settings.DockPosition = _dockSelector.SelectedDock;
+        settings.DockOffsetX = (int)_numOffsetX.Value;
+        settings.DockOffsetY = (int)_numOffsetY.Value;
 
         return true;
     }

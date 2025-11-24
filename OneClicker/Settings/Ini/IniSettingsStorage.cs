@@ -39,11 +39,9 @@ public class IniSettingsStorage : ISettingsStorage
                 case "X":
                     if (int.TryParse(value, out var x)) _settings.X = x;
                     break;
-
                 case "Y":
                     if (int.TryParse(value, out var y)) _settings.Y = y;
                     break;
-
                 case "WidgetSize":
                     if (int.TryParse(value, out var w)) _settings.WidgetSize = w;
                     break;
@@ -57,6 +55,13 @@ public class IniSettingsStorage : ISettingsStorage
                 case "DockPosition":
                     if (Enum.TryParse<DockPosition>(value, out var dockPosition))
                         _settings.DockPosition = dockPosition;
+                    break;
+                case "DockOffsetX":
+                    if (int.TryParse(value, out var dockOffsetX)) _settings.DockOffsetX = dockOffsetX;
+                    break;
+
+                case "DockOffsetY":
+                    if (int.TryParse(value, out var dockOffsetY)) _settings.DockOffsetY = dockOffsetY;
                     break;
                 case "InactiveOpacity":
                     if (int.TryParse(value, out var inactiveOpacity)) _settings.InactiveOpacity = inactiveOpacity;
@@ -79,6 +84,8 @@ public class IniSettingsStorage : ISettingsStorage
             $"TriangleColor={ColorToHex(_settings.TriangleColor)}",
             $"WindowStyle={_settings.WindowStyle}",
             $"DockPosition={_settings.DockPosition}",
+            $"DockOffsetX={_settings.DockOffsetX}",
+            $"DockOffsetY={_settings.DockOffsetY}",
             $"InactiveOpacity={_settings.InactiveOpacity}"
         };
         _fs.WriteAllLines(_path, lines);

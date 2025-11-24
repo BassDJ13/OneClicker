@@ -17,7 +17,7 @@ public class Settings : UserControl, ISettingsPage
         _buttonOpen = new Button { Text = "Open in explorer", Left = 130, Top = 26, Width = 130 };
 
         var labelHotkey = new Label { Text = "Hotkey:", Left = 0, Top = 62, Width = 50 };
-        _textHotkey = new TextBox { Left = 50, Top = 60, Width = 72, Text = "Alt + Space", ReadOnly = true };
+        _textHotkey = new TextBox { Left = 50, Top = 60, Width = 72, Text = "Alt + z", ReadOnly = true };
 
 
         _buttonBrowse.Click += (s, e) =>

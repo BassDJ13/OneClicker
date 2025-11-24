@@ -15,7 +15,7 @@ public static class TransparencyHelper
 
     private static readonly ConditionalWeakTable<Form, OpacityState> States = new();
 
-    public static void AttachAutoOpacity(Form form, double inactiveOpacity = 0.7)
+    public static void AttachAutoOpacity(Form form, double inactiveOpacity)
     {
         ArgumentNullException.ThrowIfNull(form);
 

@@ -62,7 +62,7 @@ public class Widget : PluginWidgetBase
     {
         PopupMenuProvider.Menu.Items.Clear();
         _openButton.BackColor = _settings.ButtonColor;
-        _openButton.Invalidate();
+        _openButton.Refresh();
     }
 
     private void OpenButton_Click(object sender, EventArgs e)

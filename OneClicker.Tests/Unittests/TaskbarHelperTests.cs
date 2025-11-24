@@ -43,7 +43,12 @@ public class TaskbarHelperTests
             Height = 20 
         };
 
-        form.Location = helper.GetDockedPosition(screenProvider.GetWorkingArea(form), form.Size, PluginContracts.DockPosition.BottomRight);
+        form.Location = helper.GetDockedPosition(
+            workingArea: screenProvider.GetWorkingArea(form),
+            windowSize: form.Size,
+            position: PluginContracts.DockPosition.BottomRight,
+            offsetX: 0,
+            offsetY: 0);
 
         Assert.That(form.Left, Is.EqualTo(200 - 20 - 16));
         Assert.That(form.Top, Is.EqualTo(200 - 20 - 4));
