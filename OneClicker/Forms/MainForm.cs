@@ -153,6 +153,29 @@ public class MainForm : Form, IMainWindow
         Blink();
     }
 
+    private async Task ApplyWindowStyleAsync()
+    {
+        var screen = Screen.FromHandle(Handle);
+
+        Rectangle wa;
+        int attempts = 0;
+
+        do
+        {
+            await Task.Delay(120);
+            wa = screen.WorkingArea;
+            attempts++;
+        }
+        while (IsFullScreenArea(wa, screen.Bounds) && attempts < 10);
+
+        ApplyWindowStyle();
+    }
+
+    private bool IsFullScreenArea(Rectangle wa, Rectangle bounds)
+    {
+        return wa.Width == bounds.Width && wa.Height == bounds.Height;
+    }
+
     protected override async void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
@@ -292,8 +315,10 @@ public class MainForm : Form, IMainWindow
         base.OnFormClosing(e);
     }
 
-    private void OnDisplaySettingsChanged(object? sender, EventArgs e)
-        => ApplyWindowStyle();
+    private async void OnDisplaySettingsChanged(object? sender, EventArgs e)
+    {
+        await ApplyWindowStyleAsync();
+    }
 
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
