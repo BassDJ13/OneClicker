@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [v1.0.3] - 2025-12-10
+## [v1.0.4] - 2025-11-26
+
+- Ability to dock the app in any screen corner or edge with a preferred offset.
+- Set the opacity amount for when the app is inactive
+- Change the shortcut key to activate the app
+- The app is now plugin based meaning it can run 3rd party plugins made in seperate dll's. Currently 'Folder viewer' is the only stock plugin. The plugin system is still in beta.
+
+### Added
+
+## [v1.0.3] - 2025-11-12
 
 ### Added
 
