@@ -33,7 +33,7 @@ public class TaskbarHelperTests
     {
         var screenProvider = Substitute.For<IScreenProvider>();
         screenProvider.GetWorkingArea(Arg.Any<Form>())
-                      .Returns(new Rectangle(0, 0, 200, 200));
+            .Returns(new Rectangle(0, 0, 200, 200));
 
         var helper = new WindowLocationHelper(screenProvider);
         var form = new Form
@@ -50,7 +50,7 @@ public class TaskbarHelperTests
             offsetX: 0,
             offsetY: 0);
 
-        Assert.That(form.Left, Is.EqualTo(200 - 20 - 16));
-        Assert.That(form.Top, Is.EqualTo(200 - 20 - 4));
+        Assert.That(form.Left, Is.EqualTo(200 - 20));
+        Assert.That(form.Top, Is.EqualTo(200 - 20));
     }
 }

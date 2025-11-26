@@ -35,8 +35,7 @@ public class SettingsIOTests
                 lines.Contains("Folder=C:\\TestFolder") &&
                 lines.Contains("X=123") &&
                 lines.Contains("Y=456") &&
-                lines.Contains("Width=40") &&
-                lines.Contains("Height=50") &&
+                lines.Contains("WidgetSize=40") &&
                 lines.Contains($"BackColor=#{Color.Red.R:X2}{Color.Red.G:X2}{Color.Red.B:X2}")
             ));
     }
@@ -52,8 +51,7 @@ public class SettingsIOTests
             "Folder=C:\\TestFolder",
             "X=10",
             "Y=20",
-            "Width=30",
-            "Height=40",
+            "WidgetSize=30",
             "BackColor=#FF0000",
             "ButtonColor=#00FF00",
             "TriangleColor=#0000FF"
