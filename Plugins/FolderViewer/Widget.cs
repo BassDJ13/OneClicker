@@ -27,18 +27,6 @@ public class Widget : PluginWidgetBase
         _openButton.MouseUp += AppServices.MainWindow.HandleMouseUp!;
         _openButton.Paint += DrawButtonArrow!;
 
-        PopupMenuProvider.Menu.ItemClicked += (s, e) =>
-        {
-            if (e.ClickedItem!.Tag is string path)
-            {
-                try
-                {
-                    Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-                }
-                catch { }
-            }
-        };
-
         Controls.Add(_openButton);
 
         _openButton.BackColor = _settings.ButtonColor;
@@ -76,12 +64,55 @@ public class Widget : PluginWidgetBase
         var popupMenu = PopupMenuProvider.Menu;
         if (popupMenu.Items.Count == 0)
         {
-            popupMenu.Items.AddRange(FolderContentLoader.GetItems(_settings.FolderPath).ToArray());
+            AddMenuItems();
         }
 
         popupMenu.Show(_openButton, new Point(
             GetHorizontalAlignment(_openButton, popupMenu.PreferredSize.Width),
             GetVerticalAlignment(_openButton, popupMenu.PreferredSize.Height)));
+    }
+
+    private void AddMenuItems()
+    {
+        var items = FolderContentLoader.GetItems(_settings.FolderPath);
+        foreach (var item in items)
+        {
+            item.MouseDown += MenuItem_MouseDown!;
+            PopupMenuProvider.Menu.Items.Add(item);
+        }
+    }
+
+    private void MenuItem_MouseDown(object sender, MouseEventArgs e)
+    {
+        var menuItem = (ToolStripMenuItem)sender;
+        var path = (string)menuItem.Tag!;
+        if (e.Button == MouseButtons.Left)
+        {
+            StartProcess(path);
+        }
+        else if (e.Button == MouseButtons.Right
+            && menuItem.GetCurrentParent() is ToolStripDropDown)
+        {
+            ShowWindowsContextMenu(path);
+        }
+    }
+
+    private static void ShowWindowsContextMenu(string path)
+    {
+        var shellMenu = new ShellContextMenu();
+        if (AppServices.MainWindow is Form mainForm)
+        {
+            shellMenu.Show(path, mainForm.Handle, MousePosition.X, MousePosition.Y);
+        }
+    }
+
+    private static void StartProcess(string path)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+        }
+        catch { }
     }
 
     private int GetHorizontalAlignment(Button openButton, int preferredWidth)
