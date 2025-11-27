@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [v1.0.5] - 2025-11-27
+
+### Added
+
+- FolderViewer: When clicking the right mousebutton on an item the windows contextmenu opens. This is the same as clicking right on an item in the Windows file explorer.
+
 ## [v1.0.4] - 2025-11-26
 
 ### Added
