@@ -1,4 +1,5 @@
-﻿using PluginContracts;
+﻿using BassCommon;
+using PluginContracts;
 
 namespace OneClicker.Forms;
 
@@ -10,37 +11,20 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
     private DockSelectorPanel _dockSelector;
     private Label _labelDock, _labelOffsetX, _labelOffsetY;
     private ShortcutPickerControl _shortcutPicker;
-
+    private CheckBox _startupCheckbox;
+    private const string _startupShortcutName = "OneClicker";
     public AppearanceSettingsPage()
     {
         var labelStyle = new Label { Text = "Window Style:", Left = 0, Top = 0, Width = 100 };
 
-        _radioFloating = new RadioButton
-        {
-            Text = "Floating",
-            Left = 110,
-            Top = 0,
-            AutoSize = true
-        };
-
-        _radioDocked = new RadioButton
-        {
-            Text = "Docked",
-            Left = 190,
-            Top = 0,
-            AutoSize = true
-        };
-
+        _radioFloating = new RadioButton { Text = "Floating", Left = 110, Top = 0, AutoSize = true };
+        _radioDocked = new RadioButton { Text = "Docked", Left = 190, Top = 0, AutoSize = true };
         _radioFloating.CheckedChanged += OnWindowStyleChanged;
         _radioDocked.CheckedChanged += OnWindowStyleChanged;
 
         _labelDock = new Label { Text = "Dock position:", Left = 0, Top = 27, Width = 100 };
 
-        _dockSelector = new DockSelectorPanel
-        {
-            Left = 110,
-            Top = 27
-        };
+        _dockSelector = new DockSelectorPanel { Left = 110, Top = 27 };
         _dockSelector.SelectedDockChanged += OnDockSelectorValueChanged;
 
         _labelOffsetX = new Label { Text = "x offset:", Left = 160, Top = 27, Width = 50 };
@@ -62,12 +46,19 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
         var labelInactiveOpacity = new Label { Text = "Inactive opacity:", Left = 110, Top = 114, Width = 102 };
         _numInactiveOpacity = new NumericUpDown { Left = 212, Top = 111, Width = 60, Minimum = 0, Maximum = 100 };
 
-        var labelShortcut = new Label { Text = "Focus app:", Left = 0, Top = 172, Width = 70 };
-        _shortcutPicker = new ShortcutPickerControl
+        var labelShortcut = new Label { Text = "Focus app:", Left = 0, Top = 156, Width = 70 };
+        _shortcutPicker = new ShortcutPickerControl { Left = 75, Top = 154 };
+
+        var labelStartup = new Label { Text = "Startup:", Left = 0, Top = 182, Width = 70 };
+        _startupCheckbox = new CheckBox
         {
-            Left = 75,
-            Top = 170
+            Left = 75, 
+            Top = 180, 
+            Width= 260,
+            Checked = StartupManager.IsStartupEnabled(_startupShortcutName),
+            Text = "Start automatically with Windows"
         };
+        _startupCheckbox.CheckedChanged += StartupCheckBox_CheckedChanged;
 
         _btnHeaderColor.Click += (s, e) => PickColor(_btnHeaderColor);
         _btnButtonColor.Click += (s, e) => PickColor(_btnButtonColor);
@@ -83,9 +74,27 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
             labelTriangle, _btnTriangleColor,
             labelWidgetSize, _numWidgetSize,
             labelInactiveOpacity, _numInactiveOpacity,
-            labelShortcut, _shortcutPicker]);
+            labelShortcut, _shortcutPicker,
+            labelStartup, _startupCheckbox]);
 
         OnWindowStyleChanged(null, EventArgs.Empty);
+    }
+
+    private void StartupCheckBox_CheckedChanged(object? sender, EventArgs e)
+    {
+        if (_startupCheckbox.Checked)
+        {
+            if (!StartupManager.EnableStartup(_startupShortcutName))
+            {
+                _startupCheckbox.CheckedChanged -= StartupCheckBox_CheckedChanged;
+                _startupCheckbox.Checked = false;
+                _startupCheckbox.CheckedChanged += StartupCheckBox_CheckedChanged;
+            }
+        }
+        else
+        {
+            StartupManager.DisableStartup(_startupShortcutName);
+        }
     }
 
     private void OnDockSelectorValueChanged(object? sender, EventArgs e)

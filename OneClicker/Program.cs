@@ -6,7 +6,7 @@ namespace OneClicker;
 internal static class Program
 {
     private const string MutexName = "OneClicker_Mutex";
-    private const uint WM_APP_SHOW = 0x8000 + 1; // custom message ID
+    private const uint WM_APP_SHOW = 0x8000 + 1;
 
     [DllImport("user32.dll")]
     private static extern IntPtr FindWindow(string? lpClassName, string? lpWindowName);
@@ -24,17 +24,15 @@ internal static class Program
 
         if (!isNewInstance)
         {
-            // Another instance is running — send a message to blink & bring to front
-            var existing = FindWindow(null, "OneClicker"); // window title must match MainForm.Text
+            var existing = FindWindow(null, "OneClicker");
             if (existing != IntPtr.Zero)
             {
                 PostMessage(existing, WM_APP_SHOW, IntPtr.Zero, IntPtr.Zero);
-                SetForegroundWindow(existing); // bring to front
+                SetForegroundWindow(existing);
             }
             return;
         }
 
-        // Classic initialization (works in all WinForms versions)
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 

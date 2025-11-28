@@ -14,8 +14,8 @@ public class ShortcutPickerControl : UserControl
 
     public ShortcutPickerControl()
     {
-        Height = 55;
-        Width = 260;
+        Height = 30;
+        Width = 200;
 
         _txtShortcut = new TextBox
         {
