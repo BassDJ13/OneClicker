@@ -1,4 +1,5 @@
-﻿using OneClicker.Classes;
+﻿using BassCommon.Classes;
+using OneClicker.Classes;
 using OneClicker.Plugins;
 using PluginContracts;
 using System.Diagnostics;
@@ -29,15 +30,18 @@ public sealed class SettingsForm : Form
         MaximizeBox = false;
         MinimizeBox = false;
 
-        _navList = new ListBox { Dock = DockStyle.Left, Width = 128 };
+        _navList = new ListBox { Dock = DockStyle.Left, Width = 128, DisplayMember = "Name" };
 
-        _navList.Items.Add("Appearance");
         foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
         {
-            if (plugin.HasSettings)
+            foreach (ISettingsItem settingsItem in plugin.SettingsItems)
             {
-                _navList.Items.Add(plugin.Name);
+                _navList.Items.Add(settingsItem);
             }
+            //if (plugin.HasSettings)
+            //{
+            //    _navList.Items.Add(plugin.Name);
+            //}
         }
 
         _contentPanel = new Panel
@@ -92,21 +96,17 @@ public sealed class SettingsForm : Form
 
     private async void CheckVersion(object? sender, EventArgs e)
     {
-        Version current = GitHubUpdateChecker.GetVersion();
-
-        bool isLatest = false;
         try
         {
-            isLatest = await GitHubUpdateChecker.IsLatestVersionAsync(_owner, _repo, current);
+            var isLatest = await GitHubUpdateChecker.IsLatestVersionAsync(_owner, _repo, GitHubUpdateChecker.GetVersion());
+            if (!isLatest)
+            {
+                _linkUpdate.Visible = true;
+            }
         }
         catch (Exception ex)
         {
             Debug.WriteLine("Update check failed: " + ex.Message);
-        }
-
-        if (!isLatest)
-        {
-            _linkUpdate.Visible = true;
         }
     }
 
@@ -117,33 +117,49 @@ public sealed class SettingsForm : Form
             return;
         }
 
-        LoadContentPage(_navList.SelectedItem.ToString()!);
+        LoadContentPage((ISettingsItem)_navList.SelectedItem);// ToString()!);
     }
 
-    private void LoadContentPage(string pageName)
+    //private void LoadContentPage(string pageName)
+    //{
+    //    SaveContentPageSettings();
+    //    _contentPanel.Controls.Clear();
+
+    //    var settingsControl = LoadUserControl(pageName);
+    //    if (settingsControl == null)
+    //    {
+    //        return;
+    //    }
+
+    //    (settingsControl as ISettingsPage)?.ReadFrom(_localSettings);
+    //    settingsControl.Dock = DockStyle.Fill;
+    //    _contentPanel.Controls.Add(settingsControl);
+    //}
+
+    private void LoadContentPage(ISettingsItem settingsItem)
     {
         SaveContentPageSettings();
         _contentPanel.Controls.Clear();
 
-        var settingsControl = LoadUserControl(pageName);
+        var settingsControl = settingsItem.Content;
         if (settingsControl == null)
         {
             return;
         }
 
-        (settingsControl as ISettingsPage)?.ReadFrom(_localSettings);
+    (settingsControl as ISettingsPage)?.ReadFrom(_localSettings);
         settingsControl.Dock = DockStyle.Fill;
         _contentPanel.Controls.Add(settingsControl);
     }
 
-    private UserControl? LoadUserControl(string pageName)
-    {
-        if (pageName == "Appearance")
-        {
-            return new AppearanceSettingsPage();
-        }
-        return PluginManager.Instance.GetPlugin(pageName).SettingsControl;
-    }
+    //private UserControl? LoadUserControl(string pageName)
+    //{
+    //    if (pageName == "Appearance")
+    //    {
+    //        return new AppearanceSettingsPage();
+    //    }
+    //    return PluginManager.Instance.GetPlugin(pageName).SettingsControl;
+    //}
 
     private void SaveContentPageSettings()
     {

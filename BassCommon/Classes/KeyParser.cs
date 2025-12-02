@@ -1,8 +1,8 @@
-﻿namespace OneClicker.Classes;
+﻿namespace BassCommon.Classes;
 
-internal static class KeyParser
+public static class KeyParser
 {
-    internal static string ToSettingString(Keys keyData)
+    public static string ToSettingString(Keys keyData)
     {
         if (keyData == Keys.None)
         {
@@ -13,7 +13,7 @@ internal static class KeyParser
         return string.Join(" + ", parts);
     }
 
-    internal static IList<string> GetParts(Keys keyData)
+    public static IList<string> GetParts(Keys keyData)
     {
         if (keyData == Keys.None)
         {
@@ -47,7 +47,7 @@ internal static class KeyParser
         return parts;
     }
 
-    internal static Keys FromSettingString(string text)
+    public static Keys FromSettingString(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
         {

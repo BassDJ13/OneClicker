@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using BassCommon.Classes;
+using Microsoft.Win32;
 using OneClicker.Classes;
 using OneClicker.Plugins;
 using OneClicker.Settings;
@@ -131,7 +132,7 @@ public class MainForm : Form, IMainWindow
         _widgetSize = _settings.WidgetSize;
         var headerHeight = _settings.WindowStyle == WindowStyle.Floating ? _dragAreaHeight : 0;
 
-        _appWidth = _widgetSize * Math.Max(1, PluginManager.Instance.ActivePlugins.Count);
+        _appWidth = _widgetSize * Math.Max(1, PluginManager.Instance.ActiveWidgets.Count);
         _appHeight = _widgetSize + headerHeight;
 
         Size = new Size(_appWidth, _appHeight);
@@ -186,14 +187,12 @@ public class MainForm : Form, IMainWindow
     private void LoadWidgets()
     {
         _contentPanel.Controls.Clear();
-        foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
+        foreach (IPlugin plugin in PluginManager.Instance.ActiveWidgets)
         {
-            if (plugin.HasWidget)
-            {
-                plugin.WidgetControl!.Dock = DockStyle.Fill; //todo: stack widgets horizontal
-                _contentPanel.Controls.Add(plugin.WidgetControl);
-                plugin.WidgetControl.ApplySettings();
-            }
+            var control = (UserControl)plugin.WidgetControl!;
+            control.Dock = DockStyle.Fill; //todo: stack widgets horizontal
+            _contentPanel.Controls.Add(control);
+            plugin.WidgetControl!.ApplySettings();
         }
     }
 

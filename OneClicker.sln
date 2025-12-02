@@ -5,6 +5,7 @@ VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClicker", "OneClicker\OneClicker.csproj", "{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}"
 	ProjectSection(ProjectDependencies) = postProject
+		{00E0FE84-C3C3-4659-8CF8-7A64111E299B} = {00E0FE84-C3C3-4659-8CF8-7A64111E299B}
 		{093FC698-28BD-4B96-8268-149CE29D24ED} = {093FC698-28BD-4B96-8268-149CE29D24ED}
 	EndProjectSection
 EndProject
@@ -15,6 +16,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderViewer", "Plugins\FolderViewer\FolderViewer.csproj", "{093FC698-28BD-4B96-8268-149CE29D24ED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginContracts", "PluginContracts\PluginContracts.csproj", "{EB9EE1E7-0128-41BD-852B-FC0E9D330A21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainSettings", "Plugins\MainSettings\MainSettings.csproj", "{00E0FE84-C3C3-4659-8CF8-7A64111E299B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginCore", "PluginCore\PluginCore.csproj", "{87A794B4-F077-D4FA-6358-4DBECB3D25EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +47,14 @@ Global
 		{EB9EE1E7-0128-41BD-852B-FC0E9D330A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB9EE1E7-0128-41BD-852B-FC0E9D330A21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB9EE1E7-0128-41BD-852B-FC0E9D330A21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00E0FE84-C3C3-4659-8CF8-7A64111E299B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00E0FE84-C3C3-4659-8CF8-7A64111E299B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00E0FE84-C3C3-4659-8CF8-7A64111E299B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00E0FE84-C3C3-4659-8CF8-7A64111E299B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87A794B4-F077-D4FA-6358-4DBECB3D25EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87A794B4-F077-D4FA-6358-4DBECB3D25EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87A794B4-F077-D4FA-6358-4DBECB3D25EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87A794B4-F077-D4FA-6358-4DBECB3D25EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

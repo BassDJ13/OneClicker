@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 
-namespace OneClicker.Classes;
+namespace BassCommon.Classes;
 
-internal static class GitHubUpdateChecker
+public static class GitHubUpdateChecker
 {
     public static async Task<string?> GetLatestVersionTagAsync(string owner, string name)
     {

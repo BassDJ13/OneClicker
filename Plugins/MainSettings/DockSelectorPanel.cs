@@ -1,7 +1,7 @@
 ﻿using PluginContracts;
 using System.ComponentModel;
 
-namespace OneClicker.Forms;
+namespace MainSettings;
 
 public class DockSelectorPanel : Panel
 {

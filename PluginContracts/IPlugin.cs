@@ -4,8 +4,8 @@ public interface IPlugin
 {
     string Name { get; }
 
-    UserControl? SettingsControl { get; }
-    PluginWidgetBase? WidgetControl { get; }
+    IList<ISettingsItem> SettingsItems { get; }
+    IPluginWidgetBase? WidgetControl { get; }
     IList<MenuItem> MenuItems { get; }
 
     bool HasSettings { get; }

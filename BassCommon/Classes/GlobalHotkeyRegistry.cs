@@ -1,4 +1,4 @@
-﻿namespace OneClicker.Classes;
+﻿namespace BassCommon.Classes;
 
 internal static class GlobalHotkeyRegistry
 {

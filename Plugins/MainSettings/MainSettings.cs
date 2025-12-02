@@ -1,9 +1,9 @@
 ﻿using BassCommon;
 using PluginContracts;
 
-namespace OneClicker.Forms;
+namespace MainSettings;
 
-public class AppearanceSettingsPage : UserControl, ISettingsPage
+public class MainSettings : UserControl, ISettingsPage
 {
     private readonly Button _btnHeaderColor, _btnButtonColor, _btnTriangleColor;
     private readonly NumericUpDown _numWidgetSize, _numInactiveOpacity, _numOffsetX, _numOffsetY;
@@ -13,7 +13,8 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
     private ShortcutPickerControl _shortcutPicker;
     private CheckBox _startupCheckbox;
     private const string _startupShortcutName = "OneClicker";
-    public AppearanceSettingsPage()
+
+    public MainSettings()
     {
         var labelStyle = new Label { Text = "Window Style:", Left = 0, Top = 0, Width = 100 };
 
@@ -52,9 +53,9 @@ public class AppearanceSettingsPage : UserControl, ISettingsPage
         var labelStartup = new Label { Text = "Startup:", Left = 0, Top = 182, Width = 70 };
         _startupCheckbox = new CheckBox
         {
-            Left = 75, 
-            Top = 180, 
-            Width= 260,
+            Left = 75,
+            Top = 180,
+            Width = 260,
             Checked = StartupManager.IsStartupEnabled(_startupShortcutName),
             Text = "Start automatically with Windows"
         };

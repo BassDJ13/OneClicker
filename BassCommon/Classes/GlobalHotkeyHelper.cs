@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace OneClicker.WindowBehavior;
+namespace BassCommon.Classes;
 
 public sealed class GlobalHotkeyHelper : IDisposable
 {

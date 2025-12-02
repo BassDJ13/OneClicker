@@ -8,4 +8,13 @@
 	<UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Update="ShortcutCaptureForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ShortcutPickerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

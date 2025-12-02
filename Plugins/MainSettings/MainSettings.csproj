@@ -15,10 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Widget.cs">
-      <SubType>UserControl</SubType>
+    <Compile Update="DockSelectorPanel.cs">
+      <SubType>Component</SubType>
     </Compile>
-    <Compile Update="FolderViewerSettings.cs">
+    <Compile Update="MainSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>

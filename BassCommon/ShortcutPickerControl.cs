@@ -1,6 +1,6 @@
-﻿using OneClicker.Classes;
+﻿using BassCommon.Classes;
 
-namespace OneClicker.Forms;
+namespace BassCommon;
 
 public class ShortcutPickerControl : UserControl
 {

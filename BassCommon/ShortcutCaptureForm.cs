@@ -1,4 +1,4 @@
-﻿namespace OneClicker.Forms;
+﻿namespace BassCommon;
 
 public class ShortcutCaptureForm : Form
 {

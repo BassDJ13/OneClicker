@@ -1,31 +1,9 @@
-﻿namespace PluginContracts;
+﻿using PluginContracts;
+
+namespace PluginCore;
 
 public abstract class PluginBase : IPlugin
 {
-    protected Type? SettingsClass { get; set; }
-    private UserControl? _settingsControl;
-
-    public UserControl? SettingsControl
-    {
-        get
-        {
-            if (SettingsClass == null)
-            {
-                return null;
-            }
-
-            if (_settingsControl != null && !_settingsControl.IsDisposed)
-            {
-                return _settingsControl;
-            }
-
-            _settingsControl = (UserControl)Activator.CreateInstance(SettingsClass)!;
-            return _settingsControl;
-        }
-    }
-
-    public bool HasSettings => SettingsControl != null;
-
     protected Type? WidgetClass { get; set; }
     private PluginWidgetBase? _widgetControl;
 
@@ -35,6 +13,7 @@ public abstract class PluginBase : IPlugin
             : (PluginWidgetBase)Activator.CreateInstance(WidgetClass)!;
 
     public bool HasWidget => WidgetControl != null;
+    public bool HasSettings => SettingsItems != null && SettingsItems.Count > 0;
 
     public bool HasMenuItems => MenuItems.Count > 0;
 
@@ -43,4 +22,8 @@ public abstract class PluginBase : IPlugin
 
     public virtual string Name { get; protected set; } = "Unnamed Plugin";
     public virtual string Description { get; protected set; } = "";
+
+    public IList<ISettingsItem> SettingsItems { get; protected set; } = new List<ISettingsItem>();
+
+    IPluginWidgetBase? IPlugin.WidgetControl => WidgetControl;
 }

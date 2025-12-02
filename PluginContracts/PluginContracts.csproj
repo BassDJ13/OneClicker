@@ -8,10 +8,4 @@
 	<UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Update="PluginWidgetBase.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-  </ItemGroup>
-
 </Project>

@@ -1,18 +1,20 @@
 ﻿using PluginContracts;
+using PluginCore;
 
 namespace FolderViewer;
 
-public class Plugin : PluginBase
+public class FolderViewerPlugin : PluginBase
 {
-    public Plugin()
+    public FolderViewerPlugin()
     {
         Name = "Folder Viewer";
-        SettingsClass = typeof(Settings);
         WidgetClass = typeof(Widget);
 
         MenuItems.Add(new MenuItem(
             description: "Refresh Folder",
             image: null,
             onClick: (s, a) => PopupMenuProvider.Menu.Items.Clear()));
+
+        SettingsItems.Add(new SettingsItem("Folder Viewer", typeof(FolderViewerSettings)));
     }
 }

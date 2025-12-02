@@ -13,8 +13,8 @@ internal class PluginManager
     private PluginManager(IMainWindow mainWindow)
     {
         _mainWindow = mainWindow;
-        ActivePlugins = PluginLoader.LoadPlugins("plugins", mainWindow);
-
+        _activePlugins = PluginLoader.LoadPlugins("plugins", mainWindow);
+        _activeWidgets = GetPluginsWithWidgets(_activePlugins)!;
         IList<string> names = new List<string>();
         foreach (var plugin in ActivePlugins)
         {
@@ -23,20 +23,41 @@ internal class PluginManager
         Names = names.ToArray();
     }
 
+    private IList<IPlugin>? GetPluginsWithWidgets(IList<IPlugin> plugins)
+    {
+        var result = new List<IPlugin>();
+        foreach (var plugin in plugins)
+        {
+            if (plugin.HasWidget)
+            {
+                result.Add(plugin);
+            }
+        }
+        return result;
+    }
+
     public static void Initialize(IMainWindow mainWindow)
     {
         if (_instance != null)
+        {
             throw new InvalidOperationException("PluginManager already initialized.");
+        }
 
         _instance = new PluginManager(mainWindow);
     }
 
-    public IList<IPlugin> ActivePlugins;
+    private IList<IPlugin> _activePlugins;
+    public IList<IPlugin> ActivePlugins => _activePlugins;
+
+    private IList<IPlugin> _activeWidgets;
+    public IList<IPlugin> ActiveWidgets => _activeWidgets;
+
     public string[] Names { get; private set; }
+    
 
     public IPlugin GetPlugin(string pluginName)
     {
-        foreach (var plugin in ActivePlugins)
+        foreach (var plugin in ActivePlugins!)
         {
             if (plugin.Name == pluginName)
             {
