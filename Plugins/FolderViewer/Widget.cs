@@ -24,7 +24,7 @@ public class Widget : PluginWidgetBase
         };
         _openButton.FlatAppearance.BorderSize = 0;
         _openButton.Click += OpenButton_Click!;
-        _openButton.MouseUp += AppServices.MainWindow.HandleMouseUp!;
+        _openButton.MouseUp += (_, e) => OnMouseUp(e);
         _openButton.Paint += DrawButtonArrow!;
 
         Controls.Add(_openButton);

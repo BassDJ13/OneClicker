@@ -193,6 +193,7 @@ public class MainForm : Form, IMainWindow
             control.Dock = DockStyle.Fill; //todo: stack widgets horizontal
             _contentPanel.Controls.Add(control);
             plugin.WidgetControl!.ApplySettings();
+            ((IPluginWidgetBase)control).RightClickDetected += (s, e) => ShowContextMenu(e);
         }
     }
 
@@ -249,16 +250,6 @@ public class MainForm : Form, IMainWindow
 
         base.WndProc(ref m);
         new TopMostHelper(new Win32WindowPositioner()).HandleMessage(this, ref m);
-    }
-
-    public void HandleMouseUp(object sender, MouseEventArgs e)
-    {
-        if (e.Button != MouseButtons.Right)
-        {
-            return;
-        }
-
-        ShowContextMenu(e);
     }
 
     private bool ShowContextMenu(MouseEventArgs e)
