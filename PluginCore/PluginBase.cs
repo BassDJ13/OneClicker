@@ -7,12 +7,12 @@ public abstract class PluginBase : IPlugin
     protected Type? WidgetClass { get; set; }
     private PluginWidgetBase? _widgetControl;
 
-    public PluginWidgetBase? WidgetControl =>
+    protected PluginWidgetBase? WidgetInstance =>
         _widgetControl ??= WidgetClass == null
             ? null
             : (PluginWidgetBase)Activator.CreateInstance(WidgetClass)!;
 
-    public bool HasWidget => WidgetControl != null;
+    public bool HasWidget => WidgetInstance != null;
     public bool HasSettings => SettingsItems != null && SettingsItems.Count > 0;
 
     public bool HasMenuItems => MenuItems.Count > 0;
@@ -25,5 +25,5 @@ public abstract class PluginBase : IPlugin
 
     public IList<ISettingsItem> SettingsItems { get; protected set; } = new List<ISettingsItem>();
 
-    IPluginWidgetBase? IPlugin.WidgetControl => WidgetControl;
+    IPluginWidgetBase? IPlugin.WidgetInstance => WidgetInstance;
 }

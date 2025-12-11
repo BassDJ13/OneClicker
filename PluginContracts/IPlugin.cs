@@ -5,7 +5,7 @@ public interface IPlugin
     string Name { get; }
 
     IList<ISettingsItem> SettingsItems { get; }
-    IPluginWidgetBase? WidgetControl { get; }
+    IPluginWidgetBase? WidgetInstance { get; }
     IList<MenuItem> MenuItems { get; }
 
     bool HasSettings { get; }

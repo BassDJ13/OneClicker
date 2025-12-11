@@ -5,13 +5,14 @@ using System.Diagnostics;
 
 namespace FolderViewer;
 
-public class Widget : PluginWidgetBase
+public class FolderViewerWidget : PluginWidgetBase
 {
     private readonly IAppSettings _settings;
     private readonly Button _openButton;
-    private readonly BlinkHelper _blinker = new BlinkHelper();
+    private readonly BlinkHelper _blinker = new();
+    private readonly ContextMenuStrip _menu = new();
 
-    public Widget()
+    public FolderViewerWidget()
     {
         _settings = AppSettings.Instance;
 
@@ -48,7 +49,7 @@ public class Widget : PluginWidgetBase
 
     public override void ApplySettings()
     {
-        PopupMenuProvider.Menu.Items.Clear();
+        _menu.Items.Clear();
         _openButton.BackColor = _settings.ButtonColor;
         _openButton.Refresh();
     }
@@ -61,15 +62,14 @@ public class Widget : PluginWidgetBase
             return;
         }
 
-        var popupMenu = PopupMenuProvider.Menu;
-        if (popupMenu.Items.Count == 0)
+        if (_menu.Items.Count == 0)
         {
             AddMenuItems();
         }
 
-        popupMenu.Show(_openButton, new Point(
-            GetHorizontalAlignment(_openButton, popupMenu.PreferredSize.Width),
-            GetVerticalAlignment(_openButton, popupMenu.PreferredSize.Height)));
+        _menu.Show(_openButton, new Point(
+            GetHorizontalAlignment(_openButton, _menu.PreferredSize.Width),
+            GetVerticalAlignment(_openButton, _menu.PreferredSize.Height)));
     }
 
     private void AddMenuItems()
@@ -79,7 +79,7 @@ public class Widget : PluginWidgetBase
         {
             item.Click += LeftClickOrEnter;
             item.MouseDown += RightClick;
-            PopupMenuProvider.Menu.Items.Add(item);
+            _menu.Items.Add(item);
         }
     }
 
@@ -172,5 +172,10 @@ public class Widget : PluginWidgetBase
 
         using var brush = new SolidBrush(_settings.TriangleColor);
         g.FillPolygon(brush, pts);
+    }
+
+    internal void ClearMenu()
+    {
+        _menu.Items.Clear();
     }
 }

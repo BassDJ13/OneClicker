@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Widget.cs">
+    <Compile Update="FolderViewerWidget.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="FolderViewerSettings.cs">

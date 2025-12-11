@@ -12,4 +12,12 @@ public class MenuItem
         Image = image;
         OnClick = onClick;
     }
+
+    public MenuItem(string description, Image? image, Action onClick)
+        : this(
+            description,
+            image,
+            new EventHandler((_, _) => onClick())
+          )
+    { }
 }

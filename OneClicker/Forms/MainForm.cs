@@ -189,10 +189,10 @@ public class MainForm : Form, IMainWindow
         _contentPanel.Controls.Clear();
         foreach (IPlugin plugin in PluginManager.Instance.ActiveWidgets)
         {
-            var control = (UserControl)plugin.WidgetControl!;
+            var control = (UserControl)plugin.WidgetInstance!;
             control.Dock = DockStyle.Fill; //todo: stack widgets horizontal
             _contentPanel.Controls.Add(control);
-            plugin.WidgetControl!.ApplySettings();
+            plugin.WidgetInstance!.ApplySettings();
             ((IPluginWidgetBase)control).RightClickDetected += (s, e) => ShowContextMenu(e);
         }
     }
@@ -219,7 +219,7 @@ public class MainForm : Form, IMainWindow
         ShowAndActivate(); 
         foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
         {
-            plugin.WidgetControl?.ExecuteAction(); //todo: only execute one action for the preferred plugin
+            plugin.WidgetInstance?.ExecuteAction(); //todo: only execute one action for the preferred plugin
         }
     }
 
@@ -277,7 +277,7 @@ public class MainForm : Form, IMainWindow
             DetermineAppSize();
             foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
             {
-                plugin.WidgetControl?.ApplySettings();
+                plugin.WidgetInstance?.ApplySettings();
             }
             ApplyWindowStyle();
             TransparencyHelper.SetInactiveOpacity(this, ((double)_settings.InactiveOpacity) / 100f);
