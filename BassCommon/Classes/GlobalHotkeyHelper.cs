@@ -43,13 +43,24 @@ public sealed class GlobalHotkeyHelper : IDisposable
         Keys modifiers = keyData & Keys.Modifiers;
 
         if (modifiers.HasFlag(Keys.Alt))
+        {
             mods |= MOD_ALT;
+        }
+
         if (modifiers.HasFlag(Keys.Control))
+        {
             mods |= MOD_CONTROL;
+        }
+
         if (modifiers.HasFlag(Keys.Shift))
+        {
             mods |= MOD_SHIFT;
+        }
+
         if (modifiers.HasFlag(Keys.LWin) || modifiers.HasFlag(Keys.RWin))
+        {
             mods |= MOD_WIN;
+        }
 
         return mods;
     }

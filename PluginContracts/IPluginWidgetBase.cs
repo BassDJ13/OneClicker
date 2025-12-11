@@ -7,5 +7,4 @@ public interface IPluginWidgetBase
     void ExecuteAction();
 
     event EventHandler<MouseEventArgs>? RightClickDetected;
-
 }

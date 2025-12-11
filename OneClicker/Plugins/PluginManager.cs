@@ -8,12 +8,9 @@ internal class PluginManager
     public static PluginManager Instance
         => _instance ?? throw new InvalidOperationException("PluginManager not initialized.");
 
-    private readonly IMainWindow _mainWindow;
-
-    private PluginManager(IMainWindow mainWindow)
+    private PluginManager()
     {
-        _mainWindow = mainWindow;
-        _activePlugins = PluginLoader.LoadPlugins("plugins", mainWindow);
+        _activePlugins = PluginLoader.LoadPlugins("plugins");
         _activeWidgets = GetPluginsWithWidgets(_activePlugins)!;
         IList<string> names = new List<string>();
         foreach (var plugin in ActivePlugins)
@@ -36,14 +33,14 @@ internal class PluginManager
         return result;
     }
 
-    public static void Initialize(IMainWindow mainWindow)
+    public static void Initialize()
     {
         if (_instance != null)
         {
             throw new InvalidOperationException("PluginManager already initialized.");
         }
 
-        _instance = new PluginManager(mainWindow);
+        _instance = new PluginManager();
     }
 
     private IList<IPlugin> _activePlugins;
@@ -53,7 +50,6 @@ internal class PluginManager
     public IList<IPlugin> ActiveWidgets => _activeWidgets;
 
     public string[] Names { get; private set; }
-    
 
     public IPlugin GetPlugin(string pluginName)
     {

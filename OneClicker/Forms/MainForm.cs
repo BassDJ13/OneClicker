@@ -9,7 +9,7 @@ using PluginContracts;
 
 namespace OneClicker.Forms;
 
-public class MainForm : Form, IMainWindow
+public class MainForm : Form
 {
     private readonly IAppSettings _settings;
     private readonly Panel _dragArea;
@@ -37,8 +37,7 @@ public class MainForm : Form, IMainWindow
 
     public MainForm()
     {
-        AppServices.MainWindow = this;
-        PluginManager.Initialize(this);
+        PluginManager.Initialize();
         Text = "OneClicker";
         _windowLocationHelper = new WindowLocationHelper(new ScreenProvider());
         _settings = AppSettings.Instance;
@@ -63,7 +62,9 @@ public class MainForm : Form, IMainWindow
         _dragArea.MouseDown += (s, e) =>
         {
             if (_settings.WindowStyle == WindowStyle.Docked)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Left)
             {
@@ -76,7 +77,9 @@ public class MainForm : Form, IMainWindow
         _dragArea.MouseUp += (s, e) =>
         {
             if (_settings.WindowStyle == WindowStyle.Docked)
+            {
                 return;
+            }
 
             if (_isDragging)
             {
@@ -91,7 +94,9 @@ public class MainForm : Form, IMainWindow
         _dragArea.MouseMove += (s, e) =>
         {
             if (_settings.WindowStyle == WindowStyle.Docked)
+            {
                 return;
+            }
 
             if (_isDragging)
             {
@@ -193,7 +198,7 @@ public class MainForm : Form, IMainWindow
             control.Dock = DockStyle.Fill; //todo: stack widgets horizontal
             _contentPanel.Controls.Add(control);
             plugin.WidgetInstance!.ApplySettings();
-            ((IPluginWidgetBase)control).RightClickDetected += (s, e) => ShowContextMenu(e);
+            ((IPluginWidgetBase)control).RightClickDetected += (_, e) => ShowContextMenu(e);
         }
     }
 

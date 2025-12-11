@@ -5,12 +5,14 @@ namespace OneClicker.Plugins;
 
 public static class PluginLoader
 {
-    public static List<IPlugin> LoadPlugins(string folder, IMainWindow mainWindow)
+    public static List<IPlugin> LoadPlugins(string folder)
     {
         var plugins = new List<IPlugin>();
 
         if (!Directory.Exists(folder))
+        {
             Directory.CreateDirectory(folder);
+        }
 
         foreach (var dll in Directory.GetFiles(folder, "*.dll"))
         {
@@ -23,12 +25,7 @@ public static class PluginLoader
                     if (typeof(IPlugin).IsAssignableFrom(type) &&
                         !type.IsInterface && !type.IsAbstract)
                     {
-                        var ctor = type.GetConstructor([typeof(IMainWindow)]);
-
-                        IPlugin plugin = ctor != null
-                            ? (IPlugin)ctor.Invoke([mainWindow])
-                            : (IPlugin)Activator.CreateInstance(type)!;
-
+                        var plugin = (IPlugin)Activator.CreateInstance(type)!;
                         plugins.Add(plugin);
                     }
                 }

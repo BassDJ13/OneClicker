@@ -5,10 +5,10 @@ namespace PluginCore;
 public abstract class PluginBase : IPlugin
 {
     protected Type? WidgetClass { get; set; }
-    private PluginWidgetBase? _widgetControl;
+    private IPluginWidgetBase? _widgetInstance;
 
-    protected PluginWidgetBase? WidgetInstance =>
-        _widgetControl ??= WidgetClass == null
+    public IPluginWidgetBase? WidgetInstance =>
+        _widgetInstance ??= WidgetClass == null
             ? null
             : (PluginWidgetBase)Activator.CreateInstance(WidgetClass)!;
 
@@ -24,6 +24,4 @@ public abstract class PluginBase : IPlugin
     public virtual string Description { get; protected set; } = "";
 
     public IList<ISettingsItem> SettingsItems { get; protected set; } = new List<ISettingsItem>();
-
-    IPluginWidgetBase? IPlugin.WidgetInstance => WidgetInstance;
 }

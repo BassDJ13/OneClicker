@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace OneClicker.WindowBehavior;
 
@@ -20,7 +19,9 @@ public static class TransparencyHelper
         ArgumentNullException.ThrowIfNull(form);
 
         if (States.TryGetValue(form, out _))
+        {
             return;
+        }
 
         var state = new OpacityState
         {
@@ -51,7 +52,9 @@ public static class TransparencyHelper
     public static void SetInactiveOpacity(Form form, double inactiveOpacity)
     {
         if (!States.TryGetValue(form, out var state))
+        {
             return;
+        }
 
         state.InactiveOpacity = inactiveOpacity;
         UpdateOpacity(state);
@@ -70,7 +73,9 @@ public static class TransparencyHelper
         var form = state.Form;
 
         if (form.IsDisposed || !form.IsHandleCreated)
+        {
             return;
+        }
 
         bool mouseOver = false;
 
@@ -95,13 +100,19 @@ public static class TransparencyHelper
     private static void Form_Activated(object? sender, EventArgs e)
     {
         if (sender is not Form form)
+        {
             return;
+        }
 
         if (!States.TryGetValue(form, out var state))
+        {
             return;
+        }
 
         if (form.IsDisposed || !form.IsHandleCreated)
+        {
             return;
+        }
 
         state.IsActive = true;
         UpdateOpacity(state);
@@ -110,16 +121,24 @@ public static class TransparencyHelper
     private static void Form_Deactivate(object? sender, EventArgs e)
     {
         if (sender is not Form form)
+        {
             return;
+        }
 
         if (!States.TryGetValue(form, out var state))
+        {
             return;
+        }
 
         if (form.IsDisposed)
+        {
             return;
+        }
 
         if (!form.IsHandleCreated)
+        {
             return;
+        }
 
         state.IsActive = false;
         UpdateOpacity(state);
@@ -128,13 +147,19 @@ public static class TransparencyHelper
     private static void Form_MouseEnter(object? sender, EventArgs e)
     {
         if (sender is not Form form)
+        {
             return;
+        }
 
         if (!States.TryGetValue(form, out var state))
+        {
             return;
+        }
 
         if (form.IsDisposed || !form.IsHandleCreated)
+        {
             return;
+        }
 
         UpdateOpacity(state);
     }
@@ -142,13 +167,19 @@ public static class TransparencyHelper
     private static void Form_MouseLeave(object? sender, EventArgs e)
     {
         if (sender is not Form form)
+        {
             return;
+        }
 
         if (!States.TryGetValue(form, out var state))
+        {
             return;
+        }
 
         if (form.IsDisposed || !form.IsHandleCreated)
+        {
             return;
+        }
 
         UpdateOpacity(state);
     }
@@ -156,17 +187,25 @@ public static class TransparencyHelper
     private static void Control_MouseEnter(object? sender, EventArgs e)
     {
         if (sender is not Control ctrl)
+        {
             return;
+        }
 
         var form = ctrl.FindForm();
         if (form is null)
+        {
             return;
+        }
 
         if (!States.TryGetValue(form, out var state))
+        {
             return;
+        }
 
         if (form.IsDisposed || !form.IsHandleCreated)
+        {
             return;
+        }
 
         UpdateOpacity(state);
     }
@@ -174,17 +213,25 @@ public static class TransparencyHelper
     private static void Control_MouseLeave(object? sender, EventArgs e)
     {
         if (sender is not Control ctrl)
+        {
             return;
+        }
 
         var form = ctrl.FindForm();
         if (form is null)
+        {
             return;
+        }
 
         if (!States.TryGetValue(form, out var state))
+        {
             return;
+        }
 
         if (form.IsDisposed || !form.IsHandleCreated)
+        {
             return;
+        }
 
         UpdateOpacity(state);
     }
@@ -192,10 +239,14 @@ public static class TransparencyHelper
     private static void Form_FormClosing(object? sender, FormClosingEventArgs e)
     {
         if (sender is not Form form)
+        {
             return;
+        }
 
         if (!States.TryGetValue(form, out var state))
+        {
             return;
+        }
 
         form.Activated -= Form_Activated;
         form.Deactivate -= Form_Deactivate;

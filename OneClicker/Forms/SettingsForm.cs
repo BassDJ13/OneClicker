@@ -1,5 +1,4 @@
 ﻿using BassCommon.Classes;
-using OneClicker.Classes;
 using OneClicker.Plugins;
 using PluginContracts;
 using System.Diagnostics;
@@ -38,10 +37,6 @@ public sealed class SettingsForm : Form
             {
                 _navList.Items.Add(settingsItem);
             }
-            //if (plugin.HasSettings)
-            //{
-            //    _navList.Items.Add(plugin.Name);
-            //}
         }
 
         _contentPanel = new Panel
@@ -117,24 +112,8 @@ public sealed class SettingsForm : Form
             return;
         }
 
-        LoadContentPage((ISettingsItem)_navList.SelectedItem);// ToString()!);
+        LoadContentPage((ISettingsItem)_navList.SelectedItem);
     }
-
-    //private void LoadContentPage(string pageName)
-    //{
-    //    SaveContentPageSettings();
-    //    _contentPanel.Controls.Clear();
-
-    //    var settingsControl = LoadUserControl(pageName);
-    //    if (settingsControl == null)
-    //    {
-    //        return;
-    //    }
-
-    //    (settingsControl as ISettingsPage)?.ReadFrom(_localSettings);
-    //    settingsControl.Dock = DockStyle.Fill;
-    //    _contentPanel.Controls.Add(settingsControl);
-    //}
 
     private void LoadContentPage(ISettingsItem settingsItem)
     {
@@ -151,15 +130,6 @@ public sealed class SettingsForm : Form
         settingsControl.Dock = DockStyle.Fill;
         _contentPanel.Controls.Add(settingsControl);
     }
-
-    //private UserControl? LoadUserControl(string pageName)
-    //{
-    //    if (pageName == "Appearance")
-    //    {
-    //        return new AppearanceSettingsPage();
-    //    }
-    //    return PluginManager.Instance.GetPlugin(pageName).SettingsControl;
-    //}
 
     private void SaveContentPageSettings()
     {

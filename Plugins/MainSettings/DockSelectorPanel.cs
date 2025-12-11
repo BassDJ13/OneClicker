@@ -15,7 +15,9 @@ public class DockSelectorPanel : Panel
         set
         {
             if (_selectedDock == value)
+            {
                 return;
+            }
 
             _selectedDock = value;
             OnSelectedDockChanged();
@@ -80,7 +82,9 @@ public class DockSelectorPanel : Panel
     private void OnButtonClick(object? sender, EventArgs e)
     {
         if (sender is not Button btn)
+        {
             return;
+        }
 
         if (btn.Tag is DockPosition pos)
         {

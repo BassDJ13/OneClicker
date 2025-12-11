@@ -1,5 +1,6 @@
 ﻿namespace PluginContracts;
 
+//todo: becomes obsolete after settings refactor
 public sealed record Settings : ISettings
 {
     public string FolderPath { get; set; } = "";

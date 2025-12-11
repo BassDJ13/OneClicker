@@ -91,15 +91,27 @@ public class IniSettingsStorage : ISettingsStorage
                     break;
 
                 case "DockOffsetX":
-                    if (int.TryParse(value, out var dockOffsetX)) _settings.DockOffsetX = dockOffsetX;
+                    if (int.TryParse(value, out var dockOffsetX))
+                    {
+                        _settings.DockOffsetX = dockOffsetX;
+                    }
+
                     break;
 
                 case "DockOffsetY":
-                    if (int.TryParse(value, out var dockOffsetY)) _settings.DockOffsetY = dockOffsetY;
+                    if (int.TryParse(value, out var dockOffsetY))
+                    {
+                        _settings.DockOffsetY = dockOffsetY;
+                    }
+
                     break;
 
                 case "InactiveOpacity":
-                    if (int.TryParse(value, out var inactiveOpacity)) _settings.InactiveOpacity = inactiveOpacity;
+                    if (int.TryParse(value, out var inactiveOpacity))
+                    {
+                        _settings.InactiveOpacity = inactiveOpacity;
+                    }
+
                     break;
 
                 case "FocusShortcut":

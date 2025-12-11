@@ -107,13 +107,10 @@ public class FolderViewerWidget : PluginWidgetBase
         }
     }
 
-    private static void ShowWindowsContextMenu(string path)
+    private void ShowWindowsContextMenu(string path)
     {
         var shellMenu = new ShellContextMenu();
-        if (AppServices.MainWindow is Form mainForm)
-        {
-            shellMenu.Show(path, mainForm.Handle, MousePosition.X, MousePosition.Y);
-        }
+        shellMenu.Show(path, this.ParentForm!.Handle, MousePosition.X, MousePosition.Y);
     }
 
     private static void StartProcess(string path)

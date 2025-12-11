@@ -1,5 +1,4 @@
-﻿using PluginContracts;
-using PluginCore;
+﻿using PluginCore;
 
 namespace MainSettings;
 
