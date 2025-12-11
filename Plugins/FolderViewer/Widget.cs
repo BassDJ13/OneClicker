@@ -77,20 +77,30 @@ public class Widget : PluginWidgetBase
         var items = FolderContentLoader.GetItems(_settings.FolderPath);
         foreach (var item in items)
         {
-            item.MouseDown += MenuItem_MouseDown!;
+            item.Click += LeftClickOrEnter;
+            item.MouseDown += RightClick;
             PopupMenuProvider.Menu.Items.Add(item);
         }
     }
 
-    private void MenuItem_MouseDown(object sender, MouseEventArgs e)
+    private void LeftClickOrEnter(object? sender, EventArgs e)
     {
-        var menuItem = (ToolStripMenuItem)sender;
-        var path = (string)menuItem.Tag!;
-        if (e.Button == MouseButtons.Left)
+        if (sender is ToolStripMenuItem menuItem
+            && menuItem.Tag is string path)
         {
             StartProcess(path);
         }
-        else if (e.Button == MouseButtons.Right
+    }
+
+    private void RightClick(object? sender, MouseEventArgs e)
+    {
+        if (e.Button != MouseButtons.Right)
+        {
+            return;
+        }
+
+        if (sender is ToolStripMenuItem menuItem
+            && menuItem.Tag is string path
             && menuItem.GetCurrentParent() is ToolStripDropDown)
         {
             ShowWindowsContextMenu(path);
