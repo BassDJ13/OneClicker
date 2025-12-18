@@ -1,9 +1,10 @@
-﻿namespace PluginContracts
+﻿namespace PluginContracts;
+
+public interface ISettingsItem
 {
-    public interface ISettingsItem
-    {
-        string Name { get; }
-        Type? SettingsClass { get; }
-        UserControl? Content {  get; }
-    }
+    string PluginId { get; }
+    string Name { get; }
+    Type? SettingsClass { get; }
+    IPluginSettingsControlBase? Content {  get; }
+    IPluginSettingsControlBase? CreateContent(IPluginSettings overlay, IPluginSettings globalSettings);
 }

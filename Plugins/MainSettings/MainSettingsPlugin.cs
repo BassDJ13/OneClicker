@@ -1,4 +1,5 @@
-﻿using PluginCore;
+﻿using PluginContracts;
+using PluginCore;
 
 namespace MainSettings;
 
@@ -6,9 +7,21 @@ public class MainSettingsPlugin : PluginBase
 {
     public MainSettingsPlugin()
     {
-        Name = "Appearance";
-        //SettingsItems.Add(new SettingsItem("General", typeof(MainSettings)));
-        SettingsItems.Add(new SettingsItem("Appearance", typeof(MainSettings)));
-        //SettingsItems.Add(new SettingsItem("About", typeof(MainSettings)));
+        Name = "App";
+    }
+
+    public override void InitializePlugin()
+    {
+        Name = "App";
+        //AddSettingsItem("General", typeof(MainSettings));
+        AddSettingsItem("Appearance", typeof(MainSettings));
+        //AddSettingsItem("About", typeof(MainSettings));
+
+        DefaultSettingValues.Add("WindowStyle", nameof(WindowStyle.Floating));
+        DefaultSettingValues.Add("DockPosition", nameof(DockPosition.BottomRight));
+        DefaultSettingValues.Add("DockOffsetX", "-24");
+        DefaultSettingValues.Add("DockOffsetY", "-4");
+        DefaultSettingValues.Add("InactiveOpacity", "50");
+        DefaultSettingValues.Add("FocusShortcut", "ALT+Z");
     }
 }

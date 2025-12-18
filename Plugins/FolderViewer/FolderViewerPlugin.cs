@@ -9,13 +9,19 @@ public class FolderViewerPlugin : PluginBase
     {
         Name = "Folder Viewer";
         WidgetClass = typeof(FolderViewerWidget);
+    }
 
+    public override void InitializePlugin()
+    {
         var widget = (FolderViewerWidget)WidgetInstance!;
-        MenuItems.Add(new MenuItem(
+        
+        ContextMenuItems.Add(new MenuItem(
             description: "Refresh Folder",
             image: null,
             onClick: widget.ClearMenu));
+        
+        AddSettingsItem("Folder Viewer", typeof(FolderViewerSettings));
 
-        SettingsItems.Add(new SettingsItem("Folder Viewer", typeof(FolderViewerSettings)));
+        DefaultSettingValues.Add("FolderPath", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
     }
 }

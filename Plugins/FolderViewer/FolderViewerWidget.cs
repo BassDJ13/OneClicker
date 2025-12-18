@@ -1,21 +1,19 @@
 ﻿using BassCommon;
 using BassCommon.FileSystem;
 using PluginContracts;
+using PluginCore;
 using System.Diagnostics;
 
 namespace FolderViewer;
 
-public class FolderViewerWidget : PluginWidgetBase
+public class FolderViewerWidget : PluginWidgetControlBase
 {
-    private readonly IAppSettings _settings;
     private readonly Button _openButton;
     private readonly BlinkHelper _blinker = new();
     private readonly ContextMenuStrip _menu = new();
 
-    public FolderViewerWidget()
+    public FolderViewerWidget(IPluginSettings pluginSettings, IPluginSettings globalSettings) : base(pluginSettings, globalSettings)
     {
-        _settings = AppSettings.Instance;
-
         _openButton = new Button
         {
             Dock = DockStyle.Fill,
@@ -30,7 +28,7 @@ public class FolderViewerWidget : PluginWidgetBase
 
         Controls.Add(_openButton);
 
-        _openButton.BackColor = _settings.ButtonColor;
+        _openButton.BackColor = GlobalSettings.GetColor(GlobalSettingKeys.ButtonColor, Color.SteelBlue);
     }
 
     public override async Task StartAnimation()
@@ -50,13 +48,13 @@ public class FolderViewerWidget : PluginWidgetBase
     public override void ApplySettings()
     {
         _menu.Items.Clear();
-        _openButton.BackColor = _settings.ButtonColor;
+        _openButton.BackColor = GlobalSettings.GetColor(GlobalSettingKeys.ButtonColor, Color.SteelBlue);
         _openButton.Refresh();
     }
 
     private void OpenButton_Click(object sender, EventArgs e)
     {
-        if (!Directory.Exists(_settings.FolderPath))
+        if (!Directory.Exists(PluginSettings.Get("FolderPath")))
         {
             MessageBox.Show("Folder not found.");
             return;
@@ -74,7 +72,7 @@ public class FolderViewerWidget : PluginWidgetBase
 
     private void AddMenuItems()
     {
-        var items = FolderContentLoader.GetItems(_settings.FolderPath);
+        var items = FolderContentLoader.GetItems(PluginSettings.Get("FolderPath")!);
         foreach (var item in items)
         {
             item.Click += LeftClickOrEnter;
@@ -167,7 +165,7 @@ public class FolderViewerWidget : PluginWidgetBase
             new PointF(w * 0.75f, h * 0.7f)
         };
 
-        using var brush = new SolidBrush(_settings.TriangleColor);
+        using var brush = new SolidBrush(GlobalSettings.GetColor(GlobalSettingKeys.TriangleColor, Color.LightBlue));
         g.FillPolygon(brush, pts);
     }
 

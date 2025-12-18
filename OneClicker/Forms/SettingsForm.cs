@@ -1,5 +1,6 @@
 ﻿using BassCommon.Classes;
 using OneClicker.Plugins;
+using OneClicker.Settings;
 using PluginContracts;
 using System.Diagnostics;
 
@@ -16,11 +17,14 @@ public sealed class SettingsForm : Form
     private string _owner = "BassDJ13";
     private string _repo = "OneClicker";
 
-    private ISettings _localSettings;
+    private readonly ISettingsStore _settingsStore;
+    private readonly GlobalSettingsOverlay _globalSettingsOverlay;
+    private readonly Dictionary<string, PluginSettingsOverlay> _pluginOverlays = new();
 
-    public SettingsForm()
+    public SettingsForm(ISettingsStore settingsStore)
     {
-        _localSettings = AppSettings.Instance.Copy();
+        _settingsStore = settingsStore;
+        _globalSettingsOverlay = new GlobalSettingsOverlay(settingsStore);
 
         Text = $"OneClicker Settings v{GitHubUpdateChecker.GetVersion()}";
         FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -73,7 +77,7 @@ public sealed class SettingsForm : Form
         CancelButton = _cancelButton;
 
         _saveButton.Click += SaveButton_Click;
-        _cancelButton.Click += (s, e) => Close();
+        _cancelButton.Click += CancelButton_Click;
 
         _linkUpdate = new LinkLabel { Text = "Update available", Visible = false, Top = 15, Left = 9, AutoSize = true };
         _linkUpdate.LinkClicked += LinkUpdate_LinkClicked;
@@ -87,6 +91,17 @@ public sealed class SettingsForm : Form
         _navList.SelectedIndex = 0;
 
         Load += CheckVersion;
+    }
+
+    private PluginSettingsOverlay GetPluginOverlay(string pluginId)
+    {
+        if (!_pluginOverlays.TryGetValue(pluginId, out var overlay))
+        {
+            overlay = new PluginSettingsOverlay(pluginId, _settingsStore);
+            _pluginOverlays.Add(pluginId, overlay);
+        }
+
+        return overlay;
     }
 
     private async void CheckVersion(object? sender, EventArgs e)
@@ -117,33 +132,36 @@ public sealed class SettingsForm : Form
 
     private void LoadContentPage(ISettingsItem settingsItem)
     {
-        SaveContentPageSettings();
         _contentPanel.Controls.Clear();
 
-        var settingsControl = settingsItem.Content;
+        var settingsControl = settingsItem.CreateContent(GetPluginOverlay(settingsItem.PluginId), _globalSettingsOverlay);
         if (settingsControl == null)
         {
             return;
         }
 
-    (settingsControl as ISettingsPage)?.ReadFrom(_localSettings);
         settingsControl.Dock = DockStyle.Fill;
-        _contentPanel.Controls.Add(settingsControl);
-    }
-
-    private void SaveContentPageSettings()
-    {
-        if (_contentPanel.Controls.Count > 0 && _contentPanel.Controls[0] is ISettingsPage page)
-        {
-            page.WriteTo(_localSettings);
-        }
+        _contentPanel.Controls.Add((Control)settingsControl);
     }
 
     private void SaveButton_Click(object? sender, EventArgs e)
     {
-        SaveContentPageSettings();
-        AppSettings.Instance.Save(_localSettings);
+        _globalSettingsOverlay.Commit();
+
+        foreach (var overlay in _pluginOverlays.Values)
+        {
+            overlay.Commit();
+        }
+
+        _settingsStore.Save();
+
         DialogResult = DialogResult.OK;
+        Close();
+    }
+
+    private void CancelButton_Click(object? sender, EventArgs e)
+    {
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 

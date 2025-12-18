@@ -1,17 +1,19 @@
 ﻿using PluginContracts;
+using PluginCore;
 
 namespace FolderViewer;
 
-public class FolderViewerSettings : UserControl, ISettingsPage
+public class FolderViewerSettings : PluginSettingsControlBase
 {
     private readonly TextBox _textFolder;
     private readonly Button _buttonBrowse;
     private readonly Button _buttonOpen;
 
-    public FolderViewerSettings()
+    public FolderViewerSettings(IPluginSettings pluginSettings, IPluginSettings globalSettings) : base(pluginSettings, globalSettings)
     {
         var labelFolder = new Label { Text = "Folder:", Left = 0, Top = 2, Width = 50 };
-        _textFolder = new TextBox { Left = 50, Top = 0, Width = 256 };
+        _textFolder = new TextBox { Left = 50, Top = 0, Width = 256, Text = pluginSettings.Get("FolderPath") };
+        _textFolder.TextChanged += TextFolder_TextChanged;
         _buttonBrowse = new Button { Text = "Browse...", Left = 50, Top = 26, Width = 80 };
         _buttonOpen = new Button { Text = "Open in explorer", Left = 130, Top = 26, Width = 130 };
 
@@ -39,20 +41,8 @@ public class FolderViewerSettings : UserControl, ISettingsPage
         Controls.AddRange([labelFolder, _textFolder, _buttonBrowse, _buttonOpen]);
     }
 
-    public void ReadFrom(ISettings settings)
+    private void TextFolder_TextChanged(object? sender, EventArgs e)
     {
-        _textFolder.Text = settings.FolderPath;
-    }
-
-    public bool WriteTo(ISettings settings)
-    {
-        if (!Directory.Exists(_textFolder.Text))
-        {
-            MessageBox.Show("Folder does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-
-        settings.FolderPath = _textFolder.Text;
-        return true;
+        PluginSettings.Set("FolderPath", ((TextBox)sender!).Text);
     }
 }

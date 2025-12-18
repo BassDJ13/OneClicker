@@ -11,11 +11,12 @@ namespace OneClicker.Forms;
 
 public class MainForm : Form
 {
-    private readonly IAppSettings _settings;
+    private AppSettings? _mainAppSettings;
+    private PluginSettingsProxy? _globalSettings;
     private readonly Panel _dragArea;
     private const int _dragAreaHeight = 6;
     private readonly Panel _contentPanel;
-    private ISettingsStorage? _settingsIO;
+    private ISettingsStore? _settingsStore;
     private bool _isDragging = false;
     private WindowLocationHelper _windowLocationHelper;
     private GlobalHotkeyHelper? _hotkeyHelper;
@@ -29,7 +30,7 @@ public class MainForm : Form
     private async Task BlinkAsync()
     {
         var tasks = _contentPanel.Controls
-            .OfType<IPluginWidgetBase>()
+            .OfType<IPluginWidgetControlBase>()
             .Select(widget => widget.StartAnimation())
             .ToList();
         await Task.WhenAll(tasks);
@@ -40,7 +41,6 @@ public class MainForm : Form
         PluginManager.Initialize();
         Text = "OneClicker";
         _windowLocationHelper = new WindowLocationHelper(new ScreenProvider());
-        _settings = AppSettings.Instance;
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.Manual;
         TopMost = true;
@@ -50,7 +50,7 @@ public class MainForm : Form
 
         InitializeSettings();
 
-        TransparencyHelper.AttachAutoOpacity(this, ((double)_settings.InactiveOpacity) / 100f);
+        TransparencyHelper.AttachAutoOpacity(this, _mainAppSettings!.InactiveOpacity / 100f);
 
         _dragArea = new Panel
         {
@@ -59,9 +59,10 @@ public class MainForm : Form
             Cursor = Cursors.SizeAll,
             BackColor = Color.Transparent
         };
+
         _dragArea.MouseDown += (s, e) =>
         {
-            if (_settings.WindowStyle == WindowStyle.Docked)
+            if (_mainAppSettings.WindowStyle == WindowStyle.Docked)
             {
                 return;
             }
@@ -76,7 +77,7 @@ public class MainForm : Form
 
         _dragArea.MouseUp += (s, e) =>
         {
-            if (_settings.WindowStyle == WindowStyle.Docked)
+            if (_mainAppSettings.WindowStyle == WindowStyle.Docked)
             {
                 return;
             }
@@ -85,15 +86,15 @@ public class MainForm : Form
             {
                 _isDragging = false;
                 _windowLocationHelper.KeepInWorkArea(this);
-                _settings.X = Left;
-                _settings.Y = Top;
-                _settingsIO!.Save();
+                _mainAppSettings.X = Left;
+                _mainAppSettings.Y = Top;
+                _settingsStore!.Save();
             }
         };
 
         _dragArea.MouseMove += (s, e) =>
         {
-            if (_settings.WindowStyle == WindowStyle.Docked)
+            if (_mainAppSettings.WindowStyle == WindowStyle.Docked)
             {
                 return;
             }
@@ -113,7 +114,7 @@ public class MainForm : Form
         Controls.Add(_contentPanel);
         Controls.Add(_dragArea);
 
-        BackColor = _settings.BackColor;
+        BackColor = _globalSettings!.GetColor(GlobalSettingKeys.BackColor, Color.MidnightBlue);
         DetermineAppSize();
         ApplyWindowStyle();
 
@@ -122,20 +123,53 @@ public class MainForm : Form
 
     private void InitializeSettings()
     {
-        _settingsIO = new IniSettingsStorage(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"), _settings);
-        _settingsIO.Load();
-        if (!_settingsIO.FileExists)
+        _settingsStore = new IniSettingsStore(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"));
+        _settingsStore.Load();
+
+        _mainAppSettings = new AppSettings(_settingsStore);
+        _globalSettings = new PluginSettingsProxy("Global", _settingsStore);
+
+        SetDefaultGlobalSettings(_globalSettings);
+
+        foreach (var plugin in PluginManager.Instance.ActivePlugins)
+        {
+            var settingsProxy = new PluginSettingsProxy(plugin.Name, _settingsStore);
+            plugin.Initialize(settingsProxy, _globalSettings);
+        }
+
+        if (!_settingsStore.FileExists)
         {
             SetDockedLocation();
-            _settings.X = this.Left;
-            _settings.Y = this.Top;
+            _mainAppSettings.X = this.Left;
+            _mainAppSettings.Y = this.Top;
         }
     }
 
+    private void SetDefaultGlobalSettings(PluginSettingsProxy globalSettings)
+    {
+        var _defaultSettingValues = new Dictionary<string, string>
+        {
+            { "WidgetSize", "16" },
+            { GlobalSettingKeys.BackColor, ColorToHex(Color.MidnightBlue) },
+            { GlobalSettingKeys.ButtonColor, ColorToHex(Color.SteelBlue) },
+            { GlobalSettingKeys.TriangleColor, ColorToHex(Color.LightBlue) }
+        };
+
+        foreach (var kvp in _defaultSettingValues)
+        {
+            if (globalSettings!.Get(kvp.Key) == null)
+            {
+                globalSettings.Set(kvp.Key, kvp.Value);
+            }
+        }
+    }
+
+    private static string ColorToHex(Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
+
     private void DetermineAppSize()
     {
-        _widgetSize = _settings.WidgetSize;
-        var headerHeight = _settings.WindowStyle == WindowStyle.Floating ? _dragAreaHeight : 0;
+        _widgetSize = _globalSettings!.GetInt(GlobalSettingKeys.WidgetSize, 16);
+        var headerHeight = _mainAppSettings!.WindowStyle == WindowStyle.Floating ? _dragAreaHeight : 0;
 
         _appWidth = _widgetSize * Math.Max(1, PluginManager.Instance.ActiveWidgets.Count);
         _appHeight = _widgetSize + headerHeight;
@@ -145,7 +179,7 @@ public class MainForm : Form
 
     private void ApplyWindowStyle()
     {
-        if (_settings.WindowStyle == WindowStyle.Docked)
+        if (_mainAppSettings!.WindowStyle == WindowStyle.Docked)
         {
             _dragArea.Visible = false;
             SetDockedLocation();
@@ -153,7 +187,7 @@ public class MainForm : Form
         else
         {
             _dragArea.Visible = true;
-            Location = new Point(_settings.X, _settings.Y);
+            Location = new Point(_mainAppSettings.X, _mainAppSettings.Y);
         }
         _windowLocationHelper.EnsureVisible(this);
         Blink();
@@ -198,7 +232,7 @@ public class MainForm : Form
             control.Dock = DockStyle.Fill; //todo: stack widgets horizontal
             _contentPanel.Controls.Add(control);
             plugin.WidgetInstance!.ApplySettings();
-            ((IPluginWidgetBase)control).RightClickDetected += (_, e) => ShowContextMenu(e);
+            ((IPluginWidgetControlBase)control).RightClickDetected += (_, e) => ShowContextMenu(e);
         }
     }
 
@@ -215,7 +249,7 @@ public class MainForm : Form
     protected override void OnHandleCreated(EventArgs e)
     {
         base.OnHandleCreated(e);
-        _hotkeyHelper = new GlobalHotkeyHelper(Handle, OnGlobalHotkeyPressed, KeyParser.FromSettingString(_settings.FocusShortcut));
+        _hotkeyHelper = new GlobalHotkeyHelper(Handle, OnGlobalHotkeyPressed, KeyParser.FromSettingString(_mainAppSettings!.FocusShortcut));
         //todo: currently needs to restart app, fix this
     }
 
@@ -275,18 +309,18 @@ public class MainForm : Form
 
     internal void ShowSettings()
     {
-        using var dlg = new SettingsForm();
+        using var dlg = new SettingsForm(_settingsStore!);
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-            BackColor = _settings.BackColor;
+            BackColor = _globalSettings!.GetColor(GlobalSettingKeys.BackColor, Color.MidnightBlue);
             DetermineAppSize();
             foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
             {
                 plugin.WidgetInstance?.ApplySettings();
             }
             ApplyWindowStyle();
-            TransparencyHelper.SetInactiveOpacity(this, ((double)_settings.InactiveOpacity) / 100f);
-            _settingsIO!.Save();
+            TransparencyHelper.SetInactiveOpacity(this, ((double)_mainAppSettings!.InactiveOpacity) / 100f);
+            _settingsStore!.Save();
             Invalidate();
         }
     }
@@ -294,19 +328,19 @@ public class MainForm : Form
     private void SetDockedLocation()
     {
         var wa = Screen.FromHandle(Handle).WorkingArea;
-        Location = _windowLocationHelper.GetDockedPosition(wa, Size, _settings.DockPosition, _settings.DockOffsetX, _settings.DockOffsetY);
+        Location = _windowLocationHelper.GetDockedPosition(wa, Size, _mainAppSettings!.DockPosition, _mainAppSettings!.DockOffsetX, _mainAppSettings!.DockOffsetY);
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         SystemEvents.DisplaySettingsChanged -= OnDisplaySettingsChanged;
-        if (_settings.WindowStyle == WindowStyle.Floating)
+        if (_mainAppSettings!.WindowStyle == WindowStyle.Floating)
         {
-            _settings.X = Left;
-            _settings.Y = Top;
-            _settings.WidgetSize = _widgetSize;
+            _mainAppSettings.X = Left;
+            _mainAppSettings.Y = Top;
+            _globalSettings!.SetInt(GlobalSettingKeys.WidgetSize, _widgetSize);
         }
-        _settingsIO!.Save();
+        _settingsStore!.Save();
         base.OnFormClosing(e);
     }
 

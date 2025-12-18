@@ -12,7 +12,7 @@ internal static class ContextMenuService
             if (plugin.HasMenuItems)
             {
                 var menuItem = contextMenu.Items.Add(plugin.Name);
-                (menuItem as ToolStripMenuItem)!.DropDownItems.AddRange(CreateMenuItems(plugin.MenuItems));
+                (menuItem as ToolStripMenuItem)!.DropDownItems.AddRange(CreateMenuItems(plugin.ContextMenuItems));
             }
         }
     }

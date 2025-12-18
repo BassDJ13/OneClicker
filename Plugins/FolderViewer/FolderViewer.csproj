@@ -18,9 +18,7 @@
     <Compile Update="FolderViewerWidget.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="FolderViewerSettings.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="FolderViewerSettings.cs" />
   </ItemGroup>
 
 	<Target Name="CopyPlugin" AfterTargets="Build">

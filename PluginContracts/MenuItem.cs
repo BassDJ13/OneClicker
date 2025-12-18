@@ -1,6 +1,6 @@
 ﻿namespace PluginContracts;
 
-public class MenuItem
+public class MenuItem //todo: Create interface IMenuItem
 {
     public string Description { get; }
     public Image? Image { get; }

@@ -11,7 +11,6 @@ internal class PluginManager
     private PluginManager()
     {
         _activePlugins = PluginLoader.LoadPlugins("plugins");
-        _activeWidgets = GetPluginsWithWidgets(_activePlugins)!;
         IList<string> names = new List<string>();
         foreach (var plugin in ActivePlugins)
         {
@@ -44,10 +43,11 @@ internal class PluginManager
     }
 
     private IList<IPlugin> _activePlugins;
-    public IList<IPlugin> ActivePlugins => _activePlugins;
+    public IList<IPlugin> ActivePlugins
+        => _activePlugins;
 
-    private IList<IPlugin> _activeWidgets;
-    public IList<IPlugin> ActiveWidgets => _activeWidgets;
+    public IList<IPlugin> ActiveWidgets
+        => GetPluginsWithWidgets(ActivePlugins)!;
 
     public string[] Names { get; private set; }
 
