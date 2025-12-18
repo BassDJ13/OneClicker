@@ -9,7 +9,7 @@ internal static class ContextMenuService
     {
         foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
         {
-            if (plugin.HasMenuItems)
+            if (plugin.HasContextMenuItems)
             {
                 var menuItem = contextMenu.Items.Add(plugin.Name);
                 (menuItem as ToolStripMenuItem)!.DropDownItems.AddRange(CreateMenuItems(plugin.ContextMenuItems));
@@ -17,7 +17,7 @@ internal static class ContextMenuService
         }
     }
 
-    private static ToolStripMenuItem[] CreateMenuItems(IList<MenuItem> menuItems)
+    private static ToolStripMenuItem[] CreateMenuItems(IList<IContextMenuItem> menuItems)
     {
         var result = new List<ToolStripMenuItem>();
 

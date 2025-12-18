@@ -9,7 +9,7 @@ using PluginContracts;
 
 namespace OneClicker.Forms;
 
-public class MainForm : Form
+public class WidgetsWindow : Form
 {
     private AppSettings? _mainAppSettings;
     private PluginSettingsProxy? _globalSettings;
@@ -30,13 +30,13 @@ public class MainForm : Form
     private async Task BlinkAsync()
     {
         var tasks = _contentPanel.Controls
-            .OfType<IPluginWidgetControlBase>()
+            .OfType<IPluginWidgetControl>()
             .Select(widget => widget.StartAnimation())
             .ToList();
         await Task.WhenAll(tasks);
     }
 
-    public MainForm()
+    public WidgetsWindow()
     {
         PluginManager.Initialize();
         Text = "OneClicker";
@@ -232,7 +232,7 @@ public class MainForm : Form
             control.Dock = DockStyle.Fill; //todo: stack widgets horizontal
             _contentPanel.Controls.Add(control);
             plugin.WidgetInstance!.ApplySettings();
-            ((IPluginWidgetControlBase)control).RightClickDetected += (_, e) => ShowContextMenu(e);
+            ((IPluginWidgetControl)control).RightClickDetected += (_, e) => ShowContextMenu(e);
         }
     }
 
@@ -300,16 +300,16 @@ public class MainForm : Form
         }
         _contextMenu = new ContextMenuStrip();
         ContextMenuService.CreateMenuItemsForPlugins(_contextMenu);
-        _contextMenu.Items.Add("App settings", null, (s, a) => ShowSettings());
+        _contextMenu.Items.Add("Configuration", null, (s, a) => OpenConfiguration());
         _contextMenu.Items.Add("Close program", null, (s, a) => Close());
 
         _contextMenu.Show(this, e.Location);
         return true;
     }
 
-    internal void ShowSettings()
+    internal void OpenConfiguration()
     {
-        using var dlg = new SettingsForm(_settingsStore!);
+        using var dlg = new ConfigurationWindow(_settingsStore!);
         if (dlg.ShowDialog() == DialogResult.OK)
         {
             BackColor = _globalSettings!.GetColor(GlobalSettingKeys.BackColor, Color.MidnightBlue);

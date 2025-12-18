@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace FolderViewer;
 
-public class FolderViewerWidget : PluginWidgetControlBase
+public class FolderViewerWidget : PluginWidgetControl
 {
     private readonly Button _openButton;
     private readonly BlinkHelper _blinker = new();

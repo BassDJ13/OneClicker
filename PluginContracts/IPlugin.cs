@@ -4,13 +4,13 @@ public interface IPlugin
 {
     string Name { get; }
 
-    IList<ISettingsItem> SettingsItems { get; }
-    IPluginWidgetControlBase? WidgetInstance { get; }
-    IList<MenuItem> ContextMenuItems { get; }
+    IList<IConfigurationMenuItem> ConfigurationMenuItems { get; }
+    IPluginWidgetControl? WidgetInstance { get; }
+    IList<IContextMenuItem> ContextMenuItems { get; }
 
-    bool HasSettings { get; }
+    bool HasConfiguration { get; }
     bool HasWidget { get; }
-    bool HasMenuItems { get; }
+    bool HasContextMenuItems { get; }
 
     void Initialize(IPluginSettings settings, IPluginSettings globalSettings);
 }

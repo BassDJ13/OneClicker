@@ -13,10 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="PluginSettingsControlBase.cs">
+    <Compile Update="PluginConfigurationControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="PluginWidgetControlBase.cs">
+    <Compile Update="PluginWidgetControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>

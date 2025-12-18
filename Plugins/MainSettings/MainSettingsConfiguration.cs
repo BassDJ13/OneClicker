@@ -4,7 +4,7 @@ using PluginCore;
 
 namespace MainSettings;
 
-public class MainSettings : PluginSettingsControlBase
+public class MainSettingsConfiguration : PluginConfigurationControl
 {
     private readonly Button _btnHeaderColor, _btnButtonColor, _btnTriangleColor;
     private readonly NumericUpDown _numWidgetSize, _numInactiveOpacity, _numOffsetX, _numOffsetY;
@@ -15,7 +15,7 @@ public class MainSettings : PluginSettingsControlBase
     private CheckBox _startupCheckbox;
     private const string _startupShortcutName = "OneClicker";
 
-    public MainSettings(IPluginSettings pluginSettings, IPluginSettings globalSettings) : base(pluginSettings, globalSettings)
+    public MainSettingsConfiguration(IPluginSettings pluginSettings, IPluginSettings globalSettings) : base(pluginSettings, globalSettings)
     {
         var labelStyle = new Label { Text = "Window Style:", Left = 0, Top = 0, Width = 100 };
 

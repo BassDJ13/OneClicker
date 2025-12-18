@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace OneClicker.Forms;
 
-public sealed class SettingsForm : Form
+public sealed class ConfigurationWindow : Form
 {
     private readonly ListBox _navList;
     private readonly Panel _contentPanel;
@@ -21,12 +21,12 @@ public sealed class SettingsForm : Form
     private readonly GlobalSettingsOverlay _globalSettingsOverlay;
     private readonly Dictionary<string, PluginSettingsOverlay> _pluginOverlays = new();
 
-    public SettingsForm(ISettingsStore settingsStore)
+    public ConfigurationWindow(ISettingsStore settingsStore)
     {
         _settingsStore = settingsStore;
         _globalSettingsOverlay = new GlobalSettingsOverlay(settingsStore);
 
-        Text = $"OneClicker Settings v{GitHubUpdateChecker.GetVersion()}";
+        Text = $"OneClicker v{GitHubUpdateChecker.GetVersion()}";
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterParent;
         ClientSize = new Size(480, 270);
@@ -37,9 +37,9 @@ public sealed class SettingsForm : Form
 
         foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
         {
-            foreach (ISettingsItem settingsItem in plugin.SettingsItems)
+            foreach (IConfigurationMenuItem configurationMenuItem in plugin.ConfigurationMenuItems)
             {
-                _navList.Items.Add(settingsItem);
+                _navList.Items.Add(configurationMenuItem);
             }
         }
 
@@ -127,21 +127,19 @@ public sealed class SettingsForm : Form
             return;
         }
 
-        LoadContentPage((ISettingsItem)_navList.SelectedItem);
+        LoadConfigurationControl((IConfigurationMenuItem)_navList.SelectedItem);
     }
 
-    private void LoadContentPage(ISettingsItem settingsItem)
+    private void LoadConfigurationControl(IConfigurationMenuItem configurationMenuItem)
     {
         _contentPanel.Controls.Clear();
 
-        var settingsControl = settingsItem.CreateContent(GetPluginOverlay(settingsItem.PluginId), _globalSettingsOverlay);
-        if (settingsControl == null)
+        var configurationControl = configurationMenuItem.CreateContent(GetPluginOverlay(configurationMenuItem.PluginId), _globalSettingsOverlay);
+        if (configurationControl is Control control)
         {
-            return;
+            configurationControl.Dock = DockStyle.Fill;
+            _contentPanel.Controls.Add((Control)configurationControl);
         }
-
-        settingsControl.Dock = DockStyle.Fill;
-        _contentPanel.Controls.Add((Control)settingsControl);
     }
 
     private void SaveButton_Click(object? sender, EventArgs e)

@@ -1,6 +1,6 @@
 ﻿namespace PluginContracts;
 
-public interface IPluginSettingsControlBase
+public interface IPluginConfigurationControl
 {
     DockStyle Dock { get; set; }
 }

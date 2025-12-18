@@ -3,20 +3,21 @@ using PluginCore;
 
 namespace MainSettings;
 
-public class MainSettingsPlugin : PluginBase
+public class MainSettingsPlugin : Plugin
 {
-    public MainSettingsPlugin()
+    public override string Name => "App";
+
+    protected override Type? WidgetClass => null;
+
+    protected override void InitializeConfigurationControl()
     {
-        Name = "App";
+        //AddSettingsItem("General", typeof(MainSettings));
+        AddConfigurationControl("Appearance", typeof(MainSettingsConfiguration));
+        //AddSettingsItem("About", typeof(MainSettings));
     }
 
-    public override void InitializePlugin()
+    protected override void InitializePluginSettings()
     {
-        Name = "App";
-        //AddSettingsItem("General", typeof(MainSettings));
-        AddSettingsItem("Appearance", typeof(MainSettings));
-        //AddSettingsItem("About", typeof(MainSettings));
-
         DefaultSettingValues.Add("WindowStyle", nameof(WindowStyle.Floating));
         DefaultSettingValues.Add("DockPosition", nameof(DockPosition.BottomRight));
         DefaultSettingValues.Add("DockOffsetX", "-24");

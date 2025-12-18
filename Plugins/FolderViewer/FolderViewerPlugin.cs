@@ -1,27 +1,26 @@
-﻿using PluginContracts;
-using PluginCore;
+﻿using PluginCore;
 
 namespace FolderViewer;
 
-public class FolderViewerPlugin : PluginBase
+public class FolderViewerPlugin : Plugin
 {
-    public FolderViewerPlugin()
-    {
-        Name = "Folder Viewer";
-        WidgetClass = typeof(FolderViewerWidget);
-    }
+    public override string Name => "Folder Viewer";
 
-    public override void InitializePlugin()
+    protected override Type? WidgetClass => typeof(FolderViewerWidget);
+
+    protected override void InitializeContextMenuItems()
     {
         var widget = (FolderViewerWidget)WidgetInstance!;
-        
-        ContextMenuItems.Add(new MenuItem(
-            description: "Refresh Folder",
-            image: null,
-            onClick: widget.ClearMenu));
-        
-        AddSettingsItem("Folder Viewer", typeof(FolderViewerSettings));
+        AddContextMenuItem("Refresh Folder", null, widget.ClearMenu);
+    }
 
+    protected override void InitializeConfigurationControl()
+    {
+        AddConfigurationControl("Folder Viewer", typeof(FolderViewerConfiguration));
+    }
+
+    protected override void InitializePluginSettings()
+    {
         DefaultSettingValues.Add("FolderPath", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
     }
 }

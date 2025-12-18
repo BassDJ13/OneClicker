@@ -2,12 +2,12 @@
 
 namespace PluginCore;
 
-public abstract class PluginWidgetControlBase : UserControl, IPluginWidgetControlBase
+public abstract class PluginWidgetControl : UserControl, IPluginWidgetControl
 {
     public IPluginSettings PluginSettings { get; private set; }
     public IPluginSettings GlobalSettings { get; private set; }
 
-    public PluginWidgetControlBase(IPluginSettings pluginSettings, IPluginSettings globalSettings) : base()
+    public PluginWidgetControl(IPluginSettings pluginSettings, IPluginSettings globalSettings) : base()
     {
         PluginSettings = pluginSettings;
         GlobalSettings = globalSettings;

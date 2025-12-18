@@ -18,7 +18,7 @@
     <Compile Update="DockSelectorPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="MainSettings.cs">
+    <Compile Update="MainSettingsConfiguration.cs">
       <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>
