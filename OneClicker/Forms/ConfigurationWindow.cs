@@ -34,13 +34,21 @@ public sealed class ConfigurationWindow : Form
         MinimizeBox = false;
 
         _navList = new ListBox { Dock = DockStyle.Left, Width = 128, DisplayMember = "Name" };
-
-        foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
+        _navList.FormattingEnabled = true;
+        _navList.Format += (s, e) =>
         {
-            foreach (IConfigurationMenuItem configurationMenuItem in plugin.ConfigurationMenuItems)
+            if (e.ListItem is IConfigurationMenuItem item)
             {
-                _navList.Items.Add(configurationMenuItem);
+                e.Value = item.PluginId == "App"
+                    ? item.Name
+                    : "- " + item.Name;
             }
+        };
+
+        var menuItems = GetConfigurationMenuItemsSorted();
+        foreach (IConfigurationMenuItem configurationMenuItem in menuItems)
+        {
+            _navList.Items.Add(configurationMenuItem);
         }
 
         _contentPanel = new Panel
@@ -91,6 +99,35 @@ public sealed class ConfigurationWindow : Form
         _navList.SelectedIndex = 0;
 
         Load += CheckVersion;
+    }
+
+    private IEnumerable<IConfigurationMenuItem> GetConfigurationMenuItemsSorted()
+    {
+        return PluginManager.Instance.ActivePlugins
+            .SelectMany(p => p.ConfigurationMenuItems)
+            .Select((item, index) => new
+            {
+                Item = item,
+                Index = index,
+                Priority = GetSortPriority(item)
+            })
+            .OrderBy(x => x.Priority)
+            .ThenBy(x => x.Item.PluginId, StringComparer.OrdinalIgnoreCase)
+            //.ThenBy(x => x.Item.Name, StringComparer.OrdinalIgnoreCase) //plugin is reponsible for order of menu items.
+            .ThenBy(x => x.Index)
+            .Select(x => x.Item);
+    }
+
+    private static int GetSortPriority(IConfigurationMenuItem item)
+    {
+        return item switch
+        {
+            _ when item.PluginId == "App" && item.Name == "General" => 0,
+            _ when item.PluginId == "App" && item.Name == "Appearance" => 1,
+            _ when item.PluginId == "App" && item.Name == "Plugins" => 2,
+            _ when item.PluginId == "App" && item.Name == "About" => 999,
+            _ => 10
+        };
     }
 
     private PluginSettingsOverlay GetPluginOverlay(string pluginId)

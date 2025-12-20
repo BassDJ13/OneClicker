@@ -4,7 +4,7 @@ namespace PluginCore;
 
 public abstract class Plugin : IPlugin
 {
-    protected abstract Type? WidgetClass { get; }
+    protected virtual Type? WidgetClass { get; }
 
     private IPluginWidgetControl? _widgetInstance;
     public IPluginWidgetControl? WidgetInstance => _widgetInstance;
@@ -26,11 +26,11 @@ public abstract class Plugin : IPlugin
 
     protected IPluginSettings? PluginSettings { get; private set; }
 
-    protected Dictionary<string, string> DefaultSettingValues { get; private set; }
+    private readonly Dictionary<string, string> _defaultSettingValues;
 
     public Plugin()
     {
-        DefaultSettingValues = new Dictionary<string, string>();
+        _defaultSettingValues = new Dictionary<string, string>();
     }
 
     public void Initialize(IPluginSettings pluginSettings, IPluginSettings globalSettings)
@@ -44,7 +44,7 @@ public abstract class Plugin : IPlugin
 
         PluginSettings = pluginSettings;
         InitializeContextMenuItems();
-        InitializeConfigurationControl();
+        InitializeConfigurationControls();
         InitializePluginSettings();
         ProcessDefaultSettings();
     }
@@ -53,16 +53,21 @@ public abstract class Plugin : IPlugin
     {
     }
 
-    protected virtual void InitializeConfigurationControl()
+    protected virtual void InitializeConfigurationControls()
     {
     }
     protected virtual void InitializePluginSettings()
     {
     }
 
+    protected void AddSetting(string name, string defaultValue)
+    {
+        _defaultSettingValues.Add(name, defaultValue);
+    }
+
     private void ProcessDefaultSettings()
     {
-        foreach (var kvp in DefaultSettingValues)
+        foreach (var kvp in _defaultSettingValues)
         {
             if (PluginSettings!.Get(kvp.Key) == null)
             {
@@ -71,9 +76,9 @@ public abstract class Plugin : IPlugin
         }
     }
 
-    protected void AddConfigurationControl(string name, Type? configurationPageClass)
+    protected void AddConfigurationControl(string name, Type? configureClass)
     {
-        ConfigurationMenuItems.Add(_configurationMenuItemCreator!.Create(name, configurationPageClass));
+        ConfigurationMenuItems.Add(_configurationMenuItemCreator!.Create(name, configureClass));
     }
 
     protected void AddContextMenuItem(string description, Image? image, Action onClick)

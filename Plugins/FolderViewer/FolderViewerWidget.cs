@@ -36,7 +36,7 @@ public class FolderViewerWidget : PluginWidgetControl
         var startColor = _openButton.BackColor;
         await _blinker.BlinkAsync(position =>
         {
-            _openButton.BackColor = BassCommon.ColorConverter.Convert(startColor, Color.White, position);
+            _openButton.BackColor = BassCommon.ColorHelper.GetColorBetween(startColor, Color.White, position);
         });
     }
 

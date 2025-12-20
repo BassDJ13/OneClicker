@@ -23,14 +23,14 @@ public static class PluginSettingsExtensions
     public static Color GetColor(this IPluginSettings s, string key, Color? defaultValue = null)
     {
         var fallback = defaultValue ?? Color.White;
-        return ParseColor(s.Get(key)!, fallback);
+        return HexToColor(s.Get(key)!, fallback);
     }
 
     public static void SetColor(this IPluginSettings s, string key, Color value)
         => s.Set(key, ColorToHex(value));
 
 
-    private static Color ParseColor(string hex, Color fallback)
+    private static Color HexToColor(string hex, Color fallback)
     {
         if (hex == null)
         {
@@ -48,5 +48,4 @@ public static class PluginSettingsExtensions
     }
 
     private static string ColorToHex(Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
-
 }

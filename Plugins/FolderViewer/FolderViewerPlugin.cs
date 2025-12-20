@@ -14,13 +14,13 @@ public class FolderViewerPlugin : Plugin
         AddContextMenuItem("Refresh Folder", null, widget.ClearMenu);
     }
 
-    protected override void InitializeConfigurationControl()
+    protected override void InitializeConfigurationControls()
     {
         AddConfigurationControl("Folder Viewer", typeof(FolderViewerConfiguration));
     }
 
     protected override void InitializePluginSettings()
     {
-        DefaultSettingValues.Add("FolderPath", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+        AddSetting("FolderPath", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
     }
 }

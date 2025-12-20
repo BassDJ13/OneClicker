@@ -7,22 +7,21 @@ public class MainSettingsPlugin : Plugin
 {
     public override string Name => "App";
 
-    protected override Type? WidgetClass => null;
-
-    protected override void InitializeConfigurationControl()
+    protected override void InitializeConfigurationControls()
     {
-        //AddSettingsItem("General", typeof(MainSettings));
+        //AddConfigurationControl("General", typeof(MainSettingsConfiguration));
         AddConfigurationControl("Appearance", typeof(MainSettingsConfiguration));
-        //AddSettingsItem("About", typeof(MainSettings));
+        //AddConfigurationControl("Plugins", typeof(MainSettingsConfiguration));
+        //AddConfigurationControl("About", typeof(MainSettingsConfiguration));
     }
 
     protected override void InitializePluginSettings()
     {
-        DefaultSettingValues.Add("WindowStyle", nameof(WindowStyle.Floating));
-        DefaultSettingValues.Add("DockPosition", nameof(DockPosition.BottomRight));
-        DefaultSettingValues.Add("DockOffsetX", "-24");
-        DefaultSettingValues.Add("DockOffsetY", "-4");
-        DefaultSettingValues.Add("InactiveOpacity", "50");
-        DefaultSettingValues.Add("FocusShortcut", "ALT+Z");
+        AddSetting("WindowStyle", nameof(WindowStyle.Floating));
+        AddSetting("DockPosition", nameof(DockPosition.BottomRight));
+        AddSetting("DockOffsetX", "-24");
+        AddSetting("DockOffsetY", "-4");
+        AddSetting("InactiveOpacity", "50");
+        AddSetting("FocusShortcut", "ALT+Z");
     }
 }

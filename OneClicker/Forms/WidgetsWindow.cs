@@ -1,4 +1,5 @@
-﻿using BassCommon.Classes;
+﻿using BassCommon;
+using BassCommon.Classes;
 using Microsoft.Win32;
 using OneClicker.Classes;
 using OneClicker.Plugins;
@@ -150,9 +151,9 @@ public class WidgetsWindow : Form
         var _defaultSettingValues = new Dictionary<string, string>
         {
             { "WidgetSize", "16" },
-            { GlobalSettingKeys.BackColor, ColorToHex(Color.MidnightBlue) },
-            { GlobalSettingKeys.ButtonColor, ColorToHex(Color.SteelBlue) },
-            { GlobalSettingKeys.TriangleColor, ColorToHex(Color.LightBlue) }
+            { GlobalSettingKeys.BackColor, ColorHelper.ColorToHex(Color.MidnightBlue) },
+            { GlobalSettingKeys.ButtonColor, ColorHelper.ColorToHex(Color.SteelBlue) },
+            { GlobalSettingKeys.TriangleColor, ColorHelper.ColorToHex(Color.LightBlue) }
         };
 
         foreach (var kvp in _defaultSettingValues)
@@ -163,8 +164,6 @@ public class WidgetsWindow : Form
             }
         }
     }
-
-    private static string ColorToHex(Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
 
     private void DetermineAppSize()
     {
