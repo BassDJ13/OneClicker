@@ -5,7 +5,7 @@ namespace BassCommon;
 public class ShortcutPickerControl : UserControl
 {
     private readonly TextBox _txtShortcut;
-    private readonly Button _btnSet;
+    private readonly Button _btnSet, _btnClear;
     private readonly Label _lblWarning;
 
     public event EventHandler? ShortcutChanged;
@@ -15,7 +15,7 @@ public class ShortcutPickerControl : UserControl
     public ShortcutPickerControl()
     {
         Height = 30;
-        Width = 200;
+        Width = 212;
 
         _txtShortcut = new TextBox
         {
@@ -30,10 +30,19 @@ public class ShortcutPickerControl : UserControl
         {
             Left = 112,
             Top = 0,
-            Width = 40,
+            Width = 50,
             Text = "Set"
         };
         _btnSet.Click += BtnSet_Click;
+
+        _btnClear = new Button
+        {
+            Left = 162,
+            Top = 0,
+            Width = 50,
+            Text = "Clear"
+        };
+        _btnClear.Click += BtnClear_Click;
 
         _lblWarning = new Label
         {
@@ -44,9 +53,7 @@ public class ShortcutPickerControl : UserControl
             Visible = false
         };
 
-        Controls.Add(_txtShortcut);
-        Controls.Add(_btnSet);
-        Controls.Add(_lblWarning);
+        Controls.AddRange([_txtShortcut, _btnSet, _btnClear, _lblWarning]);
     }
 
     private void BtnSet_Click(object? sender, EventArgs e)
@@ -60,6 +67,12 @@ public class ShortcutPickerControl : UserControl
             EvaluateConflict();
             ShortcutChanged?.Invoke(this, EventArgs.Empty);
         }
+    }
+
+    private void BtnClear_Click(object? sender, EventArgs e)
+    {
+        _txtShortcut.Text = string.Empty;
+        ShortcutChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void EvaluateConflict()

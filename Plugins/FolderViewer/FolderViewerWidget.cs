@@ -28,7 +28,7 @@ public class FolderViewerWidget : PluginWidgetControl
 
         Controls.Add(_openButton);
 
-        _openButton.BackColor = GlobalSettings.GetColor(GlobalSettingKeys.ButtonColor, Color.SteelBlue);
+        _openButton.BackColor = GlobalSettings.GetColor(GlobalSettingKeys.BackgroundColor, Color.SteelBlue);
     }
 
     public override async Task StartAnimation()
@@ -48,13 +48,13 @@ public class FolderViewerWidget : PluginWidgetControl
     public override void ApplySettings()
     {
         _menu.Items.Clear();
-        _openButton.BackColor = GlobalSettings.GetColor(GlobalSettingKeys.ButtonColor, Color.SteelBlue);
+        _openButton.BackColor = GlobalSettings.GetColor(GlobalSettingKeys.BackgroundColor, Color.SteelBlue);
         _openButton.Refresh();
     }
 
     private void OpenButton_Click(object sender, EventArgs e)
     {
-        if (!Directory.Exists(PluginSettings.Get("FolderPath")))
+        if (!Directory.Exists(PluginSettings.Get(SettingKeys.FolderPath)))
         {
             MessageBox.Show("Folder not found.");
             return;
@@ -72,7 +72,7 @@ public class FolderViewerWidget : PluginWidgetControl
 
     private void AddMenuItems()
     {
-        var items = FolderContentLoader.GetItems(PluginSettings.Get("FolderPath")!);
+        var items = FolderContentLoader.GetItems(PluginSettings.Get(SettingKeys.FolderPath)!);
         foreach (var item in items)
         {
             item.Click += LeftClickOrEnter;
@@ -165,7 +165,7 @@ public class FolderViewerWidget : PluginWidgetControl
             new PointF(w * 0.75f, h * 0.7f)
         };
 
-        using var brush = new SolidBrush(GlobalSettings.GetColor(GlobalSettingKeys.TriangleColor, Color.LightBlue));
+        using var brush = new SolidBrush(GlobalSettings.GetColor(GlobalSettingKeys.ForegroundColor, Color.LightBlue));
         g.FillPolygon(brush, pts);
     }
 

@@ -2,8 +2,8 @@
 
 public record GlobalSettingKeys
 {
-    public static string BackColor = nameof(BackColor);
-    public static string ButtonColor = nameof(ButtonColor);
-    public static string TriangleColor = nameof(TriangleColor);
+    public static string HeaderColor = nameof(HeaderColor);
+    public static string BackgroundColor = nameof(BackgroundColor);
+    public static string ForegroundColor = nameof(ForegroundColor);
     public static string WidgetSize = nameof(WidgetSize);
 }

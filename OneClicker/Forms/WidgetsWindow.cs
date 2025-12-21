@@ -49,7 +49,18 @@ public class WidgetsWindow : Form
         DoubleBuffered = true;
         BackColor = Color.MidnightBlue;
 
-        InitializeSettings();
+        _settingsStore = new IniSettingsStore(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"));
+        _settingsStore.Load();
+
+        _mainAppSettings = new AppSettings(_settingsStore);
+        _globalSettings = GlobalSettings.Initialize(_settingsStore);
+        
+        if (!_settingsStore.FileExists)
+        {
+            SetDockedLocation();
+            _mainAppSettings.X = this.Left;
+            _mainAppSettings.Y = this.Top;
+        }
 
         TransparencyHelper.AttachAutoOpacity(this, _mainAppSettings!.InactiveOpacity / 100f);
 
@@ -115,54 +126,11 @@ public class WidgetsWindow : Form
         Controls.Add(_contentPanel);
         Controls.Add(_dragArea);
 
-        BackColor = _globalSettings!.GetColor(GlobalSettingKeys.BackColor, Color.MidnightBlue);
+        BackColor = _globalSettings!.GetColor(GlobalSettingKeys.HeaderColor, Color.MidnightBlue);
         DetermineAppSize();
         ApplyWindowStyle();
 
         SystemEvents.DisplaySettingsChanged += OnDisplaySettingsChanged;
-    }
-
-    private void InitializeSettings()
-    {
-        _settingsStore = new IniSettingsStore(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"));
-        _settingsStore.Load();
-
-        _mainAppSettings = new AppSettings(_settingsStore);
-        _globalSettings = new PluginSettingsProxy("Global", _settingsStore);
-
-        SetDefaultGlobalSettings(_globalSettings);
-
-        foreach (var plugin in PluginManager.Instance.ActivePlugins)
-        {
-            var settingsProxy = new PluginSettingsProxy(plugin.Name, _settingsStore);
-            plugin.Initialize(settingsProxy, _globalSettings);
-        }
-
-        if (!_settingsStore.FileExists)
-        {
-            SetDockedLocation();
-            _mainAppSettings.X = this.Left;
-            _mainAppSettings.Y = this.Top;
-        }
-    }
-
-    private void SetDefaultGlobalSettings(PluginSettingsProxy globalSettings)
-    {
-        var _defaultSettingValues = new Dictionary<string, string>
-        {
-            { "WidgetSize", "16" },
-            { GlobalSettingKeys.BackColor, ColorHelper.ColorToHex(Color.MidnightBlue) },
-            { GlobalSettingKeys.ButtonColor, ColorHelper.ColorToHex(Color.SteelBlue) },
-            { GlobalSettingKeys.TriangleColor, ColorHelper.ColorToHex(Color.LightBlue) }
-        };
-
-        foreach (var kvp in _defaultSettingValues)
-        {
-            if (globalSettings!.Get(kvp.Key) == null)
-            {
-                globalSettings.Set(kvp.Key, kvp.Value);
-            }
-        }
     }
 
     private void DetermineAppSize()
@@ -311,7 +279,7 @@ public class WidgetsWindow : Form
         using var dlg = new ConfigurationWindow(_settingsStore!);
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-            BackColor = _globalSettings!.GetColor(GlobalSettingKeys.BackColor, Color.MidnightBlue);
+            BackColor = _globalSettings!.GetColor(GlobalSettingKeys.HeaderColor, Color.MidnightBlue);
             DetermineAppSize();
             foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
             {

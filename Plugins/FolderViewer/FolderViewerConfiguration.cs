@@ -12,7 +12,7 @@ public class FolderViewerConfiguration : PluginConfigurationControl
     public FolderViewerConfiguration(IPluginSettings pluginSettings, IPluginSettings globalSettings) : base(pluginSettings, globalSettings)
     {
         var labelFolder = new Label { Text = "Folder:", Left = 0, Top = 2, Width = 50 };
-        _textFolder = new TextBox { Left = 50, Top = 0, Width = 256, Text = pluginSettings.Get("FolderPath") };
+        _textFolder = new TextBox { Left = 50, Top = 0, Width = 256, Text = pluginSettings.Get(SettingKeys.FolderPath) };
         _textFolder.TextChanged += TextFolder_TextChanged;
         _buttonBrowse = new Button { Text = "Browse...", Left = 50, Top = 26, Width = 80 };
         _buttonOpen = new Button { Text = "Open in explorer", Left = 130, Top = 26, Width = 130 };
@@ -43,6 +43,6 @@ public class FolderViewerConfiguration : PluginConfigurationControl
 
     private void TextFolder_TextChanged(object? sender, EventArgs e)
     {
-        PluginSettings.Set("FolderPath", ((TextBox)sender!).Text);
+        PluginSettings.Set(SettingKeys.FolderPath, ((TextBox)sender!).Text);
     }
 }

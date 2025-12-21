@@ -15,10 +15,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\PluginsSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Controls\AboutSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="DockSelectorPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="MainSettingsConfiguration.cs">
+    <Compile Update="Controls\GeneralSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Controls\AppearanceSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>

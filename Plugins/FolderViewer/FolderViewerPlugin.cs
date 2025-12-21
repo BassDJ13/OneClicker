@@ -21,6 +21,7 @@ public class FolderViewerPlugin : Plugin
 
     protected override void InitializePluginSettings()
     {
-        AddSetting("FolderPath", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+        var defaultPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        AddSetting(SettingKeys.FolderPath, defaultPath);
     }
 }
