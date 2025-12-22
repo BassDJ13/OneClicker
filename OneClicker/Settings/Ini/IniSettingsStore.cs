@@ -19,33 +19,60 @@ public class IniSettingsStore : ISettingsStore
 
     public void Load()
     {
-        if (!_fs.Exists(_path))
+        try
         {
-            return;
-        }
-        FileExists = true;
-
-        foreach (var line in _fs.ReadAllLines(_path))
-        {
-            var parts = line.Split('=', 2);
-            if (parts.Length != 2)
+            if (!_fs.Exists(_path))
             {
-                continue;
+                return;
             }
 
-            _store.Add(parts[0], parts[1]);
+            FileExists = true;
+
+            foreach (var line in _fs.ReadAllLines(_path))
+            {
+                var parts = line.Split('=', 2);
+                if (parts.Length == 2)
+                {
+                    _store[parts[0]] = parts[1];
+                }
+            }
         }
+        catch (IOException ex)
+        {
+            HandleLoadError(ex);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            HandleLoadError(ex);
+        }
+    }
+
+    private void HandleLoadError(Exception ex)
+    {
+        FileExists = false;
+        _store.Clear();
     }
 
     public void Save()
     {
-        IList<string> lines = new List<string>();
-
-        foreach (var kvp in _store)
+        try
         {
-            lines.Add($"{kvp.Key}={kvp.Value}");
+            var lines = _store.Select(kvp => $"{kvp.Key}={kvp.Value}");
+            _fs.WriteAllLines(_path, lines);
         }
-        _fs.WriteAllLines(_path, lines);
+        catch (IOException ex)
+        {
+            HandleSaveError(ex);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            HandleSaveError(ex);
+        }
+    }
+
+    private void HandleSaveError(Exception ex)
+    {
+        FileExists = false;
     }
 
     public string? Get(string key) 

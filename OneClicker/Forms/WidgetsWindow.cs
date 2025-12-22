@@ -1,5 +1,4 @@
-﻿using BassCommon;
-using BassCommon.Classes;
+﻿using BassCommon.Classes;
 using Microsoft.Win32;
 using OneClicker.Classes;
 using OneClicker.Plugins;
@@ -18,7 +17,6 @@ public class WidgetsWindow : Form
     private const int _dragAreaHeight = 6;
     private readonly Panel _contentPanel;
     private ISettingsStore? _settingsStore;
-    private bool _isDragging = false;
     private WindowLocationHelper _windowLocationHelper;
     private GlobalHotkeyHelper? _hotkeyHelper;
     private int _widgetSize = 16;
@@ -74,47 +72,16 @@ public class WidgetsWindow : Form
 
         _dragArea.MouseDown += (s, e) =>
         {
-            if (_mainAppSettings.WindowStyle == WindowStyle.Docked)
-            {
-                return;
-            }
-
             if (e.Button == MouseButtons.Left)
             {
-                _isDragging = true;
                 NativeMethods.ReleaseCapture();
                 NativeMethods.SendMessage(Handle, 0xA1, 0x2, 0);
             }
         };
 
-        _dragArea.MouseUp += (s, e) =>
+        LocationChanged += (s, e) =>
         {
-            if (_mainAppSettings.WindowStyle == WindowStyle.Docked)
-            {
-                return;
-            }
-
-            if (_isDragging)
-            {
-                _isDragging = false;
-                _windowLocationHelper.KeepInWorkArea(this);
-                _mainAppSettings.X = Left;
-                _mainAppSettings.Y = Top;
-                _settingsStore!.Save();
-            }
-        };
-
-        _dragArea.MouseMove += (s, e) =>
-        {
-            if (_mainAppSettings.WindowStyle == WindowStyle.Docked)
-            {
-                return;
-            }
-
-            if (_isDragging)
-            {
-                _windowLocationHelper.KeepInWorkArea(this);
-            }
+            _windowLocationHelper.KeepInWorkArea(this);
         };
 
         _contentPanel = new Panel()
@@ -301,12 +268,8 @@ public class WidgetsWindow : Form
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         SystemEvents.DisplaySettingsChanged -= OnDisplaySettingsChanged;
-        if (_mainAppSettings!.WindowStyle == WindowStyle.Floating)
-        {
-            _mainAppSettings.X = Left;
-            _mainAppSettings.Y = Top;
-            _globalSettings!.SetInt(GlobalSettingKeys.WidgetSize, _widgetSize);
-        }
+        _mainAppSettings!.X = Left;
+        _mainAppSettings!.Y = Top;
         _settingsStore!.Save();
         base.OnFormClosing(e);
     }

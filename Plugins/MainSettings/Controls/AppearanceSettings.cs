@@ -51,7 +51,7 @@ public class AppearanceSettings : PluginConfigurationControl
         _btnForeGroundColor = new Button { Left = 74, Top = 126, Width = 22
             , BackColor = globalSettings.GetColor(GlobalSettingKeys.ForegroundColor) };
 
-        var labelWidgetSize = new Label { Text = "WidgetSize:", Left = 120, Top = 85, Width = 100 };
+        var labelWidgetSize = new Label { Text = "Size per widget:", Left = 120, Top = 85, Width = 100 };
         _numWidgetSize = new NumericUpDown { Left = 220, Top = 82, Width = 60, Minimum = 8, Maximum = 960
             , Value = globalSettings.GetInt(GlobalSettingKeys.WidgetSize) };
         _numWidgetSize.ValueChanged += WidgetSizeChanged;

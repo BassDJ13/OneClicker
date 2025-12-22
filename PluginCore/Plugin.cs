@@ -28,9 +28,12 @@ public abstract class Plugin : IPlugin
 
     private readonly Dictionary<string, string> _defaultSettingValues;
 
+    private readonly Dictionary<string, Action> _actions;
+
     public Plugin()
     {
         _defaultSettingValues = new Dictionary<string, string>();
+        _actions = new Dictionary<string, Action>();       
     }
 
     public void Initialize(IPluginSettings pluginSettings, IPluginSettings globalSettings)
@@ -45,7 +48,8 @@ public abstract class Plugin : IPlugin
         PluginSettings = pluginSettings;
         InitializeContextMenuItems();
         InitializeConfigurationControls();
-        InitializePluginSettings();
+        InitializeSettings();
+        InitializeActions();
         ProcessDefaultSettings();
     }
 
@@ -56,7 +60,12 @@ public abstract class Plugin : IPlugin
     protected virtual void InitializeConfigurationControls()
     {
     }
-    protected virtual void InitializePluginSettings()
+
+    protected virtual void InitializeSettings()
+    {
+    }
+
+    protected virtual void InitializeActions()
     {
     }
 
@@ -84,5 +93,10 @@ public abstract class Plugin : IPlugin
     protected void AddContextMenuItem(string description, Image? image, Action onClick)
     {
         ContextMenuItems.Add(new ContextMenuItem(description, image, onClick));
+    }
+
+    protected void AddAction(string name, Action action)
+    {
+        _actions.Add(name, action);
     }
 }

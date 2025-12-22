@@ -8,10 +8,11 @@ public class FolderViewerPlugin : Plugin
 
     protected override Type? WidgetClass => typeof(FolderViewerWidget);
 
+    FolderViewerWidget Widget => (FolderViewerWidget)WidgetInstance!;
+
     protected override void InitializeContextMenuItems()
     {
-        var widget = (FolderViewerWidget)WidgetInstance!;
-        AddContextMenuItem("Refresh Folder", null, widget.ClearMenu);
+        AddContextMenuItem("Refresh Folder", null, Widget.ClearMenu);
     }
 
     protected override void InitializeConfigurationControls()
@@ -19,9 +20,14 @@ public class FolderViewerPlugin : Plugin
         AddConfigurationControl("Folder Viewer", typeof(FolderViewerConfiguration));
     }
 
-    protected override void InitializePluginSettings()
+    protected override void InitializeSettings()
     {
         var defaultPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         AddSetting(SettingKeys.FolderPath, defaultPath);
+    }
+
+    protected override void InitializeActions()
+    {
+        AddAction("Display folder", () => Widget.ExecuteAction());
     }
 }

@@ -16,7 +16,7 @@ public class MainSettingsPlugin : Plugin
         AddConfigurationControl("About", typeof(AboutSettings));
     }
 
-    protected override void InitializePluginSettings()
+    protected override void InitializeSettings()
     {
         AddSetting(SettingKeys.WindowStyle, nameof(WindowStyle.Floating));
         AddSetting(SettingKeys.DockPosition, nameof(DockPosition.BottomRight));
