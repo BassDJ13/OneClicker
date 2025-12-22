@@ -4,6 +4,7 @@ namespace FolderViewer;
 
 public class FolderViewerPlugin : Plugin
 {
+    public override Guid Guid => new Guid("8009CBBE-12D8-442A-BF7B-4E2710F36DF7");
     public override string Name => "Folder Viewer";
 
     protected override Type? WidgetClass => typeof(FolderViewerWidget);
@@ -28,6 +29,6 @@ public class FolderViewerPlugin : Plugin
 
     protected override void InitializeActions()
     {
-        AddAction("Display folder", () => Widget.ExecuteAction());
+        AddAction("Display folder", Widget.DisplayFolder);
     }
 }

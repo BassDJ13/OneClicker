@@ -23,6 +23,7 @@ public class WidgetsWindow : Form
     private int _appWidth = 0;
     private int _appHeight = 0;
     private ContextMenuStrip? _contextMenu;
+    private Action _shortcutAction; //todo: keep guid+actionNumber in _mainAppSettings
 
     public void Blink() => _ = BlinkAsync();
 
@@ -52,7 +53,8 @@ public class WidgetsWindow : Form
 
         _mainAppSettings = new AppSettings(_settingsStore);
         _globalSettings = GlobalSettings.Initialize(_settingsStore);
-        
+        _shortcutAction = PluginManager.Instance.ActiveActions.First().Value; //todo: should not depend on initialize in row above
+
         if (!_settingsStore.FileExists)
         {
             SetDockedLocation();
@@ -107,7 +109,6 @@ public class WidgetsWindow : Form
 
         _appWidth = _widgetSize * Math.Max(1, PluginManager.Instance.ActiveWidgets.Count);
         _appHeight = _widgetSize + headerHeight;
-
         Size = new Size(_appWidth, _appHeight);
     }
 
@@ -190,10 +191,7 @@ public class WidgetsWindow : Form
     private void OnGlobalHotkeyPressed()
     {
         ShowAndActivate(); 
-        foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
-        {
-            plugin.WidgetInstance?.ExecuteAction(); //todo: only execute one action for the preferred plugin
-        }
+        _shortcutAction?.Invoke();
     }
 
     private void ShowAndActivate()

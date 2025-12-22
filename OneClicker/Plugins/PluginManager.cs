@@ -32,6 +32,21 @@ internal class PluginManager
         return result;
     }
 
+    private Dictionary<string, Action>? GetAllPluginActions(IList<IPlugin> plugins)
+    {
+        var result = new Dictionary<string, Action>();
+        foreach (var plugin in plugins)
+        {
+            int i = 1;
+            foreach (var action in plugin.Actions)
+            {
+                result.Add($"{plugin.Name}.{action.Key}", action.Value); //todo: do not literally keep action but > key = plugin.guid + id to retrieve action, value = plugin.NAme + action.Key for display
+                i++;
+            }
+        }
+        return result;
+    }
+
     public static void Initialize()
     {
         if (_instance != null)
@@ -48,6 +63,9 @@ internal class PluginManager
 
     public IList<IPlugin> ActiveWidgets
         => GetPluginsWithWidgets(ActivePlugins)!;
+
+    public Dictionary<string, Action> ActiveActions
+        => GetAllPluginActions(ActivePlugins)!;
 
     public string[] Names { get; private set; }
 

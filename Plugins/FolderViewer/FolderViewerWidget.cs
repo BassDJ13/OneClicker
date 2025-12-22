@@ -40,7 +40,7 @@ public class FolderViewerWidget : PluginWidgetControl
         });
     }
 
-    public override void ExecuteAction()
+    public void DisplayFolder()
     {
         _openButton.PerformClick();
     }

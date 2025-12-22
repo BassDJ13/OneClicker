@@ -15,8 +15,6 @@ public abstract class PluginWidgetControl : UserControl, IPluginWidgetControl
 
     public abstract Task StartAnimation();
 
-    public abstract void ExecuteAction();
-
     public abstract void ApplySettings();
 
     public event EventHandler<MouseEventArgs>? RightClickDetected;

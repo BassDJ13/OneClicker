@@ -6,6 +6,8 @@ namespace MainSettings;
 
 public class MainSettingsPlugin : Plugin
 {
+    public override Guid Guid => new Guid("FB7AD8BB-1BAF-4D55-9DDA-20D78B4CC72C");
+
     public override string Name => "App";
 
     protected override void InitializeConfigurationControls()

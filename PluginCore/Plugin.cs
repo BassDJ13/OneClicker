@@ -12,6 +12,8 @@ public abstract class Plugin : IPlugin
     private IList<IContextMenuItem>? _contextMenuItems;
     public IList<IContextMenuItem> ContextMenuItems => _contextMenuItems ??= [];
 
+    public abstract Guid Guid { get; }
+
     public abstract string Name { get; }
 
     public IList<IConfigurationMenuItem> ConfigurationMenuItems { get; protected set; } = [];
@@ -28,12 +30,11 @@ public abstract class Plugin : IPlugin
 
     private readonly Dictionary<string, string> _defaultSettingValues;
 
-    private readonly Dictionary<string, Action> _actions;
+    public Dictionary<string, Action> Actions { get; } = [];
 
     public Plugin()
     {
-        _defaultSettingValues = new Dictionary<string, string>();
-        _actions = new Dictionary<string, Action>();       
+        _defaultSettingValues = []; 
     }
 
     public void Initialize(IPluginSettings pluginSettings, IPluginSettings globalSettings)
@@ -97,6 +98,6 @@ public abstract class Plugin : IPlugin
 
     protected void AddAction(string name, Action action)
     {
-        _actions.Add(name, action);
+        Actions.Add(name, action);
     }
 }
