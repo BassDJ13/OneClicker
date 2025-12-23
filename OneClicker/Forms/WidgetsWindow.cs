@@ -52,8 +52,8 @@ public class WidgetsWindow : Form
         _settingsStore.Load();
 
         _mainAppSettings = new AppSettings(_settingsStore);
-        _globalSettings = GlobalSettings.Initialize(_settingsStore);
-        _shortcutAction = PluginManager.Instance.ActiveActions.First().Value; //todo: should not depend on initialize in row above
+        _globalSettings = GlobalSettings.Initialize(_settingsStore); //todo: to much responsibility. The row below should not depend on calling Initialize here
+        _shortcutAction = RetreivePluginAction(PluginManager.Instance.ActiveActions.First()); //todo: read setting instead of .First() when implemented
 
         if (!_settingsStore.FileExists)
         {
@@ -100,6 +100,16 @@ public class WidgetsWindow : Form
         ApplyWindowStyle();
 
         SystemEvents.DisplaySettingsChanged += OnDisplaySettingsChanged;
+    }
+
+    private Action RetreivePluginAction(PluginActionDescriptor pluginActionDescriptor)
+    {
+        var plugin = PluginManager.Instance.GetPluginById(pluginActionDescriptor.PluginId);
+        if (plugin.Actions.TryGetValue(pluginActionDescriptor.ActionId, out var action))
+        {
+            return action;
+        }
+        throw new NotImplementedException();
     }
 
     private void DetermineAppSize()
