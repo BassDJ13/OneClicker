@@ -2,5 +2,5 @@
 
 public interface IRequiresActionRegistry
 {
-    void InitializeActions(IActionRegistry registry);
+    void SupplyActions(IActionRegistry registry);
 }

@@ -14,6 +14,7 @@ internal class AppSettings : PluginSettingsProxy
     private const string _x = "X";
     private const string _y = "Y";
     private const string _focusShortcut = "FocusShortcut";
+    private const string _shortcutAction = "ShortcutAction";
 
     public double InactiveOpacity
     {
@@ -65,6 +66,12 @@ internal class AppSettings : PluginSettingsProxy
     {
         get => Get(_focusShortcut); //"ALT+Z";
         set => Set(_focusShortcut, value);
+    }
+
+    public string ShortcutAction
+    {
+        get => Get(_shortcutAction);
+        set => Set(_shortcutAction, value);
     }
 
     public AppSettings(ISettingsStore store) : base(_prefix, store)

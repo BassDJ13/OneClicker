@@ -171,7 +171,7 @@ public sealed class ConfigurationWindow : Form
     {
         _contentPanel.Controls.Clear();
 
-        var configurationControl = configurationMenuItem.CreateContent(GetPluginOverlay(configurationMenuItem.PluginId), _globalSettingsOverlay);
+        var configurationControl = configurationMenuItem.CreateConfigurationControl(GetPluginOverlay(configurationMenuItem.PluginId), _globalSettingsOverlay);
         if (configurationControl is Control control)
         {
             configurationControl.Dock = DockStyle.Fill;

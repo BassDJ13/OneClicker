@@ -23,7 +23,6 @@ public class WidgetsWindow : Form
     private int _appWidth = 0;
     private int _appHeight = 0;
     private ContextMenuStrip? _contextMenu;
-    private Action _shortcutAction; //todo: keep guid+actionNumber in _mainAppSettings
 
     public void Blink() => _ = BlinkAsync();
 
@@ -52,8 +51,7 @@ public class WidgetsWindow : Form
         _settingsStore.Load();
 
         _mainAppSettings = new AppSettings(_settingsStore);
-        _globalSettings = GlobalSettings.Initialize(_settingsStore); //todo: to much responsibility. The row below should not depend on calling Initialize here
-        _shortcutAction = RetreivePluginAction(PluginManager.Instance.ActiveActions.First()); //todo: read setting instead of .First() when implemented
+        _globalSettings = GlobalSettings.Initialize(_settingsStore); //todo: to much responsibility. Initializes a lot
 
         if (!_settingsStore.FileExists)
         {
@@ -200,8 +198,30 @@ public class WidgetsWindow : Form
 
     private void OnGlobalHotkeyPressed()
     {
-        ShowAndActivate(); 
-        _shortcutAction?.Invoke();
+        ShowAndActivate();
+        InvokeConfiguredAction();
+    }
+
+    private bool InvokeConfiguredAction()
+    {
+        var actionDescriptor = PluginManager.Instance.ActionRegistry!.GetAction(_mainAppSettings!.ShortcutAction);
+        if (actionDescriptor == null)
+        {
+            return false;
+        }
+
+        var action = default(Action);
+        try
+        {
+            var plugin = PluginManager.Instance.GetPluginById(actionDescriptor.PluginId);
+            action = plugin.Actions[actionDescriptor.ActionId];
+        }
+        catch
+        {
+            return false;
+        }
+        action.Invoke();
+        return true;
     }
 
     private void ShowAndActivate()

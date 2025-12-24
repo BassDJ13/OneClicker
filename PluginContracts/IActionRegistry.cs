@@ -2,5 +2,6 @@
 
 public interface IActionRegistry
 {
-    IReadOnlyList<PluginActionDescriptor> GetAllActions();
+    IList<PluginActionDescriptor> GetAllActions();
+    PluginActionDescriptor? GetAction(string actionName);
 }

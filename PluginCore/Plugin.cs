@@ -37,9 +37,9 @@ public abstract class Plugin : IPlugin
         _defaultSettingValues = []; 
     }
 
-    public void Initialize(IPluginSettings pluginSettings, IPluginSettings globalSettings)
+    public void PreInitialize(IPluginSettings pluginSettings, IPluginSettings globalSettings)
     {
-        _configurationMenuItemCreator = new ConfigurationMenuItemCreator(Name, pluginSettings, globalSettings);
+        _configurationMenuItemCreator = new ConfigurationMenuItemCreator(Name);
 
         if (WidgetClass != null)
         {
@@ -48,10 +48,14 @@ public abstract class Plugin : IPlugin
 
         PluginSettings = pluginSettings;
         InitializeContextMenuItems();
-        InitializeConfigurationControls();
         InitializeSettings();
         InitializeActions();
         ProcessDefaultSettings();
+    }
+
+    public void PostInitialize()
+    {
+        InitializeConfigurationControls();
     }
 
     protected virtual void InitializeContextMenuItems()
@@ -86,9 +90,9 @@ public abstract class Plugin : IPlugin
         }
     }
 
-    protected void AddConfigurationControl(string name, Type? configureClass)
+    protected void AddConfigurationControl(string name, Type? configureClass, params object[] customParameters)
     {
-        ConfigurationMenuItems.Add(_configurationMenuItemCreator!.Create(name, configureClass));
+        ConfigurationMenuItems.Add(_configurationMenuItemCreator!.Create(name, configureClass, customParameters));
     }
 
     protected void AddContextMenuItem(string description, Image? image, Action onClick)

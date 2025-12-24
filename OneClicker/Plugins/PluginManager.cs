@@ -35,7 +35,7 @@ internal class PluginManager
         return result;
     }
 
-    private IReadOnlyList<PluginActionDescriptor>? GetAllPluginActions(IList<IPlugin> plugins)
+    private IList<PluginActionDescriptor> GetAllPluginActions(IList<IPlugin> plugins)
     {
         if (ActionRegistry != null)
         {
@@ -45,30 +45,26 @@ internal class PluginManager
         var result = new List<PluginActionDescriptor>();
         foreach (var plugin in plugins)
         {
-            int i = 1;
             foreach (var action in plugin.Actions)
             {
                 result.Add(new PluginActionDescriptor(
                     pluginId: plugin.Guid.ToString(),
                     actionId: action.Key,
-                    displayName: $"{plugin.Name}.{action.Key}"));
-                i++;
+                    pluginName: plugin.Name));
             }
         }
-        ActionRegistry = new ActionRegistry(result);
-        SupplyAllPluginActionsToPlugins();
+        
         return result;
     }
 
-    private void SupplyAllPluginActionsToPlugins()
+    public void SupplyAllPluginActionsToPlugins()
     {
-        var actions = new List<PluginActionDescriptor>();
-
+        ActionRegistry = new ActionRegistry(GetAllPluginActions(ActivePlugins));
         foreach (var plugin in ActivePlugins)
         {
             if (plugin is IRequiresActionRegistry pluginWithActionRegistry)
             {
-                pluginWithActionRegistry.InitializeActions(ActionRegistry!);
+                pluginWithActionRegistry.SupplyActions(ActionRegistry!);
             }
         }
     }
@@ -89,9 +85,6 @@ internal class PluginManager
 
     public IList<IPlugin> ActiveWidgets
         => GetPluginsWithWidgets(ActivePlugins)!;
-
-    public IReadOnlyList<PluginActionDescriptor> ActiveActions
-        => GetAllPluginActions(ActivePlugins)!;
 
     public string[] Names { get; private set; }
 

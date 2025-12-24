@@ -4,20 +4,15 @@ namespace PluginCore;
 
 internal class ConfigurationMenuItemCreator
 {
-    public IPluginSettings PluginSettings { get; }
-    public IPluginSettings GlobalSettings { get; }
-
     private string _pluginId;
 
-    public ConfigurationMenuItemCreator(string pluginId, IPluginSettings pluginSettings, IPluginSettings globalSettings)
+    public ConfigurationMenuItemCreator(string pluginId)
     {
-        PluginSettings = pluginSettings;
-        GlobalSettings = globalSettings;
         _pluginId = pluginId;
     }
 
-    public IConfigurationMenuItem Create(string name, Type? configurationClass)
+    public IConfigurationMenuItem Create(string name, Type? configurationClass, params object[] customParameters)
     {
-        return new ConfigurationMenuItem(name, configurationClass, _pluginId, PluginSettings, GlobalSettings);
+        return new ConfigurationMenuItem(name, configurationClass, _pluginId, customParameters);
     }
 }

@@ -4,13 +4,25 @@ namespace OneClicker.Classes;
 
 internal sealed class ActionRegistry : IActionRegistry
 {
-    private readonly List<PluginActionDescriptor> _actions;
+    private readonly IList<PluginActionDescriptor> _actions;
 
-    public ActionRegistry(List<PluginActionDescriptor> actions)
+    public ActionRegistry(IList<PluginActionDescriptor> actions)
     {
         _actions = actions;
     }
 
-    public IReadOnlyList<PluginActionDescriptor> GetAllActions()
+    public PluginActionDescriptor? GetAction(string actionName)
+    {
+        foreach (var action in _actions)
+        {
+            if (action.UniqueKey == actionName)
+            {
+                return action;
+            }
+        }
+        return null;
+    }
+
+    public IList<PluginActionDescriptor> GetAllActions()
         => _actions;
 }

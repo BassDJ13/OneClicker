@@ -8,4 +8,5 @@ internal static class SettingKeys
     internal const string DockOffsetY     = nameof(DockOffsetY);
     internal const string InactiveOpacity = nameof(InactiveOpacity);
     internal const string FocusShortcut   = nameof(FocusShortcut);
+    internal const string ShortcutAction  = nameof(ShortcutAction);
 }

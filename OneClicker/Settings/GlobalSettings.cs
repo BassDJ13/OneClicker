@@ -11,11 +11,15 @@ internal static class GlobalSettings
         var globalSettings = new PluginSettingsProxy("Global", settingsStore);
 
         SetDefaultGlobalSettings(globalSettings);
-
         foreach (var plugin in PluginManager.Instance.ActivePlugins)
         {
             var settingsProxy = new PluginSettingsProxy(plugin.Name, settingsStore);
-            plugin.Initialize(settingsProxy, globalSettings);
+            plugin.PreInitialize(settingsProxy, globalSettings);
+        }
+        PluginManager.Instance.SupplyAllPluginActionsToPlugins();
+        foreach (var plugin in PluginManager.Instance.ActivePlugins)
+        {
+            plugin.PostInitialize();
         }
 
         return globalSettings;

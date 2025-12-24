@@ -11,14 +11,14 @@ public class MainSettingsPlugin : Plugin, IRequiresActionRegistry
     public override string Name => "App";
 
     private IActionRegistry? _allPluginsActions;
-    public void InitializeActions(IActionRegistry registry)
+    public void SupplyActions(IActionRegistry registry)
     {
         _allPluginsActions = registry;
     }
 
     protected override void InitializeConfigurationControls()
     {
-        AddConfigurationControl("General", typeof(GeneralSettings)); //todo: add third parameter for extra constructor parameters
+        AddConfigurationControl("General", typeof(GeneralSettings), _allPluginsActions!);
         AddConfigurationControl("Appearance", typeof(AppearanceSettings));
         AddConfigurationControl("Plugins", typeof(PluginsSettings));
         AddConfigurationControl("About", typeof(AboutSettings));
@@ -32,5 +32,6 @@ public class MainSettingsPlugin : Plugin, IRequiresActionRegistry
         AddSetting(SettingKeys.DockOffsetY, "-4");
         AddSetting(SettingKeys.InactiveOpacity, "50");
         AddSetting(SettingKeys.FocusShortcut, "ALT+Z");
+        AddSetting(SettingKeys.ShortcutAction, "");
     }
 }
