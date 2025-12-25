@@ -5,9 +5,9 @@ namespace PluginCore;
 public abstract class PluginWidgetControl : UserControl, IPluginWidgetControl
 {
     public IPluginSettings PluginSettings { get; private set; }
-    public IPluginSettings GlobalSettings { get; private set; }
+    public IGlobalSettings GlobalSettings { get; private set; }
 
-    public PluginWidgetControl(IPluginSettings pluginSettings, IPluginSettings globalSettings) : base()
+    public PluginWidgetControl(IPluginSettings pluginSettings, IGlobalSettings globalSettings) : base()
     {
         PluginSettings = pluginSettings;
         GlobalSettings = globalSettings;
@@ -17,7 +17,7 @@ public abstract class PluginWidgetControl : UserControl, IPluginWidgetControl
 
     public abstract void ApplySettings();
 
-    public event EventHandler<MouseEventArgs>? RightClickDetected;
+    public event EventHandler<MouseEventArgs>? OnRightMouseButtonUp;
 
     protected override void OnMouseUp(MouseEventArgs e)
     {
@@ -25,7 +25,7 @@ public abstract class PluginWidgetControl : UserControl, IPluginWidgetControl
 
         if (e.Button == MouseButtons.Right)
         {
-            RightClickDetected?.Invoke(this, e);
+            OnRightMouseButtonUp?.Invoke(this, e);
         }
     }
 }

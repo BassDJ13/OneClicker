@@ -1,5 +1,6 @@
 ﻿using PluginContracts;
 using PluginCore;
+using System.Drawing;
 
 namespace MainSettings.Controls;
 
@@ -11,7 +12,7 @@ public class AppearanceSettings : PluginConfigurationControl
     private DockSelectorPanel _dockSelector;
     private Label _labelDock, _labelOffsetX, _labelOffsetY;
 
-    public AppearanceSettings(IPluginSettings pluginSettings, IPluginSettings globalSettings) : base(pluginSettings, globalSettings)
+    public AppearanceSettings(IPluginSettings pluginSettings, IGlobalSettings globalSettings) : base(pluginSettings, globalSettings)
     {
         var labelStyle = new Label { Text = "Window Style:", Left = 0, Top = 0, Width = 100 };
 
@@ -41,19 +42,19 @@ public class AppearanceSettings : PluginConfigurationControl
 
         var labelBack = new Label { Text = "Header:", Left = 0, Top = 85, Width = 74 };
         _btnHeaderColor = new Button { Left = 74, Top = 82, Width = 22
-            , BackColor = globalSettings.GetColor(GlobalSettingKeys.HeaderColor) };
+            , BackColor = globalSettings.HeaderColor };
 
         var labelButton = new Label { Text = "Background:", Left = 0, Top = 107, Width = 74 };
         _btnBackgroundColor = new Button { Left = 74, Top = 104, Width = 22
-            , BackColor = globalSettings.GetColor(GlobalSettingKeys.BackgroundColor) };
+            , BackColor = globalSettings.BackgroundColor };
 
         var labelTriangle = new Label { Text = "Foreground:", Left = 0, Top = 129, Width = 74 };
         _btnForeGroundColor = new Button { Left = 74, Top = 126, Width = 22
-            , BackColor = globalSettings.GetColor(GlobalSettingKeys.ForegroundColor) };
+            , BackColor = globalSettings.ForegroundColor };
 
         var labelWidgetSize = new Label { Text = "Size per widget:", Left = 120, Top = 85, Width = 100 };
         _numWidgetSize = new NumericUpDown { Left = 220, Top = 82, Width = 60, Minimum = 8, Maximum = 960
-            , Value = globalSettings.GetInt(GlobalSettingKeys.WidgetSize) };
+            , Value = globalSettings.WidgetSize };
         _numWidgetSize.ValueChanged += WidgetSizeChanged;
 
         var labelInactiveOpacity = new Label { Text = "Inactive opacity:", Left = 120, Top = 114, Width = 100 };
@@ -61,9 +62,12 @@ public class AppearanceSettings : PluginConfigurationControl
             , Value = pluginSettings.GetInt(SettingKeys.InactiveOpacity) };
         _numInactiveOpacity.ValueChanged += InactiveOpacityChanged;
 
-        _btnHeaderColor.Click += (s, e) => PickColor(_btnHeaderColor, GlobalSettingKeys.HeaderColor);
-        _btnBackgroundColor.Click += (s, e) => PickColor(_btnBackgroundColor, GlobalSettingKeys.BackgroundColor);
-        _btnForeGroundColor.Click += (s, e) => PickColor(_btnForeGroundColor, GlobalSettingKeys.ForegroundColor);
+        _btnHeaderColor.Click += (s, e) => 
+            PickColor(_btnHeaderColor, (color) => GlobalSettings.HeaderColor = color);
+        _btnBackgroundColor.Click += (s, e) => 
+            PickColor(_btnBackgroundColor, (color) => GlobalSettings.BackgroundColor = color);
+        _btnForeGroundColor.Click += (s, e) => 
+            PickColor(_btnForeGroundColor, (color) => GlobalSettings.ForegroundColor = color);
 
         Controls.AddRange([
             labelStyle, _radioFloating, _radioDocked,
@@ -95,9 +99,7 @@ public class AppearanceSettings : PluginConfigurationControl
 
     private void WidgetSizeChanged(object? sender, EventArgs e)
     {
-        GlobalSettings.SetInt(
-            GlobalSettingKeys.WidgetSize, 
-            (int)((NumericUpDown)sender!).Value);
+        GlobalSettings.WidgetSize = (int)((NumericUpDown)sender!).Value;
     }
 
     private void InactiveOpacityChanged(object? sender, EventArgs e)
@@ -145,13 +147,13 @@ public class AppearanceSettings : PluginConfigurationControl
             newValue);
     }
 
-    private void PickColor(Button button, string settingName)
+    private void PickColor(Button button, Action<Color> setProperty)
     {
         using var dlg = new ColorDialog { Color = button.BackColor };
         if (dlg.ShowDialog() == DialogResult.OK)
         {
             button.BackColor = dlg.Color;
-            GlobalSettings.SetColor(settingName, dlg.Color);
+            setProperty(dlg.Color);
         }
     }
 }

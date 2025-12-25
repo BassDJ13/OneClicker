@@ -3,9 +3,9 @@ using System.Reflection;
 
 namespace OneClicker.Plugins;
 
-public static class PluginLoader
+internal static class PluginLoader
 {
-    public static List<IPlugin> LoadPlugins(string folder)
+    internal static List<IPlugin> LoadPlugins(string folder)
     {
         var plugins = new List<IPlugin>();
 

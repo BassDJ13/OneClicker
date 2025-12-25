@@ -2,12 +2,12 @@
 
 namespace OneClicker.Plugins;
 
-public class PluginSettingsProxy : IPluginSettings
+internal class PluginSettingsProxy : IPluginSettings
 {
     private readonly string _prefix;
     private readonly ISettingsStore _store;
 
-    public PluginSettingsProxy(string pluginName, ISettingsStore store)
+    internal PluginSettingsProxy(string pluginName, ISettingsStore store)
     {
         _prefix = pluginName + ".";
         _store = store;

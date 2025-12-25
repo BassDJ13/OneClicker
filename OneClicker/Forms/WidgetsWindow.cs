@@ -1,4 +1,5 @@
-﻿using BassCommon.Classes;
+﻿using BassCommon;
+using BassCommon.Classes;
 using Microsoft.Win32;
 using OneClicker.Classes;
 using OneClicker.Plugins;
@@ -11,8 +12,8 @@ namespace OneClicker.Forms;
 
 public class WidgetsWindow : Form
 {
-    private AppSettings? _mainAppSettings;
-    private PluginSettingsProxy? _globalSettings;
+    private MainAppSettings? _mainAppSettings;
+    private GlobalSettings? _globalSettings;
     private readonly Panel _dragArea;
     private const int _dragAreaHeight = 6;
     private readonly Panel _contentPanel;
@@ -37,7 +38,6 @@ public class WidgetsWindow : Form
 
     public WidgetsWindow()
     {
-        PluginManager.Initialize();
         Text = "OneClicker";
         _windowLocationHelper = new WindowLocationHelper(new ScreenProvider());
         FormBorderStyle = FormBorderStyle.None;
@@ -50,8 +50,9 @@ public class WidgetsWindow : Form
         _settingsStore = new IniSettingsStore(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"));
         _settingsStore.Load();
 
-        _mainAppSettings = new AppSettings(_settingsStore);
-        _globalSettings = GlobalSettings.Initialize(_settingsStore); //todo: to much responsibility. Initializes a lot
+        _mainAppSettings = new MainAppSettings(_settingsStore);
+        _globalSettings = new GlobalSettings(_settingsStore);
+        PluginManager.Instance.InitializePlugins(_settingsStore, _globalSettings);
 
         if (!_settingsStore.FileExists)
         {
@@ -93,26 +94,16 @@ public class WidgetsWindow : Form
         Controls.Add(_contentPanel);
         Controls.Add(_dragArea);
 
-        BackColor = _globalSettings!.GetColor(GlobalSettingKeys.HeaderColor, Color.MidnightBlue);
+        BackColor = _globalSettings!.HeaderColor;
         DetermineAppSize();
         ApplyWindowStyle();
 
         SystemEvents.DisplaySettingsChanged += OnDisplaySettingsChanged;
     }
 
-    private Action RetreivePluginAction(PluginActionDescriptor pluginActionDescriptor)
-    {
-        var plugin = PluginManager.Instance.GetPluginById(pluginActionDescriptor.PluginId);
-        if (plugin.Actions.TryGetValue(pluginActionDescriptor.ActionId, out var action))
-        {
-            return action;
-        }
-        throw new NotImplementedException();
-    }
-
     private void DetermineAppSize()
     {
-        _widgetSize = _globalSettings!.GetInt(GlobalSettingKeys.WidgetSize, 16);
+        _widgetSize = _globalSettings!.WidgetSize;
         var headerHeight = _mainAppSettings!.WindowStyle == WindowStyle.Floating ? _dragAreaHeight : 0;
 
         _appWidth = _widgetSize * Math.Max(1, PluginManager.Instance.ActiveWidgets.Count);
@@ -175,7 +166,7 @@ public class WidgetsWindow : Form
             control.Dock = DockStyle.Fill; //todo: stack widgets horizontal
             _contentPanel.Controls.Add(control);
             plugin.WidgetInstance!.ApplySettings();
-            ((IPluginWidgetControl)control).RightClickDetected += (_, e) => ShowContextMenu(e);
+            ((IPluginWidgetControl)control).OnRightMouseButtonUp += (_, e) => ShowContextMenu(e);
         }
     }
 
@@ -274,7 +265,7 @@ public class WidgetsWindow : Form
         using var dlg = new ConfigurationWindow(_settingsStore!);
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-            BackColor = _globalSettings!.GetColor(GlobalSettingKeys.HeaderColor, Color.MidnightBlue);
+            BackColor = _globalSettings!.HeaderColor;
             DetermineAppSize();
             foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
             {

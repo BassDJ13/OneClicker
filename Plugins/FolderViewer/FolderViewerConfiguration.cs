@@ -9,7 +9,7 @@ public class FolderViewerConfiguration : PluginConfigurationControl
     private readonly Button _buttonBrowse;
     private readonly Button _buttonOpen;
 
-    public FolderViewerConfiguration(IPluginSettings pluginSettings, IPluginSettings globalSettings) : base(pluginSettings, globalSettings)
+    public FolderViewerConfiguration(IPluginSettings pluginSettings, IGlobalSettings globalSettings) : base(pluginSettings, globalSettings)
     {
         var labelFolder = new Label { Text = "Folder:", Left = 0, Top = 2, Width = 50 };
         _textFolder = new TextBox { Left = 50, Top = 0, Width = 256, Text = pluginSettings.Get(SettingKeys.FolderPath) };

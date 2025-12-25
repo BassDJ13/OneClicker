@@ -12,7 +12,7 @@ public class FolderViewerWidget : PluginWidgetControl
     private readonly BlinkHelper _blinker = new();
     private readonly ContextMenuStrip _menu = new();
 
-    public FolderViewerWidget(IPluginSettings pluginSettings, IPluginSettings globalSettings) : base(pluginSettings, globalSettings)
+    public FolderViewerWidget(IPluginSettings pluginSettings, IGlobalSettings globalSettings) : base(pluginSettings, globalSettings)
     {
         _openButton = new Button
         {
@@ -28,7 +28,7 @@ public class FolderViewerWidget : PluginWidgetControl
 
         Controls.Add(_openButton);
 
-        _openButton.BackColor = GlobalSettings.GetColor(GlobalSettingKeys.BackgroundColor, Color.SteelBlue);
+        _openButton.BackColor = GlobalSettings.BackgroundColor;
     }
 
     public override async Task StartAnimation()
@@ -36,7 +36,7 @@ public class FolderViewerWidget : PluginWidgetControl
         var startColor = _openButton.BackColor;
         await _blinker.BlinkAsync(position =>
         {
-            _openButton.BackColor = BassCommon.ColorHelper.GetColorBetween(startColor, Color.White, position);
+            _openButton.BackColor = ColorHelper.GetColorBetween(startColor, Color.White, position);
         });
     }
 
@@ -48,7 +48,7 @@ public class FolderViewerWidget : PluginWidgetControl
     public override void ApplySettings()
     {
         _menu.Items.Clear();
-        _openButton.BackColor = GlobalSettings.GetColor(GlobalSettingKeys.BackgroundColor, Color.SteelBlue);
+        _openButton.BackColor = GlobalSettings.BackgroundColor;
         _openButton.Refresh();
     }
 
@@ -165,7 +165,7 @@ public class FolderViewerWidget : PluginWidgetControl
             new PointF(w * 0.75f, h * 0.7f)
         };
 
-        using var brush = new SolidBrush(GlobalSettings.GetColor(GlobalSettingKeys.ForegroundColor, Color.LightBlue));
+        using var brush = new SolidBrush(GlobalSettings.ForegroundColor);
         g.FillPolygon(brush, pts);
     }
 

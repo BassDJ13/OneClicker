@@ -6,10 +6,9 @@ namespace OneClicker.Plugins;
 internal class PluginManager
 {
     private static PluginManager? _instance;
-    public static PluginManager Instance
-        => _instance ?? throw new InvalidOperationException("PluginManager not initialized.");
+    internal static PluginManager Instance => _instance ??= new PluginManager();
 
-    public ActionRegistry? ActionRegistry { get; private set; }
+    internal ActionRegistry? ActionRegistry { get; private set; }
 
     private PluginManager()
     {
@@ -57,7 +56,7 @@ internal class PluginManager
         return result;
     }
 
-    public void SupplyAllPluginActionsToPlugins()
+    internal void SupplyAllPluginActionsToPlugins()
     {
         ActionRegistry = new ActionRegistry(GetAllPluginActions(ActivePlugins));
         foreach (var plugin in ActivePlugins)
@@ -69,26 +68,16 @@ internal class PluginManager
         }
     }
 
-    public static void Initialize()
-    {
-        if (_instance != null)
-        {
-            throw new InvalidOperationException("PluginManager already initialized.");
-        }
-
-        _instance = new PluginManager();
-    }
-
     private IList<IPlugin> _activePlugins;
-    public IList<IPlugin> ActivePlugins
+    internal IList<IPlugin> ActivePlugins
         => _activePlugins;
 
-    public IList<IPlugin> ActiveWidgets
+    internal IList<IPlugin> ActiveWidgets
         => GetPluginsWithWidgets(ActivePlugins)!;
 
-    public string[] Names { get; private set; }
+    internal string[] Names { get; private set; }
 
-    public IPlugin GetPlugin(string pluginName)
+    internal IPlugin GetPlugin(string pluginName)
     {
         foreach (var plugin in ActivePlugins!)
         {
@@ -110,5 +99,19 @@ internal class PluginManager
             }
         }
         throw new KeyNotFoundException();
+    }
+
+    internal void InitializePlugins(ISettingsStore settingsStore, IGlobalSettings globalSettings)
+    {
+        foreach (var plugin in ActivePlugins)
+        {
+            var settingsProxy = new PluginSettingsProxy(plugin.Name, settingsStore);
+            plugin.PreInitialize(settingsProxy, globalSettings);
+        }
+        SupplyAllPluginActionsToPlugins();
+        foreach (var plugin in ActivePlugins)
+        {
+            plugin.PostInitialize();
+        }
     }
 }

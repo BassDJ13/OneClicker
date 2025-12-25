@@ -5,5 +5,5 @@ public interface IPluginWidgetControl
     void ApplySettings();
     Task StartAnimation();
 
-    event EventHandler<MouseEventArgs>? RightClickDetected;
+    event EventHandler<MouseEventArgs>? OnRightMouseButtonUp;
 }

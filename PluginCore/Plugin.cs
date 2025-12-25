@@ -37,7 +37,7 @@ public abstract class Plugin : IPlugin
         _defaultSettingValues = []; 
     }
 
-    public void PreInitialize(IPluginSettings pluginSettings, IPluginSettings globalSettings)
+    public void PreInitialize(IPluginSettings pluginSettings, IGlobalSettings globalSettings)
     {
         _configurationMenuItemCreator = new ConfigurationMenuItemCreator(Name);
 

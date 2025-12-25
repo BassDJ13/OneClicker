@@ -31,10 +31,7 @@ public sealed class PluginActionComboBox : ComboBox
         DropDownStyle = ComboBoxStyle.DropDownList;
         DisplayMember = nameof(PluginActionDescriptor.DisplayName);
 
-        SelectedIndexChanged += (_, _) =>
-        {
-            SelectedActionChanged?.Invoke(this, EventArgs.Empty);
-        };
+        SelectedIndexChanged += (_, _) => SelectedActionChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public void LoadActions(IActionRegistry? registry)

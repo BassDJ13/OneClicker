@@ -11,7 +11,7 @@ public sealed class ConfigurationMenuItem : IConfigurationMenuItem
     public IPluginConfigurationControl? Content => _content;
     public object[] _customParameters;
 
-    public IPluginConfigurationControl? CreateConfigurationControl(IPluginSettings pluginSettingsOverlay, IPluginSettings globalSettingsOverlay)
+    public IPluginConfigurationControl? CreateConfigurationControl(IPluginSettings pluginSettingsOverlay, IGlobalSettings globalSettingsOverlay)
     {
         if (ConfigurationClass == null)
         {

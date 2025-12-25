@@ -11,7 +11,7 @@ public class GeneralSettings : PluginConfigurationControl
     private const string _startupShortcutName = "OneClicker";
     private readonly IActionRegistry _allPluginsActions;
 
-    public GeneralSettings(IPluginSettings pluginSettings, IPluginSettings globalSettings, IActionRegistry registry) : base(pluginSettings, globalSettings)
+    public GeneralSettings(IPluginSettings pluginSettings, IGlobalSettings globalSettings, IActionRegistry registry) : base(pluginSettings, globalSettings)
     {
         var rowHeight = 26;
         var offsetX = 75;

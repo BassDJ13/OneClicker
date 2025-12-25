@@ -1,46 +1,41 @@
-﻿using BassCommon;
-using OneClicker.Plugins;
+﻿using OneClicker.Plugins;
 using PluginContracts;
 
 namespace OneClicker.Settings;
 
-internal static class GlobalSettings
+internal class GlobalSettings : PluginSettingsProxy, IGlobalSettings
 {
-    internal static PluginSettingsProxy Initialize(ISettingsStore settingsStore)
+    private const string _prefix = "Global";
+    private const string _widgetSize = "WidgetSize";
+    private const string _headerColor = "HeaderColor";
+    private const string _backgroundColor = "BackgroundColor";
+    private const string _foregroundColor = "ForegroundColor";
+
+    public int WidgetSize
     {
-        var globalSettings = new PluginSettingsProxy("Global", settingsStore);
-
-        SetDefaultGlobalSettings(globalSettings);
-        foreach (var plugin in PluginManager.Instance.ActivePlugins)
-        {
-            var settingsProxy = new PluginSettingsProxy(plugin.Name, settingsStore);
-            plugin.PreInitialize(settingsProxy, globalSettings);
-        }
-        PluginManager.Instance.SupplyAllPluginActionsToPlugins();
-        foreach (var plugin in PluginManager.Instance.ActivePlugins)
-        {
-            plugin.PostInitialize();
-        }
-
-        return globalSettings;
+        get => this.GetInt(_widgetSize, 16);
+        set => this.SetInt(_widgetSize, value);
     }
 
-    private static void SetDefaultGlobalSettings(PluginSettingsProxy globalSettings)
+    public Color HeaderColor
     {
-        var _defaultSettingValues = new Dictionary<string, string>
-        {
-            { "WidgetSize", "16" },
-            { GlobalSettingKeys.HeaderColor, ColorHelper.ColorToHex(Color.MidnightBlue) },
-            { GlobalSettingKeys.BackgroundColor, ColorHelper.ColorToHex(Color.SteelBlue) },
-            { GlobalSettingKeys.ForegroundColor, ColorHelper.ColorToHex(Color.LightBlue) }
-        };
+        get => this.GetColor(_headerColor, Color.MidnightBlue);
+        set => this.SetColor(_headerColor, value);
+    }
 
-        foreach (var kvp in _defaultSettingValues)
-        {
-            if (globalSettings!.Get(kvp.Key) == null)
-            {
-                globalSettings.Set(kvp.Key, kvp.Value);
-            }
-        }
+    public Color BackgroundColor
+    {
+        get => this.GetColor(_backgroundColor, Color.SteelBlue);
+        set => this.SetColor(_backgroundColor, value);
+    }
+
+    public Color ForegroundColor
+    {
+        get => this.GetColor(_foregroundColor, Color.LightBlue);
+        set => this.SetColor(_foregroundColor, value);
+    }
+
+    internal GlobalSettings(ISettingsStore store) : base(_prefix, store)
+    {
     }
 }
