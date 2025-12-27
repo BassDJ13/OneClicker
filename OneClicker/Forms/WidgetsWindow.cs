@@ -1,5 +1,4 @@
-﻿using BassCommon;
-using BassCommon.Classes;
+﻿using BassCommon.Classes;
 using Microsoft.Win32;
 using OneClicker.Classes;
 using OneClicker.Plugins;
@@ -20,9 +19,6 @@ public class WidgetsWindow : Form
     private ISettingsStore? _settingsStore;
     private WindowLocationHelper _windowLocationHelper;
     private GlobalHotkeyHelper? _hotkeyHelper;
-    private int _widgetSize = 16;
-    private int _appWidth = 0;
-    private int _appHeight = 0;
     private ContextMenuStrip? _contextMenu;
 
     public void Blink() => _ = BlinkAsync();
@@ -45,7 +41,6 @@ public class WidgetsWindow : Form
         TopMost = true;
         ShowInTaskbar = false;
         DoubleBuffered = true;
-        BackColor = Color.MidnightBlue;
 
         _settingsStore = new IniSettingsStore(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"));
         _settingsStore.Load();
@@ -68,7 +63,9 @@ public class WidgetsWindow : Form
             Dock = DockStyle.Top,
             Height = _dragAreaHeight,
             Cursor = Cursors.SizeAll,
-            BackColor = Color.Transparent
+            BackColor = Color.Transparent,
+            Padding = new Padding(0),
+            Margin = new Padding(0)
         };
 
         _dragArea.MouseDown += (s, e) =>
@@ -87,28 +84,35 @@ public class WidgetsWindow : Form
 
         _contentPanel = new Panel()
         {
+            AutoSize = false,
             Dock = DockStyle.Fill,
-            Padding = new Padding(0)
+            Padding = new Padding(0),
+            Margin = new Padding(0),
         };
 
         Controls.Add(_contentPanel);
         Controls.Add(_dragArea);
 
         BackColor = _globalSettings!.HeaderColor;
-        DetermineAppSize();
-        ApplyWindowStyle();
+        RefreshLayout();
 
         SystemEvents.DisplaySettingsChanged += OnDisplaySettingsChanged;
     }
 
-    private void DetermineAppSize()
+    private void RefreshLayout()
     {
-        _widgetSize = _globalSettings!.WidgetSize;
+        var widgetSize = _globalSettings!.WidgetSize;
         var headerHeight = _mainAppSettings!.WindowStyle == WindowStyle.Floating ? _dragAreaHeight : 0;
 
-        _appWidth = _widgetSize * Math.Max(1, PluginManager.Instance.ActiveWidgets.Count);
-        _appHeight = _widgetSize + headerHeight;
-        Size = new Size(_appWidth, _appHeight);
+        var appWidth = widgetSize * Math.Max(1, PluginManager.Instance.ActiveWidgets.Count); //todo: determine total width
+        var appHeight = widgetSize + headerHeight;
+        Size = new Size(appWidth, appHeight);
+
+        ApplyWindowStyle();
+        RefreshLayoutOfWidgets();
+        Blink();
+
+
     }
 
     private void ApplyWindowStyle()
@@ -116,15 +120,16 @@ public class WidgetsWindow : Form
         if (_mainAppSettings!.WindowStyle == WindowStyle.Docked)
         {
             _dragArea.Visible = false;
+            _dragArea.Height = 0;
             SetDockedLocation();
         }
         else
         {
             _dragArea.Visible = true;
+            _dragArea.Height = _dragAreaHeight;
             Location = new Point(_mainAppSettings.X, _mainAppSettings.Y);
         }
         _windowLocationHelper.EnsureVisible(this);
-        Blink();
     }
 
     private async Task ApplyWindowStyleAsync()
@@ -150,6 +155,26 @@ public class WidgetsWindow : Form
         return wa.Width == bounds.Width && wa.Height == bounds.Height;
     }
 
+    void RefreshLayoutOfWidgets()
+    {
+        var x = 0;
+        foreach (IPlugin plugin in PluginManager.Instance.ActiveWidgets)
+        {
+            var widget = (UserControl)plugin.WidgetInstance!;
+            int units = Math.Max(1, 1); //todo: read plugin width
+            int height = _globalSettings!.WidgetSize;
+            int width = units * height;
+
+            //force widgets size and location
+            widget.Dock = DockStyle.None;
+            widget.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            widget.AutoSize = false;
+
+            widget.Bounds = new Rectangle(x, 0, width, height);
+            x += width;
+        }
+    }
+
     protected override async void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
@@ -163,9 +188,7 @@ public class WidgetsWindow : Form
         foreach (IPlugin plugin in PluginManager.Instance.ActiveWidgets)
         {
             var control = (UserControl)plugin.WidgetInstance!;
-            control.Dock = DockStyle.Fill; //todo: stack widgets horizontal
             _contentPanel.Controls.Add(control);
-            plugin.WidgetInstance!.ApplySettings();
             ((IPluginWidgetControl)control).OnRightMouseButtonUp += (_, e) => ShowContextMenu(e);
         }
     }
@@ -260,18 +283,17 @@ public class WidgetsWindow : Form
         return true;
     }
 
-    internal void OpenConfiguration()
+    private void OpenConfiguration()
     {
         using var dlg = new ConfigurationWindow(_settingsStore!);
         if (dlg.ShowDialog() == DialogResult.OK)
         {
             BackColor = _globalSettings!.HeaderColor;
-            DetermineAppSize();
-            foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
+            RefreshLayout();
+            foreach (IPlugin plugin in PluginManager.Instance.ActiveWidgets)
             {
-                plugin.WidgetInstance?.ApplySettings();
+                plugin.WidgetInstance!.SettingsChanged();
             }
-            ApplyWindowStyle();
             TransparencyHelper.SetInactiveOpacity(this, ((double)_mainAppSettings!.InactiveOpacity) / 100f);
             _settingsStore!.Save();
             Invalidate();

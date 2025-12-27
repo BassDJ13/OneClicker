@@ -15,7 +15,7 @@ public abstract class PluginWidgetControl : UserControl, IPluginWidgetControl
 
     public abstract Task StartAnimation();
 
-    public abstract void ApplySettings();
+    public abstract void SettingsChanged();
 
     public event EventHandler<MouseEventArgs>? OnRightMouseButtonUp;
 

@@ -45,11 +45,9 @@ public class FolderViewerWidget : PluginWidgetControl
         _openButton.PerformClick();
     }
 
-    public override void ApplySettings()
+    public override void SettingsChanged()
     {
         _menu.Items.Clear();
-        _openButton.BackColor = GlobalSettings.BackgroundColor;
-        _openButton.Refresh();
     }
 
     private void OpenButton_Click(object sender, EventArgs e)

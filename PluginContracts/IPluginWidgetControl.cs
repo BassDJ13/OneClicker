@@ -2,7 +2,7 @@
 
 public interface IPluginWidgetControl
 {
-    void ApplySettings();
+    void SettingsChanged();
     Task StartAnimation();
 
     event EventHandler<MouseEventArgs>? OnRightMouseButtonUp;
