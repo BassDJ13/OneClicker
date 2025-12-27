@@ -104,15 +104,13 @@ public class WidgetsWindow : Form
         var widgetSize = _globalSettings!.WidgetSize;
         var headerHeight = _mainAppSettings!.WindowStyle == WindowStyle.Floating ? _dragAreaHeight : 0;
 
-        var appWidth = widgetSize * Math.Max(1, PluginManager.Instance.ActiveWidgets.Count); //todo: determine total width
+        var appWidth = widgetSize * Math.Max(1, PluginManager.Instance.WidthOfWidgetsInUnits());
         var appHeight = widgetSize + headerHeight;
         Size = new Size(appWidth, appHeight);
 
         ApplyWindowStyle();
         RefreshLayoutOfWidgets();
         Blink();
-
-
     }
 
     private void ApplyWindowStyle()
@@ -158,14 +156,12 @@ public class WidgetsWindow : Form
     void RefreshLayoutOfWidgets()
     {
         var x = 0;
-        foreach (IPlugin plugin in PluginManager.Instance.ActiveWidgets)
+        foreach (UserControl widget in PluginManager.Instance.ActiveWidgets)
         {
-            var widget = (UserControl)plugin.WidgetInstance!;
-            int units = Math.Max(1, 1); //todo: read plugin width
+            int units = Math.Max(1, ((IPluginWidgetControl)widget).WidthInUnits);
             int height = _globalSettings!.WidgetSize;
             int width = units * height;
 
-            //force widgets size and location
             widget.Dock = DockStyle.None;
             widget.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             widget.AutoSize = false;
@@ -185,11 +181,10 @@ public class WidgetsWindow : Form
     private void LoadWidgets()
     {
         _contentPanel.Controls.Clear();
-        foreach (IPlugin plugin in PluginManager.Instance.ActiveWidgets)
+        foreach (UserControl widget in PluginManager.Instance.ActiveWidgets)
         {
-            var control = (UserControl)plugin.WidgetInstance!;
-            _contentPanel.Controls.Add(control);
-            ((IPluginWidgetControl)control).OnRightMouseButtonUp += (_, e) => ShowContextMenu(e);
+            _contentPanel.Controls.Add(widget);
+            ((IPluginWidgetControl)widget).OnRightMouseButtonUp += (_, e) => ShowContextMenu(e);
         }
     }
 
@@ -290,9 +285,9 @@ public class WidgetsWindow : Form
         {
             BackColor = _globalSettings!.HeaderColor;
             RefreshLayout();
-            foreach (IPlugin plugin in PluginManager.Instance.ActiveWidgets)
+            foreach (IPluginWidgetControl widget in PluginManager.Instance.ActiveWidgets)
             {
-                plugin.WidgetInstance!.SettingsChanged();
+                widget.SettingsChanged();
             }
             TransparencyHelper.SetInactiveOpacity(this, ((double)_mainAppSettings!.InactiveOpacity) / 100f);
             _settingsStore!.Save();

@@ -4,6 +4,7 @@ namespace PluginCore;
 
 public abstract class PluginWidgetControl : UserControl, IPluginWidgetControl
 {
+    public int WidthInUnits { get; }
     public IPluginSettings PluginSettings { get; private set; }
     public IGlobalSettings GlobalSettings { get; private set; }
 
@@ -11,11 +12,14 @@ public abstract class PluginWidgetControl : UserControl, IPluginWidgetControl
     {
         PluginSettings = pluginSettings;
         GlobalSettings = globalSettings;
+        WidthInUnits = GetWidthInUnits();
     }
 
     public abstract Task StartAnimation();
 
     public abstract void SettingsChanged();
+
+    protected virtual int GetWidthInUnits() => 1;
 
     public event EventHandler<MouseEventArgs>? OnRightMouseButtonUp;
 

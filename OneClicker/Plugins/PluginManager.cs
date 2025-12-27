@@ -21,14 +21,14 @@ internal class PluginManager
         Names = names.ToArray();
     }
 
-    private IList<IPlugin>? GetPluginsWithWidgets(IList<IPlugin> plugins)
+    private IList<IPluginWidgetControl>? GetPluginsWithWidgets(IList<IPlugin> plugins)
     {
-        var result = new List<IPlugin>();
+        var result = new List<IPluginWidgetControl>();
         foreach (var plugin in plugins)
         {
             if (plugin.HasWidget)
             {
-                result.Add(plugin);
+                result.Add(plugin.WidgetInstance!);
             }
         }
         return result;
@@ -72,7 +72,7 @@ internal class PluginManager
     internal IList<IPlugin> ActivePlugins
         => _activePlugins;
 
-    internal IList<IPlugin> ActiveWidgets
+    internal IList<IPluginWidgetControl> ActiveWidgets
         => GetPluginsWithWidgets(ActivePlugins)!;
 
     internal string[] Names { get; private set; }
@@ -113,5 +113,15 @@ internal class PluginManager
         {
             plugin.PostInitialize();
         }
+    }
+
+    internal int WidthOfWidgetsInUnits()
+    {
+        int width = 0;
+        foreach (IPluginWidgetControl widget in ActiveWidgets)
+        {
+            width += widget.WidthInUnits;
+        }
+        return width;
     }
 }

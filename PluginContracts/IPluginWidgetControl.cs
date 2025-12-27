@@ -2,6 +2,7 @@
 
 public interface IPluginWidgetControl
 {
+    int WidthInUnits { get; }
     void SettingsChanged();
     Task StartAnimation();
 
