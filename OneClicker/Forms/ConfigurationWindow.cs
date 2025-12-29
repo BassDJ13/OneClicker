@@ -20,10 +20,12 @@ public sealed class ConfigurationWindow : Form
     private readonly ISettingsStore _settingsStore;
     private readonly GlobalSettingsOverlay _globalSettingsOverlay;
     private readonly Dictionary<string, PluginSettingsOverlay> _pluginOverlays = new();
+    private readonly PluginManager _pluginManager;
 
-    public ConfigurationWindow(ISettingsStore settingsStore)
+    public ConfigurationWindow(ISettingsStore settingsStore, PluginManager pluginManager)
     {
         _settingsStore = settingsStore;
+        _pluginManager = pluginManager;
         _globalSettingsOverlay = new GlobalSettingsOverlay(settingsStore);
 
         Text = $"OneClicker v{GitHubUpdateChecker.GetVersion()}";
@@ -103,7 +105,7 @@ public sealed class ConfigurationWindow : Form
 
     private IEnumerable<IConfigurationMenuItem> GetConfigurationMenuItemsSorted()
     {
-        return PluginManager.Instance.ActivePlugins
+        return _pluginManager.ActivePlugins
             .SelectMany(p => p.ConfigurationMenuItems)
             .Select((item, index) => new
             {

@@ -3,15 +3,16 @@ using PluginContracts;
 
 namespace OneClicker.Plugins;
 
-internal class PluginManager
+public class PluginManager
 {
     private static PluginManager? _instance;
     internal static PluginManager Instance => _instance ??= new PluginManager();
 
     internal ActionRegistry? ActionRegistry { get; private set; }
 
-    private PluginManager()
+    public PluginManager()
     {
+        _instance = this;
         _activePlugins = PluginLoader.LoadPlugins("plugins");
         IList<string> names = new List<string>();
         foreach (var plugin in ActivePlugins)

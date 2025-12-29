@@ -20,6 +20,7 @@ public class WidgetsWindow : Form
     private WindowLocationHelper _windowLocationHelper;
     private GlobalHotkeyHelper? _hotkeyHelper;
     private ContextMenuStrip? _contextMenu;
+    private readonly PluginManager _pluginManager;
 
     public void Blink() => _ = BlinkAsync();
 
@@ -32,8 +33,9 @@ public class WidgetsWindow : Form
         await Task.WhenAll(tasks);
     }
 
-    public WidgetsWindow()
+    public WidgetsWindow(PluginManager pluginManager)
     {
+        _pluginManager = pluginManager;
         Text = "OneClicker";
         _windowLocationHelper = new WindowLocationHelper(new ScreenProvider());
         FormBorderStyle = FormBorderStyle.None;
@@ -47,7 +49,7 @@ public class WidgetsWindow : Form
 
         _mainAppSettings = new MainAppSettings(_settingsStore);
         _globalSettings = new GlobalSettings(_settingsStore);
-        PluginManager.Instance.InitializePlugins(_settingsStore, _globalSettings);
+        _pluginManager.InitializePlugins(_settingsStore, _globalSettings);
 
         if (!_settingsStore.FileExists)
         {
@@ -104,7 +106,7 @@ public class WidgetsWindow : Form
         var widgetSize = _globalSettings!.WidgetSize;
         var headerHeight = _mainAppSettings!.WindowStyle == WindowStyle.Floating ? _dragAreaHeight : 0;
 
-        var appWidth = widgetSize * Math.Max(1, PluginManager.Instance.WidthOfWidgetsInUnits());
+        var appWidth = widgetSize * Math.Max(1, _pluginManager.WidthOfWidgetsInUnits());
         var appHeight = widgetSize + headerHeight;
         Size = new Size(appWidth, appHeight);
 
@@ -156,7 +158,7 @@ public class WidgetsWindow : Form
     void RefreshLayoutOfWidgets()
     {
         var x = 0;
-        foreach (UserControl widget in PluginManager.Instance.ActiveWidgets)
+        foreach (UserControl widget in _pluginManager.ActiveWidgets)
         {
             int units = Math.Max(1, ((IPluginWidgetControl)widget).WidthInUnits);
             int height = _globalSettings!.WidgetSize;
@@ -181,7 +183,7 @@ public class WidgetsWindow : Form
     private void LoadWidgets()
     {
         _contentPanel.Controls.Clear();
-        foreach (UserControl widget in PluginManager.Instance.ActiveWidgets)
+        foreach (UserControl widget in _pluginManager.ActiveWidgets)
         {
             _contentPanel.Controls.Add(widget);
             ((IPluginWidgetControl)widget).OnRightMouseButtonUp += (_, e) => ShowContextMenu(e);
@@ -213,7 +215,7 @@ public class WidgetsWindow : Form
 
     private bool InvokeConfiguredAction()
     {
-        var actionDescriptor = PluginManager.Instance.ActionRegistry!.GetAction(_mainAppSettings!.ShortcutAction);
+        var actionDescriptor = _pluginManager.ActionRegistry!.GetAction(_mainAppSettings!.ShortcutAction);
         if (actionDescriptor == null)
         {
             return false;
@@ -222,7 +224,7 @@ public class WidgetsWindow : Form
         var action = default(Action);
         try
         {
-            var plugin = PluginManager.Instance.GetPluginById(actionDescriptor.PluginId);
+            var plugin = _pluginManager.GetPluginById(actionDescriptor.PluginId);
             action = plugin.Actions[actionDescriptor.ActionId];
         }
         catch
@@ -280,12 +282,12 @@ public class WidgetsWindow : Form
 
     private void OpenConfiguration()
     {
-        using var dlg = new ConfigurationWindow(_settingsStore!);
+        using var dlg = new ConfigurationWindow(_settingsStore!, _pluginManager);
         if (dlg.ShowDialog() == DialogResult.OK)
         {
             BackColor = _globalSettings!.HeaderColor;
             RefreshLayout();
-            foreach (IPluginWidgetControl widget in PluginManager.Instance.ActiveWidgets)
+            foreach (IPluginWidgetControl widget in _pluginManager.ActiveWidgets)
             {
                 widget.SettingsChanged();
             }
