@@ -12,14 +12,14 @@ public class AppearanceSettings : PluginConfigurationControl
     private DockSelectorPanel _dockSelector;
     private Label _labelDock, _labelOffsetX, _labelOffsetY;
 
-    public AppearanceSettings(IPluginSettings pluginSettings, IGlobalSettings globalSettings) : base(pluginSettings, globalSettings)
+    public AppearanceSettings(IPluginContext pluginContext) : base(pluginContext)
     {
         var labelStyle = new Label { Text = "Window Style:", Left = 0, Top = 0, Width = 100 };
 
         _radioFloating = new RadioButton { Text = "Floating", Left = 110, Top = 0, AutoSize = true
-            , Checked = pluginSettings.Get(SettingKeys.WindowStyle) == nameof(WindowStyle.Floating) };
+            , Checked = PluginSettings.Get(SettingKeys.WindowStyle) == nameof(WindowStyle.Floating) };
         _radioDocked = new RadioButton { Text = "Docked", Left = 190, Top = 0, AutoSize = true
-            , Checked = pluginSettings.Get(SettingKeys.WindowStyle) == nameof(WindowStyle.Docked) };
+            , Checked = PluginSettings.Get(SettingKeys.WindowStyle) == nameof(WindowStyle.Docked) };
         _radioFloating.CheckedChanged += OnWindowStyleChanged;
         _radioDocked.CheckedChanged += OnWindowStyleChanged;
 
@@ -33,33 +33,33 @@ public class AppearanceSettings : PluginConfigurationControl
         _labelOffsetY = new Label { Text = "y offset:", Left = 160, Top = 50, Width = 50 };
 
         _numOffsetX = new NumericUpDown { Left = 220, Top = 25, Width = 60, Minimum = -9999, Maximum = 9999
-            , Value = pluginSettings.GetInt(SettingKeys.DockOffsetX) };
+            , Value = PluginSettings.GetInt(SettingKeys.DockOffsetX) };
         _numOffsetX.ValueChanged += NumOffsetX_ValueChanged;
 
         _numOffsetY = new NumericUpDown { Left = 220, Top = 48, Width = 60, Minimum = -9999, Maximum = 9999
-            , Value = pluginSettings.GetInt(SettingKeys.DockOffsetY) };
+            , Value = PluginSettings.GetInt(SettingKeys.DockOffsetY) };
         _numOffsetY.ValueChanged += NumOffsetY_ValueChanged;
 
         var labelBack = new Label { Text = "Header:", Left = 0, Top = 85, Width = 74 };
         _btnHeaderColor = new Button { Left = 74, Top = 82, Width = 22
-            , BackColor = globalSettings.HeaderColor };
+            , BackColor = GlobalSettings.HeaderColor };
 
         var labelButton = new Label { Text = "Background:", Left = 0, Top = 107, Width = 74 };
         _btnBackgroundColor = new Button { Left = 74, Top = 104, Width = 22
-            , BackColor = globalSettings.BackgroundColor };
+            , BackColor = GlobalSettings.BackgroundColor };
 
         var labelTriangle = new Label { Text = "Foreground:", Left = 0, Top = 129, Width = 74 };
         _btnForeGroundColor = new Button { Left = 74, Top = 126, Width = 22
-            , BackColor = globalSettings.ForegroundColor };
+            , BackColor = GlobalSettings.ForegroundColor };
 
         var labelWidgetSize = new Label { Text = "Size per widget:", Left = 120, Top = 85, Width = 100 };
         _numWidgetSize = new NumericUpDown { Left = 220, Top = 82, Width = 60, Minimum = 8, Maximum = 960
-            , Value = globalSettings.WidgetSize };
+            , Value = GlobalSettings.WidgetSize };
         _numWidgetSize.ValueChanged += WidgetSizeChanged;
 
         var labelInactiveOpacity = new Label { Text = "Inactive opacity:", Left = 120, Top = 114, Width = 100 };
         _numInactiveOpacity = new NumericUpDown { Left = 220, Top = 111, Width = 60, Minimum = 0, Maximum = 100
-            , Value = pluginSettings.GetInt(SettingKeys.InactiveOpacity) };
+            , Value = PluginSettings.GetInt(SettingKeys.InactiveOpacity) };
         _numInactiveOpacity.ValueChanged += InactiveOpacityChanged;
 
         _btnHeaderColor.Click += (s, e) => 

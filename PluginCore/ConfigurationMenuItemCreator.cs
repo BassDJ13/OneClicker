@@ -11,8 +11,8 @@ internal class ConfigurationMenuItemCreator
         _pluginId = pluginId;
     }
 
-    public IConfigurationMenuItem Create(string name, Type? configurationClass, params object[] customParameters)
+    public IConfigurationMenuItem Create(string name, Type? configurationClass)
     {
-        return new ConfigurationMenuItem(name, configurationClass, _pluginId, customParameters);
+        return new ConfigurationMenuItem(name, configurationClass, _pluginId);
     }
 }

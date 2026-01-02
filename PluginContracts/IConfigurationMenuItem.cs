@@ -6,5 +6,5 @@ public interface IConfigurationMenuItem
     string Name { get; }
     Type? ConfigurationClass { get; }
     IPluginConfigurationControl? Content {  get; }
-    IPluginConfigurationControl? CreateConfigurationControl(IPluginSettings overlay, IGlobalSettings globalSettings);
+    IPluginConfigurationControl? CreateConfigurationControl(IPluginContext context);
 }

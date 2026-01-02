@@ -11,11 +11,11 @@ public class GeneralSettings : PluginConfigurationControl
     private const string _startupShortcutName = "OneClicker";
     private readonly IActionRegistry _allPluginsActions;
 
-    public GeneralSettings(IPluginSettings pluginSettings, IGlobalSettings globalSettings, IActionRegistry registry) : base(pluginSettings, globalSettings)
+    public GeneralSettings(IPluginContext pluginContext) : base(pluginContext)
     {
         var rowHeight = 26;
         var offsetX = 75;
-        _allPluginsActions = registry;
+        _allPluginsActions = ((IHostPluginContext)pluginContext).ActionRegistry;
 
         var labelShortcut = new Label { Text = "Focus app:", Left = 0, Top = 2, Width = 70 };
         _shortcutPicker = new ShortcutPickerControl { Left = offsetX, Top = 0 };
@@ -35,7 +35,7 @@ public class GeneralSettings : PluginConfigurationControl
             labelAction, actionCombobox]);
 
         _startupCheckbox.CheckedChanged += StartupCheckBox_CheckedChanged;
-        _shortcutPicker.SetShortcutKey(pluginSettings.Get(SettingKeys.FocusShortcut)!);
+        _shortcutPicker.SetShortcutKey(PluginSettings.Get(SettingKeys.FocusShortcut)!);
         _shortcutPicker.ShortcutChanged += ShortcutPicker_ShortcutChanged;
         actionCombobox.LoadActions(_allPluginsActions); //todo: row below depends on this, fix it
         actionCombobox.SelectedAction = _allPluginsActions.GetAction(PluginSettings.Get(SettingKeys.ShortcutAction)!);

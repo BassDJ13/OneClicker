@@ -5,21 +5,27 @@ namespace OneClicker.Plugins;
 
 public class PluginManager
 {
-    private static PluginManager? _instance;
-    internal static PluginManager Instance => _instance ??= new PluginManager();
-
     internal ActionRegistry? ActionRegistry { get; private set; }
+    internal PluginRegistry? PluginRegistry { get; private set; }
 
-    public PluginManager()
+    public PluginManager(ISettingsStore settingsStore, IGlobalSettings globalSettings)
     {
-        _instance = this;
         _activePlugins = PluginLoader.LoadPlugins("plugins");
-        IList<string> names = new List<string>();
+        PluginRegistry = new PluginRegistry(_activePlugins);
+
         foreach (var plugin in ActivePlugins)
         {
-            names.Add(plugin.Name);
+            var settingsProxy = new PluginSettingsProxy(plugin.Name, settingsStore);
+            var context = CreateWidgetContext(settingsProxy, globalSettings);
+            plugin.PreInitialize(context);
         }
-        Names = names.ToArray();
+
+        ActionRegistry = new ActionRegistry(_activePlugins);
+
+        foreach (var plugin in ActivePlugins)
+        {
+            plugin.PostInitialize();
+        }
     }
 
     private IList<IPluginWidgetControl>? GetPluginsWithWidgets(IList<IPlugin> plugins)
@@ -35,48 +41,12 @@ public class PluginManager
         return result;
     }
 
-    private IList<PluginActionDescriptor> GetAllPluginActions(IList<IPlugin> plugins)
-    {
-        if (ActionRegistry != null)
-        {
-            return ActionRegistry.GetAllActions();
-        }
-
-        var result = new List<PluginActionDescriptor>();
-        foreach (var plugin in plugins)
-        {
-            foreach (var action in plugin.Actions)
-            {
-                result.Add(new PluginActionDescriptor(
-                    pluginId: plugin.Guid.ToString(),
-                    actionId: action.Key,
-                    pluginName: plugin.Name));
-            }
-        }
-        
-        return result;
-    }
-
-    internal void SupplyAllPluginActionsToPlugins()
-    {
-        ActionRegistry = new ActionRegistry(GetAllPluginActions(ActivePlugins));
-        foreach (var plugin in ActivePlugins)
-        {
-            if (plugin is IRequiresActionRegistry pluginWithActionRegistry)
-            {
-                pluginWithActionRegistry.SupplyActions(ActionRegistry!);
-            }
-        }
-    }
-
     private IList<IPlugin> _activePlugins;
     internal IList<IPlugin> ActivePlugins
         => _activePlugins;
 
     internal IList<IPluginWidgetControl> ActiveWidgets
         => GetPluginsWithWidgets(ActivePlugins)!;
-
-    internal string[] Names { get; private set; }
 
     internal IPlugin GetPlugin(string pluginName)
     {
@@ -102,19 +72,12 @@ public class PluginManager
         throw new KeyNotFoundException();
     }
 
-    internal void InitializePlugins(ISettingsStore settingsStore, IGlobalSettings globalSettings)
-    {
-        foreach (var plugin in ActivePlugins)
-        {
-            var settingsProxy = new PluginSettingsProxy(plugin.Name, settingsStore);
-            plugin.PreInitialize(settingsProxy, globalSettings);
-        }
-        SupplyAllPluginActionsToPlugins();
-        foreach (var plugin in ActivePlugins)
-        {
-            plugin.PostInitialize();
-        }
-    }
+    private IPluginContext CreateWidgetContext(PluginSettingsProxy pluginSettings, IGlobalSettings globalSettings)
+        => new PluginContext(
+            pluginSettings: pluginSettings,
+            globalSettings: globalSettings,
+            actionRegistry: ActionRegistry!,
+            pluginRegistry: PluginRegistry!);
 
     internal int WidthOfWidgetsInUnits()
     {

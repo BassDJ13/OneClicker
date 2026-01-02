@@ -5,7 +5,7 @@ namespace MainSettings;
 
 public class PluginsSettings : PluginConfigurationControl
 {
-    public PluginsSettings(IPluginSettings pluginSettings, IGlobalSettings globalSettings) : base(pluginSettings, globalSettings)
+    public PluginsSettings(IPluginContext pluginContext) : base(pluginContext)
     {
         var labelStyle = new Label { Text = "Plugins settings", Left = 0, Top = 0, Width = 100 };
 

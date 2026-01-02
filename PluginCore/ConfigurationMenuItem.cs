@@ -9,9 +9,8 @@ public sealed class ConfigurationMenuItem : IConfigurationMenuItem
     public string PluginId { get; private set; }
     private IPluginConfigurationControl? _content;
     public IPluginConfigurationControl? Content => _content;
-    public object[] _customParameters;
 
-    public IPluginConfigurationControl? CreateConfigurationControl(IPluginSettings pluginSettingsOverlay, IGlobalSettings globalSettingsOverlay)
+    public IPluginConfigurationControl? CreateConfigurationControl(IPluginContext context)
     {
         if (ConfigurationClass == null)
         {
@@ -23,24 +22,15 @@ public sealed class ConfigurationMenuItem : IConfigurationMenuItem
             return _content;
         }
 
-        var parameters = new object[]
-        {
-            pluginSettingsOverlay,
-            globalSettingsOverlay
-        }
-        .Concat(_customParameters)
-        .ToArray();
-
-        _content = (IPluginConfigurationControl)Activator.CreateInstance(ConfigurationClass, parameters)!;
+        _content = (IPluginConfigurationControl)Activator.CreateInstance(ConfigurationClass, [context])!;
 
         return _content;
     }
 
-    public ConfigurationMenuItem(string name, Type? configurationClass, string pluginId, params object[] customParameters)
+    public ConfigurationMenuItem(string name, Type? configurationClass, string pluginId)
     {
         PluginId = pluginId;
         Name = name;
         ConfigurationClass = configurationClass;
-        _customParameters = customParameters;
     }
 }

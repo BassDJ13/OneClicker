@@ -1,8 +1,5 @@
 ﻿using OneClicker.Forms;
 using System.Runtime.InteropServices;
-using Microsoft.Extensions.DependencyInjection;
-using OneClicker.Plugins;
-using Microsoft.Extensions.Hosting;
 
 namespace OneClicker;
 
@@ -38,9 +35,6 @@ internal static class Program
 
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-
-        using var host = ApplicationHost.Build();
-        var mainForm = host.Services.GetRequiredService<WidgetsWindow>();
-        Application.Run(mainForm);
+        Application.Run(new WidgetsWindow());
     }
 }

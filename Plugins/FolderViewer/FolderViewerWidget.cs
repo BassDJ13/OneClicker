@@ -12,7 +12,7 @@ public class FolderViewerWidget : PluginWidgetControl
     private readonly BlinkHelper _blinker = new();
     private readonly ContextMenuStrip _menu = new();
 
-    public FolderViewerWidget(IPluginSettings pluginSettings, IGlobalSettings globalSettings) : base(pluginSettings, globalSettings)
+    public FolderViewerWidget(IPluginContext context) : base(context)
     {
         _openButton = new Button
         {
@@ -48,6 +48,8 @@ public class FolderViewerWidget : PluginWidgetControl
     public override void SettingsChanged()
     {
         _menu.Items.Clear();
+        _openButton.BackColor = GlobalSettings.BackgroundColor;
+        _openButton.Refresh();
     }
 
     private void OpenButton_Click(object sender, EventArgs e)

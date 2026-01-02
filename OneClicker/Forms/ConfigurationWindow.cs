@@ -172,14 +172,21 @@ public sealed class ConfigurationWindow : Form
     private void LoadConfigurationControl(IConfigurationMenuItem configurationMenuItem)
     {
         _contentPanel.Controls.Clear();
-
-        var configurationControl = configurationMenuItem.CreateConfigurationControl(GetPluginOverlay(configurationMenuItem.PluginId), _globalSettingsOverlay);
+        var context = CreateConfigurationContext(configurationMenuItem);
+        var configurationControl = configurationMenuItem.CreateConfigurationControl(context);
         if (configurationControl is Control control)
         {
             configurationControl.Dock = DockStyle.Fill;
             _contentPanel.Controls.Add((Control)configurationControl);
         }
     }
+
+    private IPluginContext CreateConfigurationContext(IConfigurationMenuItem configurationMenuItem)
+        => new PluginContext(
+            pluginSettings: GetPluginOverlay(configurationMenuItem.PluginId),
+            globalSettings: _globalSettingsOverlay,
+            actionRegistry: _pluginManager.ActionRegistry!,
+            pluginRegistry: _pluginManager.PluginRegistry!);
 
     private void SaveButton_Click(object? sender, EventArgs e)
     {

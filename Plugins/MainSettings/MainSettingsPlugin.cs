@@ -4,21 +4,15 @@ using PluginCore;
 
 namespace MainSettings;
 
-public class MainSettingsPlugin : Plugin, IRequiresActionRegistry
+public class MainSettingsPlugin : Plugin
 {
     public override Guid Guid => new Guid("FB7AD8BB-1BAF-4D55-9DDA-20D78B4CC72C");
 
     public override string Name => "App";
 
-    private IActionRegistry? _allPluginsActions;
-    public void SupplyActions(IActionRegistry registry)
-    {
-        _allPluginsActions = registry;
-    }
-
     protected override void InitializeConfigurationControls()
     {
-        AddConfigurationControl("General", typeof(GeneralSettings), _allPluginsActions!);
+        AddConfigurationControl("General", typeof(GeneralSettings));
         AddConfigurationControl("Appearance", typeof(AppearanceSettings));
         AddConfigurationControl("Plugins", typeof(PluginsSettings));
         AddConfigurationControl("About", typeof(AboutSettings));

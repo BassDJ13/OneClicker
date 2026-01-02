@@ -5,9 +5,9 @@ namespace OneClicker.Classes;
 
 internal static class ContextMenuService
 {
-    public static void CreateMenuItemsForPlugins(ContextMenuStrip contextMenu)
+    public static void CreateMenuItemsForPlugins(ContextMenuStrip contextMenu, IList<IPlugin> plugins)
     {
-        foreach (IPlugin plugin in PluginManager.Instance.ActivePlugins)
+        foreach (IPlugin plugin in plugins)
         {
             if (plugin.HasContextMenuItems)
             {

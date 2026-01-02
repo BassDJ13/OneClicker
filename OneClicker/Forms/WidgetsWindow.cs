@@ -33,9 +33,8 @@ public class WidgetsWindow : Form
         await Task.WhenAll(tasks);
     }
 
-    public WidgetsWindow(PluginManager pluginManager)
+    public WidgetsWindow()
     {
-        _pluginManager = pluginManager;
         Text = "OneClicker";
         _windowLocationHelper = new WindowLocationHelper(new ScreenProvider());
         FormBorderStyle = FormBorderStyle.None;
@@ -49,7 +48,7 @@ public class WidgetsWindow : Form
 
         _mainAppSettings = new MainAppSettings(_settingsStore);
         _globalSettings = new GlobalSettings(_settingsStore);
-        _pluginManager.InitializePlugins(_settingsStore, _globalSettings);
+        _pluginManager = new PluginManager(_settingsStore, _globalSettings);
 
         if (!_settingsStore.FileExists)
         {
@@ -272,7 +271,7 @@ public class WidgetsWindow : Form
             return false;
         }
         _contextMenu = new ContextMenuStrip();
-        ContextMenuService.CreateMenuItemsForPlugins(_contextMenu);
+        ContextMenuService.CreateMenuItemsForPlugins(_contextMenu, _pluginManager.ActivePlugins);
         _contextMenu.Items.Add("Configuration", null, (s, a) => OpenConfiguration());
         _contextMenu.Items.Add("Close program", null, (s, a) => Close());
 
@@ -286,11 +285,11 @@ public class WidgetsWindow : Form
         if (dlg.ShowDialog() == DialogResult.OK)
         {
             BackColor = _globalSettings!.HeaderColor;
-            RefreshLayout();
             foreach (IPluginWidgetControl widget in _pluginManager.ActiveWidgets)
             {
                 widget.SettingsChanged();
             }
+            RefreshLayout();
             TransparencyHelper.SetInactiveOpacity(this, ((double)_mainAppSettings!.InactiveOpacity) / 100f);
             _settingsStore!.Save();
             Invalidate();

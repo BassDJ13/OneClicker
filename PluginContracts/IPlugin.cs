@@ -12,6 +12,6 @@ public interface IPlugin
     bool HasContextMenuItems { get; }
     Dictionary<string, Action> Actions { get; }
 
-    void PreInitialize(IPluginSettings settings, IGlobalSettings globalSettings);
+    void PreInitialize(IPluginContext context);
     void PostInitialize();
 }

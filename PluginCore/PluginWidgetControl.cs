@@ -5,13 +5,13 @@ namespace PluginCore;
 public abstract class PluginWidgetControl : UserControl, IPluginWidgetControl
 {
     public int WidthInUnits { get; }
-    public IPluginSettings PluginSettings { get; private set; }
-    public IGlobalSettings GlobalSettings { get; private set; }
+    protected IPluginSettings PluginSettings { get; private set; }
+    protected IGlobalSettings GlobalSettings { get; private set; }
 
-    public PluginWidgetControl(IPluginSettings pluginSettings, IGlobalSettings globalSettings) : base()
+    public PluginWidgetControl(IPluginContext context) : base()
     {
-        PluginSettings = pluginSettings;
-        GlobalSettings = globalSettings;
+        PluginSettings = context.PluginSettings;
+        GlobalSettings = context.GlobalSettings;
         WidthInUnits = GetWidthInUnits();
     }
 

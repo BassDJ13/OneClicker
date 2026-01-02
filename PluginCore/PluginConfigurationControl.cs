@@ -4,12 +4,12 @@ namespace PluginCore;
 
 public abstract class PluginConfigurationControl : UserControl, IPluginConfigurationControl
 {
-    public IPluginSettings PluginSettings { get; private set; }
-    public IGlobalSettings GlobalSettings { get; private set; }
+    protected IPluginSettings PluginSettings { get; private set; }
+    protected IGlobalSettings GlobalSettings { get; private set; }
 
-    public PluginConfigurationControl(IPluginSettings pluginSettings, IGlobalSettings globalSettings) : base()
+    public PluginConfigurationControl(IPluginContext pluginContext) : base()
     {
-        PluginSettings = pluginSettings;
-        GlobalSettings = globalSettings;
+        PluginSettings = pluginContext.PluginSettings;
+        GlobalSettings = pluginContext.GlobalSettings;
     }
 }
