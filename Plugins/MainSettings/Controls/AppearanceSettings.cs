@@ -1,6 +1,5 @@
 ﻿using PluginContracts;
 using PluginCore;
-using System.Drawing;
 
 namespace MainSettings.Controls;
 
