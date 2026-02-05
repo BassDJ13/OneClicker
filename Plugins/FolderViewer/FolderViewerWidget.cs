@@ -72,11 +72,11 @@ public class FolderViewerWidget : PluginWidgetControl
 
     private void AddMenuItems()
     {
-        var items = FolderContentLoader.GetItems(PluginSettings.Get(SettingKeys.FolderPath)!);
-        foreach (var item in items)
+        _menu.Items.Clear();
+
+        foreach (var item in FolderContentLoader.GetItems(
+            PluginSettings.Get(SettingKeys.FolderPath)!, LeftClickOrEnter, RightClick))
         {
-            item.Click += LeftClickOrEnter;
-            item.MouseDown += RightClick;
             _menu.Items.Add(item);
         }
     }
@@ -84,7 +84,8 @@ public class FolderViewerWidget : PluginWidgetControl
     private void LeftClickOrEnter(object? sender, EventArgs e)
     {
         if (sender is ToolStripMenuItem menuItem
-            && menuItem.Tag is string path)
+            && menuItem.Tag is string path
+            && File.Exists(path))
         {
             StartProcess(path);
         }
