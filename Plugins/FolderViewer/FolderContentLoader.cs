@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace BassCommon.FileSystem;
+namespace FolderViewer;
 
 public static class FolderContentLoader
 {
@@ -24,24 +24,24 @@ public static class FolderContentLoader
     private const uint SHGFI_ICON = 0x100;
     private const uint SHGFI_SMALLICON = 0x1;
     private const uint SHGFI_USEFILEATTRIBUTES = 0x10;
-    private const uint FILE_ATTRIBUTE_DIRECTORY = 0x10;
-    private const uint SHGFI_LARGEICON = 0x0;
 
-    private static Icon GetFolderIcon()
+    private static Icon GetFolderIcon(string folderPath)
     {
         SHFILEINFO shinfo = new SHFILEINFO();
 
         SHGetFileInfo(
-            string.Empty,
-            FILE_ATTRIBUTE_DIRECTORY,
+            folderPath,
+            0,
             ref shinfo,
             (uint)Marshal.SizeOf(shinfo),
-            SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES
+            SHGFI_ICON | SHGFI_SMALLICON
         );
 
-        return shinfo.hIcon != nint.Zero
-            ? Icon.FromHandle(shinfo.hIcon)
-            : SystemIcons.WinLogo;
+        if (shinfo.hIcon == nint.Zero)
+            return SystemIcons.WinLogo;
+
+        using var temp = Icon.FromHandle(shinfo.hIcon);
+        return (Icon)temp.Clone();
     }
 
     private static Icon GetFileIcon(string path)
@@ -86,10 +86,12 @@ public static class FolderContentLoader
         EventHandler fileClickHandler,
         MouseEventHandler rightClickHandler)
     {
-        var folderItem = new ToolStripMenuItem(Path.GetFileName(folderPath))
+        var name = Path.GetFileName(folderPath);
+
+        var folderItem = new ToolStripMenuItem(name)
         {
             Tag = folderPath,
-            Image = GetFolderIcon().ToBitmap()
+            Image = GetFolderIcon(folderPath).ToBitmap()
         };
 
         folderItem.DropDownItems.Add("Loading...");

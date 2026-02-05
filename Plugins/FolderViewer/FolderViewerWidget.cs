@@ -1,5 +1,4 @@
 ﻿using BassCommon;
-using BassCommon.FileSystem;
 using PluginContracts;
 using PluginCore;
 using System.Diagnostics;
