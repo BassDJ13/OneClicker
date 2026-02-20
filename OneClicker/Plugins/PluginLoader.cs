@@ -1,5 +1,6 @@
 ﻿using PluginContracts;
 using System.Reflection;
+using System.IO;
 
 namespace OneClicker.Plugins;
 
@@ -32,7 +33,7 @@ internal static class PluginLoader
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading plugin {dll}\n{ex.Message}");
+                // MessageBox.Show($"Error loading plugin {dll}\n{ex.Message}");
             }
         }
 

@@ -2,5 +2,5 @@
 
 public interface IScreenProvider
 {
-    Rectangle GetWorkingArea(Form form);
+    // Rectangle GetWorkingArea(Form form);
 }

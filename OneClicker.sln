@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36518.9
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11408.102 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClicker", "OneClicker\OneClicker.csproj", "{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{00E0FE84-C3C3-4659-8CF8-7A64111E299B} = {00E0FE84-C3C3-4659-8CF8-7A64111E299B}
 		{093FC698-28BD-4B96-8268-149CE29D24ED} = {093FC698-28BD-4B96-8268-149CE29D24ED}
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClicker.Tests", "OneClicker.Tests\OneClicker.Tests.csproj", "{FC677EB0-A753-453F-8B73-AEFC2C532440}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BassCommon", "BassCommon\BassCommon.csproj", "{BE7C7E9B-96A4-DB81-C809-2E42B5B5E777}"
 EndProject
@@ -31,10 +29,6 @@ Global
 		{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6889E0FA-29FE-4FAD-9FA8-6091CE941BE9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC677EB0-A753-453F-8B73-AEFC2C532440}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC677EB0-A753-453F-8B73-AEFC2C532440}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC677EB0-A753-453F-8B73-AEFC2C532440}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC677EB0-A753-453F-8B73-AEFC2C532440}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BE7C7E9B-96A4-DB81-C809-2E42B5B5E777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BE7C7E9B-96A4-DB81-C809-2E42B5B5E777}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE7C7E9B-96A4-DB81-C809-2E42B5B5E777}.Release|Any CPU.ActiveCfg = Release|Any CPU

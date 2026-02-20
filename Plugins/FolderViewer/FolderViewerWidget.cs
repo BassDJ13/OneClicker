@@ -27,7 +27,7 @@ public class FolderViewerWidget : PluginWidgetControl
 
         Controls.Add(_openButton);
 
-        _openButton.BackColor = GlobalSettings.BackgroundColor;
+        // _openButton.BackColor = GlobalSettings.BackgroundColor;
     }
 
     public override async Task StartAnimation()
@@ -47,7 +47,7 @@ public class FolderViewerWidget : PluginWidgetControl
     public override void SettingsChanged()
     {
         _menu.Items.Clear();
-        _openButton.BackColor = GlobalSettings.BackgroundColor;
+        // _openButton.BackColor = GlobalSettings.BackgroundColor;
         _openButton.Refresh();
     }
 
@@ -165,8 +165,8 @@ public class FolderViewerWidget : PluginWidgetControl
             new PointF(w * 0.75f, h * 0.7f)
         };
 
-        using var brush = new SolidBrush(GlobalSettings.ForegroundColor);
-        g.FillPolygon(brush, pts);
+        // using var brush = new SolidBrush(GlobalSettings.ForegroundColor);
+        // g.FillPolygon(brush, pts);
     }
 
     internal void ClearMenu()

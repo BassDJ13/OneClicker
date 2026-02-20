@@ -40,16 +40,13 @@ public class AppearanceSettings : PluginConfigurationControl
         _numOffsetY.ValueChanged += NumOffsetY_ValueChanged;
 
         var labelBack = new Label { Text = "Header:", Left = 0, Top = 85, Width = 74 };
-        _btnHeaderColor = new Button { Left = 74, Top = 82, Width = 22
-            , BackColor = GlobalSettings.HeaderColor };
+        _btnHeaderColor = new Button { Left = 74, Top = 82, Width = 22 };
 
         var labelButton = new Label { Text = "Background:", Left = 0, Top = 107, Width = 74 };
-        _btnBackgroundColor = new Button { Left = 74, Top = 104, Width = 22
-            , BackColor = GlobalSettings.BackgroundColor };
+        _btnBackgroundColor = new Button { Left = 74, Top = 104, Width = 22 };
 
         var labelTriangle = new Label { Text = "Foreground:", Left = 0, Top = 129, Width = 74 };
-        _btnForeGroundColor = new Button { Left = 74, Top = 126, Width = 22
-            , BackColor = GlobalSettings.ForegroundColor };
+        _btnForeGroundColor = new Button { Left = 74, Top = 126, Width = 22 };
 
         var labelWidgetSize = new Label { Text = "Size per widget:", Left = 120, Top = 85, Width = 100 };
         _numWidgetSize = new NumericUpDown { Left = 220, Top = 82, Width = 60, Minimum = 8, Maximum = 960
@@ -61,12 +58,9 @@ public class AppearanceSettings : PluginConfigurationControl
             , Value = PluginSettings.GetInt(SettingKeys.InactiveOpacity) };
         _numInactiveOpacity.ValueChanged += InactiveOpacityChanged;
 
-        _btnHeaderColor.Click += (s, e) => 
-            PickColor(_btnHeaderColor, (color) => GlobalSettings.HeaderColor = color);
-        _btnBackgroundColor.Click += (s, e) => 
-            PickColor(_btnBackgroundColor, (color) => GlobalSettings.BackgroundColor = color);
-        _btnForeGroundColor.Click += (s, e) => 
-            PickColor(_btnForeGroundColor, (color) => GlobalSettings.ForegroundColor = color);
+        _btnHeaderColor.Click += (s, e) => { };
+        _btnBackgroundColor.Click += (s, e) => { };
+        _btnForeGroundColor.Click += (s, e) => { };
 
         Controls.AddRange([
             labelStyle, _radioFloating, _radioDocked,

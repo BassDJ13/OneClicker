@@ -17,24 +17,24 @@ internal static class Program
     [DllImport("user32.dll")]
     private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-    [STAThread]
-    static void Main()
-    {
-        using var mutex = new Mutex(true, MutexName, out bool isNewInstance);
-
-        if (!isNewInstance)
-        {
-            var existing = FindWindow(null, "OneClicker");
-            if (existing != IntPtr.Zero)
-            {
-                PostMessage(existing, WM_APP_SHOW, IntPtr.Zero, IntPtr.Zero);
-                SetForegroundWindow(existing);
-            }
-            return;
-        }
-
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
-        Application.Run(new WidgetsWindow());
-    }
+    //[STAThread]
+    //static void Main()
+    //{
+    //    using var mutex = new Mutex(true, MutexName, out bool isNewInstance);
+    //
+    //    if (!isNewInstance)
+    //    {
+    //        var existing = FindWindow(null, "OneClicker");
+    //        if (existing != IntPtr.Zero)
+    //        {
+    //            PostMessage(existing, WM_APP_SHOW, IntPtr.Zero, IntPtr.Zero);
+    //            SetForegroundWindow(existing);
+    //        }
+    //        return;
+    //    }
+    //
+    //    var app = new App();
+    //    app.InitializeComponent();
+    //    app.Run();
+    //}
 }

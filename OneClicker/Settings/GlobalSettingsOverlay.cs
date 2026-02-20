@@ -15,26 +15,26 @@ public sealed class GlobalSettingsOverlay : SettingsOverlayBase, IGlobalSettings
         set => this.SetInt(_widgetSize, value);
     }
 
-    public Color HeaderColor
+    public string HeaderColor
     {
-        get => this.GetColor(_headerColor, Color.MidnightBlue);
-        set => this.SetColor(_headerColor, value);
+        get => Get(_headerColor) ?? "#FF191970";
+        set => Set(_headerColor, value);
     }
 
-    public Color BackgroundColor
+    public string BackgroundColor
     {
-        get => this.GetColor(_backgroundColor, Color.SteelBlue);
-        set => this.SetColor(_backgroundColor, value);
+        get => Get(_backgroundColor) ?? "#FF4682B4";
+        set => Set(_backgroundColor, value);
     }
 
-    public Color ForegroundColor
+    public string ForegroundColor
     {
-        get => this.GetColor(_foregroundColor, Color.LightBlue);
-        set => this.SetColor(_foregroundColor, value);
+        get => Get(_foregroundColor) ?? "#FFADD8E6";
+        set => Set(_foregroundColor, value);
     }
 
     public GlobalSettingsOverlay(ISettingsStore store)
-        : base(store, "Global.")
+        : base(store, "Global")
     {
     }
 }

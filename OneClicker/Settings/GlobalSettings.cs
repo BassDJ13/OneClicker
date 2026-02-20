@@ -1,4 +1,6 @@
-﻿using OneClicker.Plugins;
+﻿
+using System.Windows.Media;
+using OneClicker.Plugins;
 using PluginContracts;
 
 namespace OneClicker.Settings;
@@ -17,22 +19,22 @@ internal class GlobalSettings : PluginSettingsProxy, IGlobalSettings
         set => this.SetInt(_widgetSize, value);
     }
 
-    public Color HeaderColor
+    public string HeaderColor
     {
-        get => this.GetColor(_headerColor, Color.MidnightBlue);
-        set => this.SetColor(_headerColor, value);
+        get => Get(_headerColor) ?? "#FF191970"; // MidnightBlue
+        set => Set(_headerColor, value);
     }
 
-    public Color BackgroundColor
+    public string BackgroundColor
     {
-        get => this.GetColor(_backgroundColor, Color.SteelBlue);
-        set => this.SetColor(_backgroundColor, value);
+        get => Get(_backgroundColor) ?? "#FF4682B4"; // SteelBlue
+        set => Set(_backgroundColor, value);
     }
 
-    public Color ForegroundColor
+    public string ForegroundColor
     {
-        get => this.GetColor(_foregroundColor, Color.LightBlue);
-        set => this.SetColor(_foregroundColor, value);
+        get => Get(_foregroundColor) ?? "#FFADD8E6"; // LightBlue
+        set => Set(_foregroundColor, value);
     }
 
     internal GlobalSettings(ISettingsStore store) : base(_prefix, store)

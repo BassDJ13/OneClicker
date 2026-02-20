@@ -9,16 +9,16 @@ public class TopMostHelper
         _positioner = positioner;
     }
 
-    public void HandleMessage(Form form, ref Message m)
-    {
-        const int WM_ACTIVATE = 0x0006;
-        const int WA_INACTIVE = 0;
-
-        if (m.Msg == WM_ACTIVATE && m.WParam.ToInt32() == WA_INACTIVE)
-        {
-            _positioner.SetTopMost(form.Handle);
-        }
-    }
+    // public void HandleMessage(Form form, ref Message m)
+    // {
+    //     const int WM_ACTIVATE = 0x0006;
+    //     const int WA_INACTIVE = 0;
+    //
+    //     if (m.Msg == WM_ACTIVATE && m.WParam.ToInt32() == WA_INACTIVE)
+    //     {
+    //         _positioner.SetTopMost(form.Handle);
+    //     }
+    // }
 
     public void KeepOnTop(nint handle)
     {

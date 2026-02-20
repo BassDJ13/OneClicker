@@ -1,41 +1,47 @@
-﻿using PluginContracts;
+﻿
+using System.Windows.Controls;
+using PluginContracts;
 
 namespace OneClicker.Classes;
 
 internal static class ContextMenuService
 {
-    public static void CreateMenuItemsForPlugins(ContextMenuStrip contextMenu, IList<IPlugin> plugins)
+    public static void CreateMenuItemsForPlugins(ContextMenu contextMenu, IList<IPlugin> plugins)
     {
         foreach (IPlugin plugin in plugins)
         {
             if (plugin.HasContextMenuItems)
             {
-                var menuItem = contextMenu.Items.Add(plugin.Name);
-                (menuItem as ToolStripMenuItem)!.DropDownItems.AddRange(CreateMenuItems(plugin.ContextMenuItems));
+                var menuItem = new MenuItem { Header = plugin.Name };
+                foreach (var subItem in CreateMenuItems(plugin.ContextMenuItems))
+                {
+                    menuItem.Items.Add(subItem);
+                }
+                contextMenu.Items.Add(menuItem);
             }
         }
     }
 
-    private static ToolStripMenuItem[] CreateMenuItems(IList<IContextMenuItem> menuItems)
+    private static List<MenuItem> CreateMenuItems(IList<IContextMenuItem> menuItems)
     {
-        var result = new List<ToolStripMenuItem>();
+        var result = new List<MenuItem>();
 
         foreach (var item in menuItems)
         {
-            var menuItem = new ToolStripMenuItem
+            var menuItem = new MenuItem
             {
-                Text = item.Description,
-                Image = item.Image,
+                Header = item.Description
+                // Icon = item.Image, // TODO: Convert to ImageSource if needed
             };
 
             if (item.OnClick != null)
             {
-                menuItem.Click += item.OnClick;
+                menuItem.Click += (s, e) => item.OnClick(s, EventArgs.Empty);
             }
 
             result.Add(menuItem);
         }
 
-        return result.ToArray();
+        return result;
     }
 }

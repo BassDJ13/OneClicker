@@ -3,7 +3,7 @@
 public interface IGlobalSettings : IPluginSettings
 {
     int WidgetSize { get; set; }
-    Color HeaderColor { get; set; }
-    Color BackgroundColor { get; set; }
-    Color ForegroundColor { get; set; }
+    string HeaderColor { get; set; }
+    string BackgroundColor { get; set; }
+    string ForegroundColor { get; set; }
 }
