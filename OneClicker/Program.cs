@@ -1,5 +1,12 @@
 ﻿using OneClicker.Forms;
+using Microsoft.Extensions.DependencyInjection;
+using OneClicker.WindowBehavior;
+using OneClicker.Plugins;
 using System.Runtime.InteropServices;
+using OneClicker.Settings;
+using OneClicker.Settings.Ini;
+using BassCommon.FileSystem;
+using PluginContracts;
 
 namespace OneClicker;
 
@@ -35,6 +42,21 @@ internal static class Program
 
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-        Application.Run(new WidgetsWindow());
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IScreenProvider, ScreenProvider>();
+        services.AddSingleton<IWindowLocationHelper, WindowLocationHelper>();
+        services.AddSingleton<IPathProvider, PathProvider>();
+        services.AddSingleton<IFileSystem, RealFileSystem>();
+        services.AddSingleton<ISettingsStore, IniSettingsStore>();
+        services.AddSingleton<IMainAppSettings>(sp => new MainAppSettings(sp.GetRequiredService<ISettingsStore>()));
+        services.AddSingleton<IGlobalSettings>(sp => new GlobalSettings(sp.GetRequiredService<ISettingsStore>()));
+        services.AddSingleton<IPluginManager>(sp => new PluginManager(sp.GetRequiredService<ISettingsStore>(), sp.GetRequiredService<IGlobalSettings>()));
+
+        services.AddSingleton<WidgetsWindow>();
+
+        using var serviceProvider = services.BuildServiceProvider();
+
+        Application.Run(serviceProvider.GetRequiredService<WidgetsWindow>());
     }
 }

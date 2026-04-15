@@ -6,29 +6,29 @@ namespace OneClicker.Settings.Ini;
 public class IniSettingsStore : ISettingsStore
 {
     private readonly string _path;
-    private readonly IFileSystem _fs;
+    private readonly IFileSystem _fileSystem;
     private readonly Dictionary<string, string> _store = new();
 
     public bool FileExists { get; private set; }
 
-    public IniSettingsStore(string path, IFileSystem? fs = null)
+    public IniSettingsStore(IPathProvider pathProvider, IFileSystem fileSystem)
     {
-        _path = path;
-        _fs = fs ?? new RealFileSystem();
+        _path = pathProvider.GetConfigPath();
+        _fileSystem = fileSystem;
     }
 
     public void Load()
     {
         try
         {
-            if (!_fs.Exists(_path))
+            if (!_fileSystem.Exists(_path))
             {
                 return;
             }
 
             FileExists = true;
 
-            foreach (var line in _fs.ReadAllLines(_path))
+            foreach (var line in _fileSystem.ReadAllLines(_path))
             {
                 var parts = line.Split('=', 2);
                 if (parts.Length == 2)
@@ -58,7 +58,7 @@ public class IniSettingsStore : ISettingsStore
         try
         {
             var lines = _store.Select(kvp => $"{kvp.Key}={kvp.Value}");
-            _fs.WriteAllLines(_path, lines);
+            _fileSystem.WriteAllLines(_path, lines);
         }
         catch (IOException ex)
         {

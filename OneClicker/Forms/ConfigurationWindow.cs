@@ -20,9 +20,9 @@ public sealed class ConfigurationWindow : Form
     private readonly ISettingsStore _settingsStore;
     private readonly GlobalSettingsOverlay _globalSettingsOverlay;
     private readonly Dictionary<string, PluginSettingsOverlay> _pluginOverlays = new();
-    private readonly PluginManager _pluginManager;
+    private readonly IPluginManager _pluginManager;
 
-    public ConfigurationWindow(ISettingsStore settingsStore, PluginManager pluginManager)
+    internal ConfigurationWindow(ISettingsStore settingsStore, IPluginManager pluginManager)
     {
         _settingsStore = settingsStore;
         _pluginManager = pluginManager;

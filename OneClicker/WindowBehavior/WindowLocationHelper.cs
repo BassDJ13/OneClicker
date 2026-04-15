@@ -2,7 +2,7 @@
 
 namespace OneClicker.WindowBehavior;
 
-public class WindowLocationHelper
+public class WindowLocationHelper : IWindowLocationHelper
 {
     private readonly IScreenProvider _screenProvider;
 

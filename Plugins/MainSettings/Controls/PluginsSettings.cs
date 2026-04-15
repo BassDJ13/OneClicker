@@ -31,7 +31,10 @@ public class PluginsSettings : PluginConfigurationControl
 
         foreach (IPlugin plugin in plugins)
         {
-            pluginList.Items.Add(plugin.Name, true);
+            if (!(plugin is MainSettingsPlugin))
+            {
+                pluginList.Items.Add(plugin.Name, true);
+            }
         }
 
         pluginList.ItemCheck += (s, e) =>

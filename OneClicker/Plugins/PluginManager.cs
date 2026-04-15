@@ -3,10 +3,10 @@ using PluginContracts;
 
 namespace OneClicker.Plugins;
 
-public class PluginManager
+internal class PluginManager : IPluginManager
 {
-    internal ActionRegistry? ActionRegistry { get; private set; }
-    internal PluginRegistry? PluginRegistry { get; private set; }
+    public ActionRegistry? ActionRegistry { get; private set; }
+    public PluginRegistry? PluginRegistry { get; private set; }
 
     public PluginManager(ISettingsStore settingsStore, IGlobalSettings globalSettings)
     {
@@ -42,13 +42,13 @@ public class PluginManager
     }
 
     private IList<IPlugin> _activePlugins;
-    internal IList<IPlugin> ActivePlugins
+    public IList<IPlugin> ActivePlugins
         => _activePlugins;
 
-    internal IList<IPluginWidgetControl> ActiveWidgets
+    public IList<IPluginWidgetControl> ActiveWidgets
         => GetPluginsWithWidgets(ActivePlugins)!;
 
-    internal IPlugin GetPlugin(string pluginName)
+    public IPlugin GetPlugin(string pluginName)
     {
         foreach (var plugin in ActivePlugins!)
         {
@@ -60,7 +60,7 @@ public class PluginManager
         throw new KeyNotFoundException();
     }
 
-    internal IPlugin GetPluginById(string pluginId)
+    public IPlugin GetPluginById(string pluginId)
     {
         foreach (var plugin in ActivePlugins!)
         {
@@ -79,7 +79,7 @@ public class PluginManager
             actionRegistry: ActionRegistry!,
             pluginRegistry: PluginRegistry!);
 
-    internal int WidthOfWidgetsInUnits()
+    public int WidthOfWidgetsInUnits()
     {
         int width = 0;
         foreach (IPluginWidgetControl widget in ActiveWidgets)

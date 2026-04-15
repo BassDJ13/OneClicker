@@ -2,7 +2,7 @@
 
 namespace OneClicker.Classes;
 
-internal sealed class ActionRegistry : IActionRegistry
+public sealed class ActionRegistry : IActionRegistry
 {
     private readonly IList<PluginActionDescriptor> _actions;
 

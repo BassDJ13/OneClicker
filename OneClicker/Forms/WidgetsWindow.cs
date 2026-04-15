@@ -3,7 +3,6 @@ using Microsoft.Win32;
 using OneClicker.Classes;
 using OneClicker.Plugins;
 using OneClicker.Settings;
-using OneClicker.Settings.Ini;
 using OneClicker.WindowBehavior;
 using PluginContracts;
 
@@ -11,16 +10,16 @@ namespace OneClicker.Forms;
 
 public class WidgetsWindow : Form
 {
-    private MainAppSettings? _mainAppSettings;
-    private GlobalSettings? _globalSettings;
+    private IMainAppSettings? _mainAppSettings;
+    private IGlobalSettings? _globalSettings;
     private readonly Panel _dragArea;
     private const int _dragAreaHeight = 6;
     private readonly Panel _contentPanel;
     private ISettingsStore? _settingsStore;
-    private WindowLocationHelper _windowLocationHelper;
+    private IWindowLocationHelper _windowLocationHelper;
     private GlobalHotkeyHelper? _hotkeyHelper;
     private ContextMenuStrip? _contextMenu;
-    private readonly PluginManager _pluginManager;
+    private readonly IPluginManager _pluginManager;
 
     public void Blink() => _ = BlinkAsync();
 
@@ -33,22 +32,22 @@ public class WidgetsWindow : Form
         await Task.WhenAll(tasks);
     }
 
-    public WidgetsWindow()
+    public WidgetsWindow(IWindowLocationHelper windowLocationHelper, ISettingsStore settingsStore, IMainAppSettings mainAppSettings, IGlobalSettings globalSettings, IPluginManager pluginManager)
     {
         Text = "OneClicker";
-        _windowLocationHelper = new WindowLocationHelper(new ScreenProvider());
+        _windowLocationHelper = windowLocationHelper;
+        _settingsStore = settingsStore;
+        _settingsStore.Load();
+
+        _mainAppSettings = mainAppSettings;
+        _globalSettings = globalSettings;
+        _pluginManager = pluginManager;
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.Manual;
         TopMost = true;
         ShowInTaskbar = false;
         DoubleBuffered = true;
 
-        _settingsStore = new IniSettingsStore(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini"));
-        _settingsStore.Load();
-
-        _mainAppSettings = new MainAppSettings(_settingsStore);
-        _globalSettings = new GlobalSettings(_settingsStore);
-        _pluginManager = new PluginManager(_settingsStore, _globalSettings);
 
         if (!_settingsStore.FileExists)
         {
@@ -272,8 +271,8 @@ public class WidgetsWindow : Form
         }
         _contextMenu = new ContextMenuStrip();
         ContextMenuService.CreateMenuItemsForPlugins(_contextMenu, _pluginManager.ActivePlugins);
-        _contextMenu.Items.Add("Configuration", null, (s, a) => OpenConfiguration());
-        _contextMenu.Items.Add("Close program", null, (s, a) => Close());
+        _contextMenu.Items.Add("Configuration", null, (_, _) => OpenConfiguration());
+        _contextMenu.Items.Add("Close program", null, (_, _) => Close());
 
         _contextMenu.Show(this, e.Location);
         return true;

@@ -28,4 +28,14 @@ public class MainSettingsPlugin : Plugin
         AddSetting(SettingKeys.FocusShortcut, "ALT+Z");
         AddSetting(SettingKeys.ShortcutAction, "");
     }
+
+    protected override void InitializeContextMenuItems()
+    {
+        AddContextMenuItem("Always on top", null, () => DoSomething());
+    }
+
+    private void DoSomething()
+    {
+        ContextMenuItems.First().Description = "Enable always on top";
+    }
 }

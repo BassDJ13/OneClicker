@@ -2,7 +2,7 @@ using PluginContracts;
 
 namespace OneClicker.Plugins;
 
-internal sealed class PluginRegistry : IPluginRegistry
+public sealed class PluginRegistry : IPluginRegistry
 {
     private readonly IList<IPlugin> _plugins;
 

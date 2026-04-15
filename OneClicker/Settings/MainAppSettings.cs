@@ -3,7 +3,7 @@ using PluginContracts;
 
 namespace OneClicker.Settings;
 
-internal class MainAppSettings : PluginSettingsProxy
+internal class MainAppSettings : PluginSettingsProxy, IMainAppSettings
 {
     private const string _prefix = "App";
     private const string _inactiveOpacity = "InactiveOpacity";
@@ -16,13 +16,13 @@ internal class MainAppSettings : PluginSettingsProxy
     private const string _focusShortcut = "FocusShortcut";
     private const string _shortcutAction = "ShortcutAction";
 
-    internal double InactiveOpacity
+    public double InactiveOpacity
     {
         get => this.GetDouble(_inactiveOpacity, 50);
         set => this.SetDouble(_inactiveOpacity, value);
     }
 
-    internal WindowStyle WindowStyle
+    public WindowStyle WindowStyle
     {
         get => Enum.TryParse(Get(_windowStyle), out WindowStyle result)
             ? result
@@ -30,7 +30,7 @@ internal class MainAppSettings : PluginSettingsProxy
         set => Set(_windowStyle, nameof(value));
     }
 
-    internal DockPosition DockPosition
+    public DockPosition DockPosition
     {
         get => Enum.TryParse(Get(_dockPosition), out DockPosition result)
             ? result
@@ -38,37 +38,37 @@ internal class MainAppSettings : PluginSettingsProxy
         set => Set(_dockPosition, nameof(value));
     }
 
-    internal int DockOffsetX
+    public int DockOffsetX
     {
         get => this.GetInt(_dockOffsetX, -24);
         set => this.SetInt(_dockOffsetX, value);
     }
 
-    internal int DockOffsetY
+    public int DockOffsetY
     {
         get => this.GetInt(_dockOffsetY, -4);
         set => this.SetInt(_dockOffsetY, value);
     }
 
-    internal int X
+    public int X
     {
         get => this.GetInt(_x, 24);
         set => this.SetInt(_x, value);
     }
 
-    internal int Y
+    public int Y
     {
         get => this.GetInt(_y, 4);
         set => this.SetInt(_y, value);
     }
 
-    internal string FocusShortcut
+    public string FocusShortcut
     {
         get => Get(_focusShortcut);
         set => Set(_focusShortcut, value);
     }
 
-    internal string ShortcutAction
+    public string ShortcutAction
     {
         get => Get(_shortcutAction);
         set => Set(_shortcutAction, value);

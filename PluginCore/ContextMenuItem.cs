@@ -4,8 +4,8 @@ namespace PluginCore;
 
 public class ContextMenuItem : IContextMenuItem
 {
-    public string Description { get; }
-    public Image? Image { get; }
+    public string Description { get; set; }
+    public Image? Image { get; set; }
     public EventHandler? OnClick { get; }
 
     public ContextMenuItem(string description, Image? image, EventHandler? onClick)
